@@ -7,29 +7,7 @@ const jwt = require('jsonwebtoken');
 // Importing the user model
 const { User } = require('../models/User');
 
-
-
-/**
- * Checks the string for a valid e-mail address
- * @param {String} email - String to be checked
- * @returns {Boolean}
- */
-function isValidEmail(email) {
-  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9._%-]+\.[a-zA-Z]{2,}$/;
-  return regex.test(email);
-}
-
-
-
-/**
- * Checks the string for a valid phone number (e.g. "+371 00000000")
- * @param {String} phone - String to be checked
- * @returns {Boolean}
- */
-function isValidPhone(phone) {
-  const regex = /^\+?[0-9]{1,3}[0-9]{6,14}$/;
-  return regex.test(phone);
-}
+const validation = require('../utils/validation');
 
 
 
@@ -58,7 +36,7 @@ const login = async (req, res) => {
     ui_errors.emailError = i18n.__('errors.ERROR_03')
     return res.status(400).json(ui_errors);
   }
-  if (!isValidEmail(email)) {
+  if (!validation.isValidEmail(email)) {
     ui_errors.emailError = i18n.__('errors.ERROR_02');
     return res.status(400).json(ui_errors);
   }
@@ -112,7 +90,7 @@ const login = async (req, res) => {
     ui_errors.generalError = i18n.__('errors.ERROR_14');
     return res.status(500).json(ui_errors);
   }
-}
+};
 
 
 
@@ -150,11 +128,11 @@ const register = async (req, res) => {
   }
   
   // Checking for valid e-mail address and phone number.
-  if (!isValidEmail(email)) {
+  if (!validation.isValidEmail(email)) {
     ui_errors.emailError = i18n.__('errors.ERROR_02');
     return res.status(400).json(ui_errors);
   }
-  if (!isValidPhone(phone)) {
+  if (!validation.isValidPhone(phone)) {
     ui_errors.phoneError = i18n.__('errors.ERROR_06');
     return res.status(400).json(ui_errors);
   }
@@ -203,7 +181,7 @@ const register = async (req, res) => {
     ui_errors.generalError = i18n.__('errors.ERROR_14');
     return res.status(500).json(ui_errors);
   }
-}
+};
 
 
 
@@ -222,11 +200,11 @@ const logout = async (req, res) => {
     expiresIn: new Date(0)
   });
   res.redirect('/');
-}
+};
 
 const changeData = async (req, res) => {
 
-}
+};
 
 
 
@@ -257,7 +235,7 @@ const blockUser = async (req, res) => {
     console.error();
     return res.status(500).json({ message: i18n.__('errors.ERROR_14')});
   }
-}
+};
 
 
 
@@ -288,15 +266,15 @@ const unblockUser = async (req, res) => {
     console.error();
     return res.status(500).json({ message: i18n.__('errors.ERROR_14')});
   }
-}
+};
 
 const deleteOwnUser = async (req, res) => {
 
-}
+};
 
 const deleteOtherUser = async (req, res) => {
 
-}
+};
 
 
 
@@ -304,4 +282,4 @@ const deleteOtherUser = async (req, res) => {
 module.exports = {
   login, register, logout, changeData,
   blockUser, unblockUser, deleteOwnUser, deleteOtherUser
-}
+};

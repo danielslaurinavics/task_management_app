@@ -8,7 +8,24 @@
 		"ERROR_06": "Ievadītais telefona numurs nav pareizs. ",
 		"ERROR_07": "Sistēmā jau eksistē lietotājs ar e-pasta adresi {{ email }}.",
 		"ERROR_08": "Nepareizs e-pasts un/vai parole!",
-		"ERROR_09": "Šis lietotājs ir bloķēts. Lūdzu, sazinieties ar sistēmas tehnisko atbalstu!"
+		"ERROR_09": "Šis lietotājs ir bloķēts. Lūdzu, sazinieties ar sistēmas tehnisko atbalstu!",
+		"ERROR_10": "Jums nav tiesību piekļūt šim resursam!",
+		"ERROR_11": "Jums nav tiesību veikt šo darbību!",
+		"ERROR_12": "Tikai komandas dalībnieki var piekļūt šim resursam. Lūdzu, sazinieties ar komandas {{ teamName }} vadītāju!",
+		"ERROR_13": "Tikai uzņēmuma pārvaldnieki var piekļūt šim resursam. Lūdzu, sazinieites ar uzņēmuma {{ companyName }} pārvaldnieku!",
+		"ERROR_14": "Notikusi kļūda pieprasījuma apstrādē! Lūdzu, mēģiniet vēlreiz."
+	},
+	"success": {
+		"SUCCESS_01": "Lietotāja reģistrācija veiksmīgi pabeigta!",
+		"SUCCESS_02": "Lietotāja datu rediģēšana veiksmīgi pabeigta!",
+		"SUCCESS_03": "Lietotājs veiksmīgi bloķēts!",
+		"SUCCESS_04": "Lietotājs veiksmīgi atbloķēts!",
+		"SUCCESS_05": "Lietotāja dzēšana no sistēmas veiksmīgi pabeigta!"
+	},
+	"confirm": {
+		"CONFIRM_01": "Vai Jūs esat pārliecināts, ka vēlaties dzēst savu lietotāja profilu no sistēmas? Veicot šo darbību, visi lietotāja dati tiks neatgriezeniski dzēsti, un nevarēsiet piekļūt sistēmai.",
+		"CONFIRM_02": "Vai Jūs esat pārliecināts, ka vēlaties dzēst šo lietotāju no sistēmas? Veicot šo darbību, visi šī lietotāja dati tiks neatgriezeniski dzēsti, un nevarēs piekļūt sistēmai.",
+		"CONFIRM_03": "Vai Jūs esat pārliecināts, ka vēlaties dzēst šo uzņēmumu? Veicot šo darbību, visi uzņēmuma dati, kā arī tai piederošās komandas un to uzdevumi tiks neatgriezeniski dzēsti."
 	},
 	"ui": {
 		"login": "Pieslēgties",
