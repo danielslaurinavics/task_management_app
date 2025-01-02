@@ -1,0 +1,22 @@
+{
+  "name": "task_app",
+  "version": "1.0.0",
+  "description": "A simple task management application. Qualification work at UL.",
+  "keywords": [
+    "task",
+    "task managment system",
+    "task management",
+    "task planner"
+  ],
+  "license": "ISC",
+  "author": "Daniels Laurinavičs",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
