@@ -2,38 +2,82 @@ const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const { User } = require('./User');
-const { Team } = require('./Team');
+const { TaskList } = require('./TaskList');
 
-const TaskList = sequelize.define('TaskList', {
+const Task = sequelize.define('Task', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  is_team_list: {
-    type: DataTypes.BOOLEAN,
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  status: {
+    type: DataTypes.STRING(16),
     allowNull: false,
-    defaultValue: false
+    defaultValue: 'UPCOMING'
   },
-  owner_user: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: User,
-      key: 'id'
-    }
+  priority: {
+    type: DataTypes.STRING(16),
+    allowNull: false,
+    defaultValue: 'LOW'
   },
-  owner_team: {
+  dueDate: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  list_id: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
     references: {
-      model: Team,
+      model: TaskList,
       key: 'id'
     }
   }
 }, {
   timestamps: true,
-  tableName: 'task_lists'
+  tableName: 'tasks'
 });
 
-module.exports = { TaskList };
+Task.belongsTo(TaskList, { foreignKey: 'list_id' });
+
+const TaskPersons = sequelize.define('tasklist', {
+  task_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Task,
+      key: 'id'
+    }
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: User,
+      key: 'id'
+    }
+  }
+}, {
+  tableName: 'task_persons'
+});
+
+Task.belongsToMany(User, {
+  through: TaskPersons,
+  foreignKey: 'task_id',
+  otherKey: 'user_id'
+});
+
+User.belongsToMany(Task, {
+  through: TaskPersons,
+  foreignKey: 'user_id',
+  otherKey: 'task_id'
+})
+
+module.exports = { Task, TaskPersons };

@@ -1,13 +1,21 @@
 {
-  "errors": {
-    "ERROR_01": "Šis ir obligāts lauks.",
-    "ERROR_02": "Ievadītā e-pasta adrese nav derīga.",
-    "ERROR_03": "Šis lauks nedrīkst saturēt vairāk par 255 simboliem.",
-    "ERROR_04": "Parolei ir jābūt vismaz 8 simbolus garai.",
-    "ERROR_05": "Ievadītais paroles apstiprinājums neatbilst ievadītajai parolei.",
-    "ERROR_06": "Ievadītais telefona numurs nav pareizs. ",
-    "ERROR_07": "Sistēmā jau eksistē lietotājs ar e-pasta adresi {{ email }}.",
-    "ERROR_08": "Nepareizs e-pasts un/vai parole!",
-    "ERROR_09": "Šis lietotājs ir bloķēts. Lūdzu, sazinieties ar sistēmas tehnisko atbalstu!"
-  }
+	"errors": {
+		"ERROR_01": "Šis ir obligāts lauks.",
+		"ERROR_02": "Ievadītā e-pasta adrese nav derīga.",
+		"ERROR_03": "Šis lauks nedrīkst saturēt vairāk par 255 simboliem.",
+		"ERROR_04": "Parolei ir jābūt vismaz 8 simbolus garai.",
+		"ERROR_05": "Ievadītais paroles apstiprinājums neatbilst ievadītajai parolei.",
+		"ERROR_06": "Ievadītais telefona numurs nav pareizs. ",
+		"ERROR_07": "Sistēmā jau eksistē lietotājs ar e-pasta adresi {{ email }}.",
+		"ERROR_08": "Nepareizs e-pasts un/vai parole!",
+		"ERROR_09": "Šis lietotājs ir bloķēts. Lūdzu, sazinieties ar sistēmas tehnisko atbalstu!"
+	},
+	"ui": {
+		"login": "Pieslēgties",
+		"signup": "Reģistrēties",
+		"index": {
+			"headline": "Ievies uzdevumu pārvaldību arī savā darba vidē",
+			"headlinetext": "Paredzēts gan personīgai, gan komerciālai lietošanai!"
+		}
+	}
 }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../partials/structural/head') %>
+  <body>
+    <%- include('../partials/structural/header') %>
+    <main class="mx-5">
+      <div class="pt-5 text-center border-bottom">
+        <h1 class="display-4 fw-bold text-body-emphasis"><%= __('ui.index.headline') %></h1>
+        <div class="col-lg-6 mx-auto mb-5">
+          <p class="lead mb-4"><%= __('ui.index.headlinetext') %></p>
+        </div>
+        <div class="overflow-hidden" style="max-height: 30vh;">
+          <div class="container px-5">
+            <img src="/public/images/showcase.png" class="img-fluid border rounded-3 shadow-lg mb-4" alt="App example" width="700" height="383" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </main>
+    <%- include('../partials/structural/footer') %>
+  </body>
+</html>
