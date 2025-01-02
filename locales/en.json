@@ -1,0 +1,13 @@
+{
+  "errors": {
+    "ERROR_01": "This field is required.",
+    "ERROR_02": "The entered e-mail address is not valid.",
+    "ERROR_03": "This field must not contain more than 255 characters",
+    "ERROR_04": "The password must be at least 8 characters long",
+    "ERROR_05": "The password confirmation entered does not match the entered password.",
+    "ERROR_06": "The phone number entered is incorrect.",
+    "ERROR_07": "There is a user with e-mail {{ email }} registered in the system.",
+    "ERROR_08": "Wrong e-mail address and/or password!",
+    "ERROR_09": "This user is blocked. Please contact Technical Support!"
+  }
+}
