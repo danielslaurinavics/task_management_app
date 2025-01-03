@@ -60,6 +60,12 @@
 		"index": {
 			"headline": "Ievies uzdevumu pārvaldību arī savā darba vidē",
 			"headlinetext": "Paredzēts gan personīgai, gan komerciālai lietošanai!"
-		}
+		},
+		"login_ui": {
+			"headline": "Pieslēgšanās sistēmai TaskApp",
+			"registerhere": "Reģistrējies šeit!"
+		},
+		"email": "E-pasts",
+		"password": "Parole"
 	}
 }

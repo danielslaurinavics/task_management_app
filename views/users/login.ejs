@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../partials/structural/head') %>
+  <body class="d-flex align-items-center vh-100 bg-body-tertiary">
+    <main class="col-10 col-md-6 col-xl-4 m-auto">
+      <form id="login-form">
+        <h1 class="h3 mb-3 fw-normal"><%= __('ui.login_ui.headline') %></h1>
+        <div id="message-area"></div>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="email" name="email" placeholder="example@example.com" autocomplete="email">
+          <label for="email"><%= __('ui.email') %></label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="password" name="password" placeholder="password">
+          <label for="password"><%= __('ui.password') %></label>
+        </div>
+        <div class="text-start my-3">
+          <a class="text-body-secondary text-decoration-none" href="/register"><%= __('ui.login_ui.registerhere') %></a>
+        </div>
+        <button class="btn btn-primary w-100 py-2" type="submit"><%= __('ui.login') %></button>
+      </form>
+    </main>
+    <script src="/public/scripts/forms/login.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </body>
+</html>

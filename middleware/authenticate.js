@@ -39,4 +39,13 @@ async function authorizeAdmin(req, res, next) {
 
 
 
-module.exports = { authenticate, authorizeAdmin };
+async function goToDashboard(req, res, next) {
+  if (req.user) {
+    if (req.user.is_admin) res.redirect('/admin');
+    else res.redirect('/dashboard');
+  } else return res.redirect('/');
+}
+
+
+
+module.exports = { authenticate, authorizeAdmin, goToDashboard };
