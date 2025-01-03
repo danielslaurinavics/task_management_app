@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../partials/structural/head') %>
+  <body class="d-flex align-items-center vh-100 bg-body-tertiary">
+    <main class="col-10 col-md-6 col-xl-4 m-auto">
+      <form id="register-form">
+        <h1 class="h3 mb-3 fw-normal"><%= __('ui.register_ui.headline') %></h1>
+        <div id="message-area"></div>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="name" name="name" placeholder="John Smith" autocomplete="name">
+          <label for="name"><%= __('ui.name') %></label>
+        </div>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="email" name="email" placeholder="password">
+          <label for="email"><%= __('ui.email') %></label>
+        </div>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="phone" name="phone" placeholder="+37100000000">
+          <label for="phone"><%= __('ui.phone') %></label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="password" name="password" placeholder="password">
+          <label for="password"><%= __('ui.password') %></label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="password">
+          <label for="password_confirm"><%= __('ui.password_confirm') %></label>
+        </div>
+        <div class="text-start my-3">
+          <a class="text-body-secondary text-decoration-none" href="/login"><%= __('ui.register_ui.loginhere') %></a>
+        </div>
+        <button class="btn btn-primary w-100 py-2" type="submit"><%= __('ui.signup') %></button>
+      </form>
+    </main>
+    <script src="/public/scripts/forms/register.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </body>
+</html>

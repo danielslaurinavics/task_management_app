@@ -16,7 +16,7 @@ function isValidEmail(email) {
  * @returns {Boolean}
  */
 function isValidPhone(phone) {
-  const regex = /^\+?[0-9]{1,3}[0-9]{6,14}$/;
+  const regex = /^\+[0-9]{1,3}[0-9]{6,14}$/;
   return regex.test(phone);
 }
 

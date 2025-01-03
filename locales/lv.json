@@ -66,6 +66,13 @@
 			"registerhere": "Reģistrējies šeit!"
 		},
 		"email": "E-pasts",
-		"password": "Parole"
+		"password": "Parole",
+		"register_ui": {
+			"headline": "Reģistrēšanās sistēmai TaskApp",
+			"loginhere": "Pieslēdzies šeit!"
+		},
+		"name": "Pilnais vārds",
+		"phone": "Tālruņa numurs",
+		"password_confirm": "Paroles apstiprinājums"
 	}
 }

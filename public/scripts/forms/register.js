@@ -1,21 +1,26 @@
-document.getElementById('login-form').addEventListener('submit', async (event) => {
+document.getElementById('register-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   document.activeElement.blur();
 
   const formData = new FormData(event.target);
-  
+
   const data = {
+    name: formData.get('name').trim(),
     email: formData.get('email').trim(),
-    password: formData.get('password').trim()
+    phone: formData.get('phone').trim(),
+    password: formData.get('password').trim(),
+    password_confirm: formData.get('password_confirm').trim()
   };
 
   const messageArea = document.getElementById('message-area');
   const passwordInput = document.getElementById('password');
+  const passwordConfirmInput = document.getElementById('password_confirm');
 
   messageArea.innerHTML = '';
   passwordInput.value = '';
+  passwordConfirmInput.value = '';
 
-  const response = await fetch("/login", {
+  const response = await fetch('/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -31,8 +36,8 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
       message.role = 'alert';
       message.textContent = responseData.message;
       messageArea.appendChild(message);
-
-      window.location.href = '/home';
+      
+      window.location.href = '/login';
     }
   } else {
     const errors = responseData.errors;
@@ -44,4 +49,4 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
       messageArea.appendChild(alert);
     });
   }
-});
+})
