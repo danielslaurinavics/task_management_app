@@ -4,6 +4,10 @@ const express = require('express');
 const cookie_parser = require('cookie-parser');
 const i18n = require('i18n');
 
+// Get all required local modules
+const routes = require('./routes/routes');
+const localeMiddleware = require('./middleware/locale');
+
 // Initialize the server
 const app = express();
 
@@ -21,18 +25,17 @@ app.use(express.json());
 app.use(cookie_parser());
 app.use(i18n.init);
 
+// Local middleware setup
+app.use(localeMiddleware.localeMiddleware);
+
+// Local route setup
+app.use(routes);
+
 // View engine setup
 app.set('view engine', 'ejs');
 
 // Handling static files
 app.use('/public', express.static('./public'));
-
-
-
-// Index page route
-app.get('/', (req, res) => {
-  res.render('./index/index');
-});
 
 
 

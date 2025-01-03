@@ -64,11 +64,10 @@ const login = async (req, res) => {
 
     // Creating the JWT token and saving it in the cookies.
     const jwtPayload = {
-      userId: user.id,
-      isAdmin: user.is_admin
+      userId: user.id
     };
     const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.cookie('JWT', token, {
+    res.cookie('jwt', token, {
       secure: process.env.COOKIES_SECURE,
       httpOnly: true,
       sameSite: 'Strict',

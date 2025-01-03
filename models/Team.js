@@ -55,6 +55,8 @@ const TeamParticipant = sequelize.define('TeamParticipant', {
     allowNull: false,
     defaultValue: false
   }
+}, {
+  tableName: 'team_participants'
 });
 
 Team.belongsToMany(User, {
