@@ -4,182 +4,156 @@ const i18n = require('i18n');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Importing the user model
+// Importing the necessary models
 const { User } = require('../models/User');
+const { CompanyManager } = require('../models/Company');
+const { TeamParticipant } = require('../models/Team');
+const { Task } = require('../models/Task');
 
+// Importing the validation utility functions
 const validation = require('../utils/validation');
+
+// Importing the task list creation functions from task list controller
+const { createTaskList, deleteTaskList } = require('./tasklistController');
 
 
 
 /**
- * Validates user credentials and
- * - logs user in in case of successful validation,
- * - otherwise sends error messages to the client and displays in frontend.
+ * Validates user credentials and logs the user into the
+ * system in case of successful validation.
  * @param {Object} req - Request object containing user credentials.
  * @param {Object} res - Response object for sending the result to the client.
  */
 const login = async (req, res) => {
-  // Receiving user credentials via request body.
-  const { email, password } = req.body;
+  // Receiving user credentials via the request body.
+  const { emailInput, passwordInput } = req.body;
 
-  // Defining the errors object used in frontend
-  // and checking whether email or password is empty.
-  let ui_errors = { generalError: '', emailError: '', passwordError: '' };
+  const email = emailInput.trim();
+  const password = passwordInput.trim();
 
-  if (!email) ui_errors.emailError = i18n.__('errors.ERROR_01');
-  if (!password) ui_errors.passwordError = i18n.__('errors.ERROR_01');
-  if (!email || !password) {
-    return res.status(400).json(ui_errors);
-  }
+  // Doing data validation:
+  // Required fields - email and password;
+  // E-mail length shall not exceed 255 characters,
+  // E-mail address should be in format <email>@<domain>.
+  const sendError = (status, errorKey) =>
+    res.status(status).json({ error: i18n.__(`errors.${errorKey}`) });
 
-  if (email.length > 255) {
-    ui_errors.emailError = i18n.__('errors.ERROR_03')
-    return res.status(400).json(ui_errors);
-  }
-  if (!validation.isValidEmail(email)) {
-    ui_errors.emailError = i18n.__('errors.ERROR_02');
-    return res.status(400).json(ui_errors);
+  const validations = [
+    {condition: !email || !password, error: 'ERR_01'},
+    {condition: email.length > 255, error: 'ERR_02'},
+    {condition: !validation.isValidEmail(email), error: 'ERR_06'},
+  ];
+  for (const { condition, error } of validations ) {
+    if (condition) return sendError(400, error);
   }
 
   try {
-    // Finding the corresponding user and sending
-    // an error in case it's not found
+    // Finding the user in the database and returning
+    // an error if the user was not found.
     const user = await User.findOne({
-      where: { email: email },
-      attributes: { include: ['password'] }
+      where: { email: email }
     });
-    if (!user) {
-      ui_errors.generalError = i18n.__('errors.ERROR_08');
-      return res.status(401).json(ui_errors);
-    }
+    if (!user) return sendError(404, 'ERR_12');
 
-    // Comparing the password entered and password
-    // stored in database. Sends an error if doesn't match.
-    const passwordHash = user.password;
-    const validPassword = await bcrypt.compare(password, passwordHash);
-    if (!validPassword) {
-      ui_errors.generalError = i18n.__('errors.ERROR_08');
-      return res.status(401).json(ui_errors);
-    }
+    // Returning an error if the password is incorrect
+    const passwordValid = await bcrypt.compare(password, user.password);
+    if (!passwordValid) return sendError(401, 'ERR_12');
 
-    // Check whether the user is blocked. Sends an error
-    // if the user is blocked in the system.
-    if (user.is_blocked === true) {
-      ui_errors.generalError = i18n.__('errors.ERROR_09');
-      return res.status(403).json(ui_errors);
-    }
+    // If the user is marked as blocked, it will return an error.
+    if (user.is_blocked) return sendError(403, 'ERR_13');
 
-    // In case of successful login, the JWT authentication token is
-    // created together with its payload.
-    // The token is then placed in the cookies for further use.
-    const jwtPayload = { userId: user.id }
+    // Creating the JWT token and saving it in the cookies.
+    const jwtPayload = {
+      userId: user.id,
+      isAdmin: user.is_admin
+    };
     const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.cookie('token', token, {
+    res.cookie('JWT', token, {
+      secure: process.env.COOKIES_SECURE,
       httpOnly: true,
       sameSite: 'Strict',
-      secure: process.env.COOKIES_SECURE,
       maxAge: 3600000
     });
 
-    // Sends an success flag to the client.
-    res.status(200).json({ success: true });
+    // Returning success response
+    res.status(200).json({ success: true, message: i18n.__('errors.SUC_01') });
   } catch (error) {
-    // Displays an error to the console and sends back
-    // the generic error message to the client.
-    console.error(error);
-    ui_errors.generalError = i18n.__('errors.ERROR_14');
-    return res.status(500).json(ui_errors);
+    // Logging the error in console and sending a generic error message.
+    console.log(error);
+    return sendError(500, 'ERR_18');
   }
 };
 
 
 
 /**
- * Validates the entered information and
- * - creates a user in the database if validation is successful,
- * - otherwise sends error messages to the client and displays in frontend.
+ * Validates the entered information and creates a new user in
+ * database if validation is successful.
  * @param {Object} req - Request object containing new user information.
  * @param {Object} res - Response object for sending the result to the client.
  */
 const register = async (req, res) => {
-  // Receiving new user's infromation from request body.
-  const { name, email, phone, password, password_confirm } = req.body;
+  // Receiving user information via the request body.
+  const { nameInput, emailInput, phoneInput,
+    passwordInput, confirmInput } = req.body;
 
-  // Defining the errors object, which is used in frontend
-  // and doing validation of data received.
-  let ui_errors = { generalError: '', nameError: '', emailError: '',
-    phoneError: '', passwordError: '', confirmError: '' };
-  
-  // Checking for missing field values.
-  if (!name) ui_errors.nameError = i18n.__('errors.ERROR_01');
-  if (!email) ui_errors.emailError = i18n.__('errors.ERROR_01');
-  if (!phone) ui_errors.phoneError = i18n.__('errors.ERROR_01');
-  if (!password) ui_errors.passwordError = i18n.__('errors.ERROR_01');
-  if (!password_confirm) ui_errors.confirmError = i18n.__('errors.ERROR_01');
-  if (!name || !email || !phone || !password || !password_confirm) {
-    return res.status(400).json(ui_errors);
-  }
+  const name = nameInput.trim();
+  const email = emailInput.trim();
+  const phone = phoneInput.trim();
+  const password = passwordInput.trim();
+  const confirm = confirmInput.trim();
 
-  // Checking for valid name and email field value length.
-  if (name.length > 255) ui_errors.nameError = i18n.__('errors.ERROR_03');
-  if (email.length > 255) ui_errors.emailError = i18n.__('errors.ERROR_03');
-  if (name.length > 255 || email.length > 255) {
-    return res.status(400).json(ui_errors);
-  }
-  
-  // Checking for valid e-mail address and phone number.
-  if (!validation.isValidEmail(email)) {
-    ui_errors.emailError = i18n.__('errors.ERROR_02');
-    return res.status(400).json(ui_errors);
-  }
-  if (!validation.isValidPhone(phone)) {
-    ui_errors.phoneError = i18n.__('errors.ERROR_06');
-    return res.status(400).json(ui_errors);
-  }
+  // Doing data validation:
+  // Fields required - name, email, phone number, password and confirmation;
+  // Name, email length shall not exceed 255 characters, phone number - 32;
+  // E-mail address should be in format <email>@<domain>;
+  // Phone numbers should be in format +<code><number>;
+  // Password should be at least 8 characters long and its confirmation
+  // must match with the written password.
+  const sendError = (status, errorKey) =>
+    res.status(status).json({ error: i18n.__(`errors.${errorKey}`) });
 
-  // Checking for valid password length and that password and its
-  // confirmation matches.
-  if (password.length < 8) {
-    ui_errors.passwordError = i18n.__('errors.ERROR_04');
-    return res.status(400).json(ui_errors);
-  }
-
-  if (password !== password_confirm) {
-    ui_errors.generalError = i18n.__('errors.ERROR_05');
-    return res.status(400).json(ui_errors);
+  const validations = [
+    {condition: !name || !email || !phone || !password || !confirm, error: 'ERR_01'},
+    {condition: email.length > 255, error: 'ERR_02'},
+    {condition: name.length > 255, error: 'ERR_03'},
+    {condition: phone.length > 32 , error: 'ERR_05'},
+    {condition: !validation.isValidEmail(email), error: 'ERR_06'},
+    {condition: !validation.isValidPhone(phone), error: 'ERR_07'},
+    {condition: password.length < 8, error: 'ERR_08'},
+    {condition: password !== confirm, error: 'ERR_09'},
+  ];
+  for (const { condition, error } of validations) {
+    if (condition) return sendError(400, error);
   }
 
   try {
-    // Finds an existing user by its e-mail address. Sends
-    // an error if a user was found.
-    const existingUser = await User.findOne({
+    // Checks for an existing user with the same e-mail address as the new one.
+    // Returns an error if such user was found, since two accounts with same
+    // e-mail address is not allowed.
+    const userFound = await User.findOne({
       where: { email: email }
     });
-    if (existingUser) {
-      ui_errors.generalError = i18n.__('errors.ERROR_07');
-      return res.status(409).json(ui_errors);
-    }
+    if (userFound) return sendError(409, 'ERR_11');
+    
+    // Creates a password hash
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Hashes the password by first generating the salt and then hashing it.
-    const hashSalt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, hashSalt);
-
-    // Creating a new user and inserting it to the database.
+    // Creates a new database entry
     const newUser = await User.create({
       name: name,
       email: email,
       password: hashedPassword,
-      phone: phone,
+      phone: phone
     });
 
-    // Sends a success message.
-    res.status(201).json({ success: i18n.__('success.SUCCESS_01') });
+    // Returning success response
+    res.status(201).json({ success: true, message: i18n.__('success.SUC_02')});
   } catch (error) {
-    // Displays an error to the console and sends back
-    // the generic error message to the client.
-    console.log(error);
-    ui_errors.generalError = i18n.__('errors.ERROR_14');
-    return res.status(500).json(ui_errors);
+    // Logging the error in console and sending a generic error message.
+    console.error(error);
+    return sendError(500, 'ERR_18');
   }
 };
 
@@ -202,8 +176,67 @@ const logout = async (req, res) => {
   res.redirect('/');
 };
 
-const changeData = async (req, res) => {
 
+
+/**
+ * Validates the entered information and changes data of an existing user
+ * in the database if validation is successful.
+ * @param {Object} req - Request object containing new user information.
+ * @param {Object} res - Response object for sending the result to the client.
+ */
+const changeData = async (req, res) => {
+  // Receiving user information via the request body.
+  const { id, name, phone,
+    curr_password, new_password, confirm } = req.body;
+
+  const newName = name.trim();
+  const newPhone = phone.trim();
+  const currentPassword = curr_password.trim();
+  const newPassword = new_password.trim();
+  const newConfirm = confirm.trim();
+
+  // Doing data validation:
+  // If no data is provided, then the function is returned, since there is
+  // nothing to edit.
+  if (!newName && !newPhone && !currentPassword && !newPassword && !newConfirm) {
+    return res.status(200).json({ success: true });
+  }
+
+  const sendError = (status, errorKey) =>
+    res.status(status).json({ error: i18n.__(`errors.${errorKey}`) });
+
+  const validations = [
+    { condition: newName && newName.length > 255, error: 'ERR_03'},
+    { condition: newPhone && newPhone.length > 32, error: 'ERR_05'},
+    { condition: newPhone && !validation.isValidPhone(newPhone), error: 'ERR_07'},
+    { condition: newPassword && newPassword.length < 8, error: 'ERR_08'},
+    { condition: newPassword && newConfirm && newPassword !== newConfirm, error: 'ERR_09'}
+  ];
+  for (const { condition, error } of validations) {
+    if (condition) return sendError(400, error);
+  }
+  try {
+    const user = await User.findByPk(id);
+    if (newPassword) {
+      const validCurrentPassword = await bcrypt.compare(currentPassword, user.password);
+      if (!validCurrentPassword) return sendError(400, 'ERR_10');
+    }
+
+    if (newName) user.name = newName;
+    if (newPhone) user.phone = newPhone;
+    if (newPassword) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      user.password = hashedPassword;
+    }
+    
+    await user.save();
+    res.status(200).json({ success: true, message: i18n.__('errors.SUC_03') });
+  } catch (error) {
+    // Logging the error in console and sending a generic error message.
+    console.error(error);
+    return sendError(500, 'ERR_18');
+  }
 };
 
 
@@ -214,7 +247,7 @@ const changeData = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const blockUser = async (req, res) => {
-  // Receiving the blocking user's information from the request body
+  // Receiving the blocking user's information via request body
   // and check whether it is provided.
   const { userId } = req.body;
   if (!userId) return res.status(400);
@@ -222,7 +255,7 @@ const blockUser = async (req, res) => {
   try {
     // Finds the user to block by its ID, returns an
     // error if the user was not found.
-    const user = User.findByPk(userId);
+    const user = await User.findByPk(userId);
     if (!user) return res.status(404);
 
     // Set the user as blocked and save the changes to the database.

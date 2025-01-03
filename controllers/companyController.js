@@ -64,6 +64,39 @@ const changeCompanyData = async (req, res) => {
 };
 
 const addManager = async (req, res) => {
+  const { company_id, user_email } = req.body;
+  
+  let ui_errors = { generalError: '', userError: ''};
+  if (!company_id) return res.status(400);
+  if (!user_email) {
+    userError = i18n.__('errors.ERROR_01');
+    return res.status(400).json(ui_errors);
+  }
+
+  if (user_email.length > 255) {
+    userError = i18n.__('errors.ERROR_03');
+    return res.status(400).json(ui_errors);
+  }
+
+  if (!validation.isValidEmail(user_email)) {
+    userError = i18n.__('errors.ERROR_02');
+    return res.status(400).json(ui_errors);
+  }
+
+  if (confirm("CONFIRM_04")) {
+    const user = await User.findOne({
+      where: { email: user_email }
+    });
+    if (!user) return res.status(404);
+
+    const relationship = await CompanyManager.create({
+      company_id: company_id,
+      user_id: user.id
+    });
+
+    res.status(201);
+  } else {
+  }
 
 };
 

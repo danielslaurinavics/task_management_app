@@ -22,7 +22,7 @@ const User = sequelize.define('User', {
   },
   phone: {
     type: DataTypes.STRING(32),
-    allowNull: true
+    allowNull: false
   },
   is_admin: {
     type: DataTypes.BOOLEAN,

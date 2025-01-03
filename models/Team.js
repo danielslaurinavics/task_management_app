@@ -31,9 +31,7 @@ const Team = sequelize.define('Team', {
   tableName: 'teams'
 });
 
-Team.belongsTo(Company, {
-  foreignKey: 'owner_company'
-});
+Team.belongsTo(Company, { foreignKey: 'owner_company', onDelete: 'CASCADE' });
 
 const TeamParticipant = sequelize.define('TeamParticipant', {
   team_id: {
@@ -62,13 +60,15 @@ const TeamParticipant = sequelize.define('TeamParticipant', {
 Team.belongsToMany(User, {
   through: TeamParticipant,
   foreignKey: 'team_id',
-  otherKey: 'user_id'
+  otherKey: 'user_id',
+  onDelete: 'CASCADE'
 });
 
 User.belongsToMany(Team, {
   through: TeamParticipant,
   foreignKey: 'user_id',
-  otherKey: 'team_id'
+  otherKey: 'team_id',
+  onDelete: 'CASCADE'
 });
 
 module.exports = { Team, TeamParticipant };

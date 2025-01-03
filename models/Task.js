@@ -45,7 +45,7 @@ const Task = sequelize.define('Task', {
   tableName: 'tasks'
 });
 
-Task.belongsTo(TaskList, { foreignKey: 'list_id' });
+Task.belongsTo(TaskList, { foreignKey: 'list_id', onDelete: 'CASCADE' });
 
 const TaskPersons = sequelize.define('tasklist', {
   task_id: {
@@ -71,13 +71,15 @@ const TaskPersons = sequelize.define('tasklist', {
 Task.belongsToMany(User, {
   through: TaskPersons,
   foreignKey: 'task_id',
-  otherKey: 'user_id'
+  otherKey: 'user_id',
+  onDelete: 'CASCADE'
 });
 
 User.belongsToMany(Task, {
   through: TaskPersons,
   foreignKey: 'user_id',
-  otherKey: 'task_id'
+  otherKey: 'task_id',
+  onDelete: 'CASCADE'
 })
 
 module.exports = { Task, TaskPersons };

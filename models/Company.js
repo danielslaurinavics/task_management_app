@@ -54,13 +54,15 @@ const CompanyManager = sequelize.define('CompanyManager', {
 Company.belongsToMany(User, {
   through: CompanyManager,
   foreignKey: 'company_id',
-  otherKey: 'user_id'
+  otherKey: 'user_id',
+  onDelete: 'CASCADE'
 });
 
 User.belongsToMany(Company, {
   through: CompanyManager,
   foreignKey: 'user_id',
-  otherKey: 'company_id'
+  otherKey: 'company_id',
+  onDelete: 'CASCADE'
 });
 
-module.exports = { Company, CompanyManager }; 
+module.exports = { Company, CompanyManager };

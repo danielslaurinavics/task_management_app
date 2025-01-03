@@ -18,6 +18,7 @@ const TaskList = sequelize.define('TaskList', {
   owner_user: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    unique: true,
     references: {
       model: User,
       key: 'id'
@@ -26,6 +27,7 @@ const TaskList = sequelize.define('TaskList', {
   owner_team: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    unique: true,
     references: {
       model: Team,
       key: 'id'
@@ -36,12 +38,7 @@ const TaskList = sequelize.define('TaskList', {
   tableName: 'task_lists',
 });
 
-TaskList.belongsTo(User, {
-  foreignKey: 'owner_user'
-});
-
-TaskList.belongsTo(Team, {
-  foreignKey: 'owner_team'
-});
+TaskList.belongsTo(User, { foreignKey: 'owner_user', onDelete: 'CASCADE' });
+TaskList.belongsTo(Team, { foreignKey: 'owner_team', onDelete: 'CASCADE' });
 
 module.exports = { TaskList };
