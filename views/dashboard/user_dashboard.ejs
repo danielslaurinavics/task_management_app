@@ -10,7 +10,7 @@
         <div class="p-3 bg-body-secondary rounded-3">
           <span><%= __('ui.dashboard.current_tasks') %></span>
           <div class="p-2 mt-2 bg-body-tertiary rounded-3">
-            <div class="m-2" id="user-tasks"></div>
+            <div class="m-2 row-cols-1" id="tasks"></div>
           </div>
         </div>
       </div>
@@ -19,7 +19,7 @@
         <div class="p-3 bg-body-secondary rounded-3">
           <span><%= __('ui.dashboard.goto') %></span>
           <div class="p-2 mt-2 bg-body-tertiary rounded-3">
-            <div class="m-2 row row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-2" id="select-div">
+            <div class="m-2 row row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-2" id="companies">
               
               <!-- Link to user settings button -->
               <div class="col">
@@ -48,8 +48,7 @@
         </div>
       </div>
     </main>
-    <script src="/public/scripts/fetching/getTasks.js"></script>
-    <script src="/public/scripts/ui/displaySelect.js"></script>
+    <script src="/public/scripts/ui/displayUserDashboard.js"></script>
     <%- include('../partials/structural/footer') %>
   </body>
 </html>

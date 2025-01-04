@@ -32,6 +32,7 @@ async function authenticate(req, res, next) {
 }
 
 
+
 async function authorizeAdmin(req, res, next) {
   if (req.user && req.user.is_admin) return next();
   else return res.status(403).render('error', { error: i18n.__('errors.ERR_14')});

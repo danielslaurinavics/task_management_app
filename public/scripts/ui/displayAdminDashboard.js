@@ -43,7 +43,7 @@ async function populateUserTable() {
       const confirmed = confirm(user.allowed_to.block_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/user/block/${user.id}`;
+        const fetchUrl = `/user/${user.id}/block`;
         const response = await fetch(fetchUrl, { method: 'PUT' });
         const data = await response.json();
 
@@ -59,7 +59,7 @@ async function populateUserTable() {
       const confirmed = confirm(user.allowed_to.unblock_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/user/unblock/${user.id}`;
+        const fetchUrl = `/user/${user.id}/unblock`;
         const response = await fetch(fetchUrl, { method: 'PUT' });
         const data = await response.json();
 
@@ -104,7 +104,7 @@ async function populateUserTable() {
 async function populateCompanyTable() {
   const companiesTable = document.getElementById('companies-table');
 
-  const response = await fetch('/company/get', { method: 'GET' });
+  const response = await fetch('/get/company', { method: 'GET' });
   const data = await response.json();
 
   if (!response.ok) return;

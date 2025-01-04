@@ -3,9 +3,55 @@
   <%- include('../partials/structural/head') %>
   <body>
     <%- include('../partials/structural/dashboard_header', { name: user.name }) %>
+    <input type="number" id="user-id" style="display: none;" value="<%= user.id %>" disabled>
+    <input type="number" id="company-id" style="display: none;" value="<%= company.id %>" disabled>
     <main class="mx-5">
-      
+      <h1><%= __('ui.company.dashboard_headline', { name: company.name }) %></h1>
+      <a class="btn btn-outline-primary btn-sm ms-2" href="/settings/company/<%= company.id %>"><%= __('ui.company.settings') %></a>
+      <p><%= company.description %></p>
+      <div class="container-fluid my-3">
+        <div class="p-3 bg-body-secondary rounded-3">
+          <span><%= __('ui.company.managers') %></span>
+          <div class="p-2 mt-2 bg-body-tertiary rounded-3">
+            <div class="m-2">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col"><%= __('ui.name') %></th>
+                    <th scope="col"><%= __('ui.email') %></th>
+                    <th scope="col"><%= __('ui.phone') %></th>
+                    <th scope="col"><%= __('ui.actions') %></th>
+                  </tr>
+                </thead>
+                <tbody id="managers-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container-fluid my-3">
+        <div class="p-3 bg-body-secondary rounded-3">
+          <span><%= __('ui.company.teams') %></span>
+          <a class="btn btn-outline-primary btn-sm ms-2" href="/create/team/<%= company.id %>"><%= __('ui.team.create') %></a>
+          <div class="p-2 mt-2 bg-body-tertiary rounded-3">
+            <div class="m-2">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col"><%= __('ui.entity_name') %></th>
+                    <th scope="col"><%= __('ui.entity_description') %></th>
+                    <th scope="col"><%= __('ui.actions') %></th>
+                  </tr>
+                </thead>
+                <tbody id="teams-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
+    <script src="/public/scripts/ui/displayCompanyDashboard.js"></script>
     <%- include('../partials/structural/footer') %>
   </body>
 </html>

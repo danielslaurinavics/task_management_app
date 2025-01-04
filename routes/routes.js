@@ -3,92 +3,93 @@ const express = require('express');
 const router = express.Router();
 
 // Importing local controllers.
-const userController = require('../controllers/userController');
-const companyController = require('../controllers/companyController');
-const teamController = require('../controllers/teamController');
-const taskController = require('../controllers/taskController');
+const userCon = require('../controllers/userController');
+const companyCon = require('../controllers/companyController');
+const teamCon = require('../controllers/teamController');
+const taskCon = require('../controllers/taskController');
 
 // Importing local middleware.
-const authMiddleware = require('../middleware/authenticate');
-const companyMiddleware = require('../middleware/company');
+const auth = require('../middleware/authenticate');
+const companyMid = require('../middleware/company');
 const { setLocale } = require('../middleware/locale');
 
 
 
-// Index page route
 router.get('/', (req, res) => res.render('./index/index'));
-
-// Locale setting route
 router.get('/locale/set', setLocale);
 
 // Login and logout routes
-router.get('/login', authMiddleware.checkIfLoggedIn, (req, res) => res.render('./users/login'));
-router.post('/login', authMiddleware.checkIfLoggedIn, userController.login);
-router.post('/logout', authMiddleware.authenticate, userController.logout);
+router.get('/login', auth.checkIfLoggedIn, (req, res) => res.render('./users/login'));
+router.post('/login', auth.checkIfLoggedIn, userCon.login);
+router.post('/logout', auth.authenticate, userCon.logout);
 
 // Registration routes
-router.get('/register', authMiddleware.checkIfLoggedIn, (req, res) => res.render('./users/register'));
-router.post('/register', authMiddleware.checkIfLoggedIn, userController.register);
+router.get('/register', auth.checkIfLoggedIn, (req, res) => res.render('./users/register'));
+router.post('/register', auth.checkIfLoggedIn, userCon.register);
 
 // Dashboard routes
-router.get('/home', authMiddleware.authenticate, authMiddleware.goToDashboard);
-router.get('/dashboard', authMiddleware.authenticate, (req, res) => res.render('./dashboard/user_dashboard', { user: req.user }));
-router.get('/admin', authMiddleware.authenticate, authMiddleware.authorizeAdmin, (req, res) => res.render('./dashboard/admin_dashboard', { user: req.user }));
+router.get('/home', auth.authenticate, auth.goToDashboard);
+router.get('/dashboard', auth.authenticate, (req, res) => res.render('./dashboard/user_dashboard', { user: req.user }));
+router.get('/admin', auth.authenticate, auth.authorizeAdmin, (req, res) => res.render('./dashboard/admin_dashboard', { user: req.user }));
 
 // User setting routes
-router.get('/settings', authMiddleware.authenticate, (req, res) => res.render('./users/settings', { user: req.user }));
-router.put('/settings/change/:id', authMiddleware.authenticate, userController.changeData);
+router.get('/settings', auth.authenticate, (req, res) => res.render('./users/settings', { user: req.user }));
+router.put('/settings/change/:id', auth.authenticate, userCon.changeData);
 
 // User blocking routes
-router.put('/user/block/:id', authMiddleware.authenticate, authMiddleware.authorizeAdmin, userController.blockUser);
-router.put('/user/unblock/:id', authMiddleware.authenticate, authMiddleware.authorizeAdmin, userController.unblockUser);
+router.put('/user/:id/block', auth.authenticate, auth.authorizeAdmin, userCon.blockUser);
+router.put('/user/:id/unblock', auth.authenticate, auth.authorizeAdmin, userCon.unblockUser);
 
 // User deletion route
-router.delete('/user/:id/delete/self', authMiddleware.authenticate, userController.deleteSelf);
-router.delete('/user/:id/delete', authMiddleware.authenticate, authMiddleware.authorizeAdmin,userController.deleteUser);
+router.delete('/user/:id/delete/self', auth.authenticate, userCon.deleteSelf);
+router.delete('/user/:id/delete', auth.authenticate, auth.authorizeAdmin,userCon.deleteUser);
 
 // Personal task list route
-router.get('/user/:id/list', authMiddleware.authenticate, (req, res) => res.render('./tasklists/personal_list', { user: req.user }));
+router.get('/user/:id/list', auth.authenticate, (req, res) => res.render('./tasklists/personal_list', { user: req.user }));
 
 
 // User information routes
-router.get('/user/get', authMiddleware.authenticate, authMiddleware.authorizeAdmin, userController.getAllUsers);
+router.get('/user/get', auth.authenticate, auth.authorizeAdmin, userCon.getAllUsers);
 
 
 
 // Company routes
-// router.get('/company/:id', authMiddleware.authenticate, (req, res) => res.render('./companies/dashboard', { user: req.user, company: req.company }));
-router.get('/company/get', authMiddleware.authenticate, authMiddleware.authorizeAdmin, companyController.getAllCompanies);
-router.get('/company/info/:user_id', authMiddleware.authenticate, companyController.getUserCompanies);
-router.get('/company/create', authMiddleware.authenticate, authMiddleware.authorizeAdmin, (req, res) => res.render('./companies/create', { user: req.user }));
-router.post('/company/create', authMiddleware.authenticate, authMiddleware.authorizeAdmin, companyController.createCompany);
-router.post('/company/:id/manager/add', authMiddleware.authenticate, companyController.addManager);
-router.put('/company/:id/change', authMiddleware.authenticate, companyController.changeCompanyData);
-router.delete('/company/:id/delete', authMiddleware.authenticate, authMiddleware.authorizeAdmin, companyController.deleteCompany);
-router.delete('/company/:id/manager/delete', authMiddleware.authenticate, companyController.removeManager);
+router.get('/create/company', auth.authenticate, auth.authorizeAdmin, (req, res) => res.render('./companies/create', { user: req.user }));
+router.post('/create/company', auth.authenticate, auth.authorizeAdmin, companyCon.createCompany);
+router.post('/company/:id/manager/add', auth.authenticate, companyCon.addManager);
 
+router.get('/company/:id', auth.authenticate, companyMid.checkForAccess, (req, res) => res.render('./companies/dashboard', { user: req.user, company: req.company }));
+router.get('/get/company', auth.authenticate, auth.authorizeAdmin, companyCon.getAllCompanies);
+router.get('/company/get/:user_id', auth.authenticate, companyCon.getUserCompanies);
+router.get('/company/:id/manager/get', auth.authenticate, companyMid.checkForAccess, companyCon.getCompanyManagers);
+
+
+router.put('/company/:id/change', auth.authenticate, companyCon.changeCompanyData);
+
+router.delete('/company/:id/delete', auth.authenticate, auth.authorizeAdmin, companyCon.deleteCompany);
+router.delete('/company/:id/manager/delete', auth.authenticate, companyCon.removeManager);
 
 
 // Team routes
-router.get('/team/:id', authMiddleware.authenticate, (req, res) => res.render('./teams/dashboard', { team: req.team }));
-router.post('/team/create', authMiddleware.authenticate, teamController.createTeam);
-//router.post('/team/:id/add')
-//router.put('/team/:id/change')
-//router.put('/team/:id/role/manager')
-//router.put('/team/:id/role/participant')
-//router.delete('/team/:id/delete')
-//router.delete('/team/:id/remove')
+router.get('/team/get/:id', auth.authenticate, companyMid.checkForAccess, teamCon.getAllCompanyTeams);
+router.get('/create/team/:id', auth.authenticate, companyMid.checkForAccess, (req, res) => res.render('./teams/create', { user: req.user, company: req.company }));
+router.post('/create/team/:id', auth.authenticate, companyMid.checkForAccess, teamCon.createTeam);
+
+router.get('/team/:team_id', auth.authenticate, (req, res) => res.render('./teams/dashboard', { user: req.user }));
 
 
+
+
+router.delete('/team/:id/:team_id/delete', auth.authenticate, companyMid.checkForAccess, teamCon.deleteTeam);
 
 // Task routes
 
-router.get('/tasks/personal/:user_id', authMiddleware.authenticate, (req, res) => res.render('./tasklists/personal_list'));
-router.get('/tasks/team/:team_id', authMiddleware.authenticate, (req, res) => res.render('./tasklists/team_list'));
+router.get('/tasks/personal/:user_id', auth.authenticate, (req, res) => res.render('./tasklists/personal_list'));
+router.get('/tasks/team/:team_id', auth.authenticate, (req, res) => res.render('./tasklists/team_list'));
 
-router.get('/tasks/user/:user_id', authMiddleware.authenticate, taskController.getUserTasks);
+router.get('/tasks/user/:user_id', auth.authenticate, taskCon.getUserTasks);
 // router.get('/tasks/team/:id')
-router.post('/tasks/create', authMiddleware.authenticate, taskController.createTask);
+router.post('/tasks/create', auth.authenticate, taskCon.createTask);
 // router.put('/task/:id/change')
 // router.put('/task/:id/status')
 // router.delete('/task/:id/delete')

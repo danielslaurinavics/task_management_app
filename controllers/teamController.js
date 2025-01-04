@@ -23,12 +23,13 @@ const createTeam = async (req, res) => {
   const errors = [];
   try {
     // Getting creation form field values.
-    let { name, companyId } = req.body;
+    let { name, description } = req.body;
+    let { id: companyId } = req.params;
 
     // Sanitizing the input by removing front and rear whitespaces,
     // and converting ids to integers.
     name = name.trim();
-    companyId = parseInt(companyId.trim(), 10);
+    description = description.trim();
 
     // Validation of entered values.
     const validations = [
@@ -47,7 +48,7 @@ const createTeam = async (req, res) => {
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
     
     // Creating a new team entry in the database
-    const newTeam = await Team.create({ name, owner_company: company.id });
+    const newTeam = await Team.create({ name, description, owner_company: company.id });
     
     // Creating a new task list, since team always have one.
     const newTaskList = await TaskList.create({
@@ -64,6 +65,44 @@ const createTeam = async (req, res) => {
     res.status(500).json({ errors: errors });
   }
 };
+
+
+
+const getAllCompanyTeams = async (req, res) => {
+  try {
+  let { id: companyId } = req.params;
+  if (!companyId || isNaN(companyId))
+    return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+
+  const company = await Company.findByPk(companyId);
+  if (!company)
+    return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+
+  const data = await Team.findAll({
+    where: { owner_company: company.id },
+    order: [['id', 'ASC']]
+  });
+
+  const teams = [];
+  data.forEach(team => {
+    teams.push({
+      id: team.id, name: team.name, description: team.description,
+      allowed_to: {
+        add_word: i18n.__('ui.dashboard.team.add_to_team'),
+        add_prompt: i18n.__('ui.dashboard.team.add_to_team_prompt'),
+        add_confirm: i18n.__('confirm.CON_09', { user: '%user' }),
+        delete_word: i18n.__('ui.dashboard.team.delete_team'),
+        delete_confirm: i18n.__('confirm.CON_08', { name: team.name, company: company.name })
+      }
+    })
+  });
+
+  res.status(200).json({ teams });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+}
 
 
 
@@ -135,7 +174,7 @@ const deleteTeam = async (req, res) => {
   const t = await sequelize.transaction();
   try {
     // Gets the deletable team id from request parameters and validates it.
-    const { id } = req.params;
+    const { team_id: id } = req.params;
     if (!id || isNaN(id))
       return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
@@ -161,5 +200,5 @@ const deleteTeam = async (req, res) => {
 
 module.exports = {
   createTeam, changeTeamData, addToTeam, removeFromTeam,
-  elevateToManager, lowerToParticipant, deleteTeam
+  elevateToManager, lowerToParticipant, deleteTeam, getAllCompanyTeams
 };

@@ -18,7 +18,8 @@
 		"ERR_16": "Šim resursam var piekļūt tikai {{ name }} pārvaldnieki. Lūdzu, sazinieties ar uzņēmuma pārvaldnieku!",
 		"ERR_17": "Šim resursam var piekļūt tikai komandas {{ name }} dalībnieki. Lūdzu, sazinieties ar tās komandas vadītāju!",
 		"ERR_18": "Diemžēl notikusi kļūda pieprasījuma apstrādē. Lūdzu, mēģiniet vēlāk!",
-		"ERR_19": "Resurss nav atrasts!"
+		"ERR_19": "Resurss nav atrasts!",
+		"ERR_20": "Sistēmā jau eksistē ieraksts par lietotāja dalību!"
 	},
 	"success": {
 		"SUC_01": "Lietotājs ir veiksmīgi pieslēdzies sistēmai!",
@@ -93,6 +94,11 @@
 				"add_to_company": "Pievienot lietotāju uzņēmumam",
 				"add_to_company_prompt": "Ievadiet pievienojamā lietotāja e-pasta adresi!",
 				"delete_company": "Dzēst uzņēmumu"
+			},
+			"team": {
+				"add_to_team": "Pievienot lietotāju komandai",
+				"add_to_team_prompt": "Ievadiet pievienojamā lietotāja e-pasta adresi!",
+				"delete_team": "Dzēst komandu"
 			}
 		},
 		"settings": {
@@ -120,9 +126,18 @@
 		"is_blocked": "Bloķēts?",
 		"company": {
 			"createHeader": "Izveidot uzņēmumu",
-			"create": "Izveidot uzņēmumu"
+			"create": "Izveidot uzņēmumu",
+			"dashboard_headline": "Uzņēmums '{{ name }}'",
+			"managers": "Uzņēmuma pārvaldnieki",
+			"teams": "Uzņēmuma komandas",
+			"settings": "Uzņēmuma iestatījumi"
 		},
-		"return": "Atgriezties"
+		"return": "Atgriezties",
+		"entity_description": "Apraksts",
+		"team": {
+			"create": "Izveidot komandu"
+		},
+		"remove": "Noņemt"
 	},
 	"tasks": {
 		"statuses": {

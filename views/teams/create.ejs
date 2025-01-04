@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../partials/structural/head') %>
+  <body>
+    <%- include('../partials/structural/dashboard_header', { name: user.name }) %>
+    <input type="number" id="company-id" style="display: none;" value="<%= company.id %>" disabled>
+    <main class="mx-5">
+      <h1><%= __('ui.team.create') %></h1>
+      
+      <div class="col-10 col-md-6 col-xl-4 my-3">
+        <form id="create-team-form">
+          <div id="message-area"></div>
+          <div class="form-floating">
+            <input type="text" class="form-control" id="team_name" name="team_name" placeholder="Team" autocomplete="team_name">
+            <label for="team_name"><%= __('ui.entity_name') %></label>
+          </div>
+          <div class="form-floating">
+            <textarea class="form-control" id="team_description" name="team_description" style="height: 100px;" placeholder="We are the champions!"></textarea>
+            <label for="team_description"><%= __('ui.entity_description') %></label>
+          </div>
+          <button class="btn btn-primary w-100 py-2 my-1" type="submit"><%= __('ui.team.create') %></button>
+          <a class="btn btn-outline-primary w-100 py-2" href="/company/<%= company.id %>"><%= __('ui.return') %></a>
+        </form>
+      </div>
+    </main>
+    <script src="/public/scripts/forms/team_create.js"></script>
+    <%- include('../partials/structural/footer') %>
+  </body>
+</html>

@@ -1,17 +1,18 @@
-document.getElementById('create-company-form').addEventListener('submit', async (event) => {
+document.getElementById('create-team-form').addEventListener('submit', async (event) => {
   event.preventDefault();
+  const coid = document.getElementById('company-id').value;
+  const companyId = parseInt(coid, 10);
 
   const formData = new FormData(event.target);
   const data = {
-    name: formData.get('company_name')?.trim() || '',
-    email: formData.get('company_email')?.trim() || '',
-    phone: formData.get('company_phone')?.trim() || ''
+    name: formData.get('team_name')?.trim() || '',
+    description: formData.get('team_description')?.trim() || '',
   };
 
   const messageArea = document.getElementById('message-area');
   messageArea.innerHTML = '';
 
-  const response = await fetch('/create/company', {
+  const response = await fetch(`/create/team/${companyId}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -22,7 +23,7 @@ document.getElementById('create-company-form').addEventListener('submit', async 
 
   if (response.ok) {
     if (responseData.success) {
-      window.location.href = '/home';
+      window.location.href = `/company/${companyId}`;
       alert(responseData.message);
     }
   } else {

@@ -18,7 +18,8 @@
 		"ERR_16": "Only company's {{ name }} managers can access this resource. Please, contact this company's manager!",
 		"ERR_17": "Only team's {{ name }} members can access this resource. Please, contact this team's manager!",
 		"ERR_18": "Sadly, there is an error during the processing of this request. Please, try again later!",
-		"ERR_19": "The resource was not found!"
+		"ERR_19": "The resource was not found!",
+		"ERR_20": "There is such relationship entry in the system already!"
 	},
 	"success": {
 		"SUC_01": "The user has logged in successfully!",
@@ -83,13 +84,18 @@
 			"welcome": "Welcome, {{ name }}!",
 			"goto": "Go to",
 			"settings": "User settings",
-			"personal_list": "Your personal list",
+			"personal_list": "Your personal task list",
 			"system_users": "System's users",
 			"system_companies": "System's companies",
 			"admin": {
 				"block_user": "Block user",
 				"unblock_user": "Unblock user",
 				"delete_user": "Delete user"
+			},
+			"team": {
+				"add_to_team": "Add user to team",
+				"add_to_team_prompt": "Enter the new member's e-mail address",
+				"delete_team": "Delete team"
 			}
 		},
 		"settings": {
@@ -117,9 +123,18 @@
 		"is_blocked": "Blocked?",
 		"company": {
 			"createHeader": "Create a company",
-			"create": "Create company"
+			"create": "Create company",
+			"dashboard_headline": "Company '{{ name }}'",
+			"managers": "Company's managers",
+			"teams": "Comany's teams",
+			"settings": "Company settings"
 		},
-		"return": "Return"
+		"return": "Return",
+		"entity_description": "Description",
+		"team": {
+			"create": "Create a team"
+		},
+		"remove": "Noņemt"
 	},
 	"tasks": {
 		"statuses": {
