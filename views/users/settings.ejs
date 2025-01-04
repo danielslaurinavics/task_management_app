@@ -43,7 +43,9 @@
           </div>
           <div class="d-flex flex-column">
             <button type="submit" class="btn btn-primary my-2"><%= __('ui.settings.change') %></button>
+            <% if (!user.is_admin) { %>
             <button type="button" class="btn btn-danger my-2" data-bs-toggle="modal" data-bs-target="#deleteModal"><%= __('ui.settings.delete') %></button>
+            <% } %>
           </div>
         </form>
 

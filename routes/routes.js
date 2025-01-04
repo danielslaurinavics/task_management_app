@@ -57,8 +57,10 @@ router.get('/user/get', authMiddleware.authenticate, authMiddleware.authorizeAdm
 
 
 // Company routes
-router.get('/company/:id', authMiddleware.authenticate, (req, res) => res.render('./companies/dashboard', { user: req.user, company: req.company }));
+// router.get('/company/:id', authMiddleware.authenticate, (req, res) => res.render('./companies/dashboard', { user: req.user, company: req.company }));
+router.get('/company/get', authMiddleware.authenticate, authMiddleware.authorizeAdmin, companyController.getAllCompanies);
 router.get('/company/info/:user_id', authMiddleware.authenticate, companyController.getUserCompanies);
+router.get('/company/create', authMiddleware.authenticate, authMiddleware.authorizeAdmin, (req, res) => res.render('./companies/create', { user: req.user }));
 router.post('/company/create', authMiddleware.authenticate, authMiddleware.authorizeAdmin, companyController.createCompany);
 router.post('/company/:id/manager/add', authMiddleware.authenticate, companyController.addManager);
 router.put('/company/:id/change', authMiddleware.authenticate, companyController.changeCompanyData);

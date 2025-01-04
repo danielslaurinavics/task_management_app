@@ -114,7 +114,12 @@
 			"admin": "Administrator",
 			"user": "User"
 		},
-		"is_blocked": "Blocked?"
+		"is_blocked": "Blocked?",
+		"company": {
+			"createHeader": "Create a company",
+			"create": "Create company"
+		},
+		"return": "Return"
 	},
 	"tasks": {
 		"statuses": {

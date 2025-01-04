@@ -13,6 +13,34 @@ const sequelize = require('../config/database');
 
 
 
+const getAllCompanies = async (req, res) => {
+  try {
+    const companyData = await Company.findAll({ order: [['id', 'ASC']] });
+    const companies = []
+    companyData.forEach(company => {
+      companies.push({
+        id: company.id,
+        name: company.name,
+        email: company.email,
+        phone: company.phone,
+        allowed_to: {
+          add_word: i18n.__('ui.dashboard.admin.add_to_company'),
+          add_prompt: i18n.__('ui.dashboard.admin.add_to_company_prompt'),
+          add_confirm: i18n.__('confirm.CON_06', { user: '%user', company: company.name }),
+          delete_word: i18n.__('ui.dashboard.admin.delete_company'),
+          delete_confirm: i18n.__('confirm.CON_05', { name: company.name }),
+        }
+      });
+    })
+    res.status(200).json({ companies });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({errors: [i18n.__('errors.ERR_18')]});
+  }
+}
+
+
+
 /**
  * Gets a list of all companies the user is manager in.
  * @param {Object} req - Request object containing user's ID.
@@ -199,6 +227,15 @@ const addManager = async (req, res) => {
     if (!company || !user)
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
 
+    // Check for existing company management entries with the same company
+    // and user ID. Returns an error, if found due to not being possible to
+    // create two exact entries.
+    const existingManager = await CompanyManager.findOne({
+      where: { company_id: company.id, user_id: user.id}
+    });
+    if (existingManager)
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_20')] });
+    
     // Creating a new company manager entry in the database
     const newManager = await CompanyManager.create({
       company_id: company.id,
@@ -297,6 +334,6 @@ const deleteCompany = async (req, res) => {
 };
 
 module.exports = {
-  createCompany, getUserCompanies, changeCompanyData,
-  addManager, removeManager, deleteCompany
+  getAllCompanies, getUserCompanies, createCompany,
+  changeCompanyData, addManager, removeManager, deleteCompany
 };

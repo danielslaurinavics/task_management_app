@@ -17,13 +17,14 @@ const sequelize = require('../config/database');
 
 
 /**
- * Returns an array of all system's users.
+ * Returns an array of all system's users. Also gives
+ * localized messages for use by client-side JavaScript.
  * @param {Object} req - Request object, empty.
  * @param {Object} res - Response object for sending the result to the client.
  */
 const getAllUsers = async (req, res) => {
   try {
-    const usersData = await User.findAll({ order: [[ 'id', 'ASC']] });
+    const usersData = await User.findAll({ order: [['id', 'ASC']] });
     const users = []
     usersData.forEach(user => {
       users.push({
@@ -37,7 +38,9 @@ const getAllUsers = async (req, res) => {
         block: user.is_blocked,
         allowed_to: {
           block_word: i18n.__('ui.dashboard.admin.block_user'),
+          block_confirm: i18n.__('confirm.CON_03', { user: user.name }),
           unblock_word: i18n.__('ui.dashboard.admin.unblock_user'),
+          unblock_confirm: i18n.__('confirm.CON_04', { user: user.name }), 
           delete_word: i18n.__('ui.dashboard.admin.delete_user'),
           delete_confirm: i18n.__('confirm.CON_02', { user: user.name })
         }
@@ -343,7 +346,7 @@ const unblockUser = async (req, res) => {
     await user.save()
 
     // Sending the successful blocking message.
-    return res.status(200).json({ success: true, message: i18n.__('success.SUC_04')});
+    return res.status(200).json({ success: true, message: i18n.__('success.SUC_05')});
   } catch (error) {
     // Outputting the error to the console and sending a
     // generic internal server error message.

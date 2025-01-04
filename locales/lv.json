@@ -89,7 +89,10 @@
 			"admin": {
 				"block_user": "Bloķēt lietotāju",
 				"unblock_user": "Atbloķēt lietotāju",
-				"delete_user": "Dzēst lietotāju"
+				"delete_user": "Dzēst lietotāju",
+				"add_to_company": "Pievienot lietotāju uzņēmumam",
+				"add_to_company_prompt": "Ievadiet pievienojamā lietotāja e-pasta adresi!",
+				"delete_company": "Dzēst uzņēmumu"
 			}
 		},
 		"settings": {
@@ -114,7 +117,12 @@
 			"admin": "Administrators",
 			"user": "Lietotājs"
 		},
-		"is_blocked": "Bloķēts?"
+		"is_blocked": "Bloķēts?",
+		"company": {
+			"createHeader": "Izveidot uzņēmumu",
+			"create": "Izveidot uzņēmumu"
+		},
+		"return": "Atgriezties"
 	},
 	"tasks": {
 		"statuses": {

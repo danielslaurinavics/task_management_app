@@ -10,7 +10,6 @@ async function populateUserTable() {
 
   usersTable.innerHTML = '';
   const users = data.users;
-  console.log(users);
 
   users.forEach(user => {
     const row = document.createElement('tr');
@@ -41,21 +40,35 @@ async function populateUserTable() {
     deleteButton.className = 'btn btn-danger btn-sm ms-1';
 
     blockButton.addEventListener('click', async () => {
-      const fetchUrl = `/user/block/${user.id}`;
-      const response = await fetch(fetchUrl, { method: 'PUT' });
-      const data = await response.json();
+      const confirmed = confirm(user.allowed_to.block_confirm);
 
-      if (response.ok) populateUserTable();
-      else alert(data.errors);
+      if (confirmed) {
+        const fetchUrl = `/user/block/${user.id}`;
+        const response = await fetch(fetchUrl, { method: 'PUT' });
+        const data = await response.json();
+
+        if (response.ok) {
+          populateUserTable();
+          alert(data.message);
+        }
+        else alert(data.errors);
+      }
     });
 
     unblockButton.addEventListener('click', async () => {
-      const fetchUrl = `/user/unblock/${user.id}`;
-      const response = await fetch(fetchUrl, { method: 'PUT' });
-      const data = await response.json();
+      const confirmed = confirm(user.allowed_to.unblock_confirm);
 
-      if (response.ok) populateUserTable();
-      else alert(data.errors);
+      if (confirmed) {
+        const fetchUrl = `/user/unblock/${user.id}`;
+        const response = await fetch(fetchUrl, { method: 'PUT' });
+        const data = await response.json();
+
+        if (response.ok) {
+          populateUserTable();
+          alert(data.message);
+        }
+        else alert(data.errors);
+      }
     });
 
     deleteButton.addEventListener('click', async () => {
@@ -66,7 +79,10 @@ async function populateUserTable() {
         const response = await fetch(fetchUrl, { method: 'DELETE' });
         const data = await response.json();
 
-        if (response.ok) populateUserTable();
+        if (response.ok) {
+          populateUserTable();
+          alert(data.message);
+        }
         else alert(data.errors);
       }
     });
@@ -80,13 +96,91 @@ async function populateUserTable() {
     row.appendChild(actionCell);
 
     usersTable.appendChild(row);
-  })
+  });
 }
 
 
 
 async function populateCompanyTable() {
-  return;
+  const companiesTable = document.getElementById('companies-table');
+
+  const response = await fetch('/company/get', { method: 'GET' });
+  const data = await response.json();
+
+  if (!response.ok) return;
+
+  companiesTable.innerHTML = '';
+  const companies = data.companies;
+  companies.forEach(company => {
+    const row = document.createElement('tr');
+
+    row.innerHTML = `
+    <td>${company.id}</td>
+    <td>${company.name}</td>
+    <td>${company.email}</td>
+    <td>${company.phone}</td>
+    `;
+
+    const actionCell = document.createElement('td');
+
+    const addUserButton = document.createElement('button');
+    const deleteButton = document.createElement('button');
+
+    addUserButton.textContent = company.allowed_to.add_word;
+    deleteButton.textContent = company.allowed_to.delete_word;
+
+    addUserButton.className = 'btn btn-outline-primary btn-sm ms-1';
+    deleteButton.className = 'btn btn-danger btn-sm ms-1';
+
+    addUserButton.addEventListener('click', async () => {
+      const user_email = prompt(company.allowed_to.add_prompt);
+      
+      if (user_email) {
+        let confirm_text = company.allowed_to.add_confirm;
+        confirm_text = confirm_text.replace('%user', user_email);
+        const confirmed = confirm(confirm_text);
+        
+        if (confirmed) {
+          const fetchUrl = `/company/${company.id}/manager/add`;
+          const response = await fetch(fetchUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: user_email.trim() })
+          });
+          const data = await response.json();
+
+          if (response.ok) {
+            populateCompanyTable();
+            alert(data.message);
+          } else alert(data.errors);
+        }
+      }
+    });
+
+    deleteButton.addEventListener('click', async () => {
+      const confirmed = confirm(company.allowed_to.delete_confirm);
+      
+      if (confirmed) {
+        const fetchUrl = `/company/${company.id}/delete`;
+        const response = await fetch(fetchUrl, { method: 'DELETE' });
+        const data = await response.json();
+
+        if (response.ok) {
+          populateCompanyTable();
+          alert(data.message);
+        } else alert(JSON.stringify(data.errors));
+      }
+    });
+
+    actionCell.appendChild(addUserButton);
+    actionCell.appendChild(deleteButton);
+
+    row.appendChild(actionCell);
+    
+    companiesTable.appendChild(row);
+  });
 }
 
 populateUserTable();
