@@ -60,7 +60,61 @@ const createCompany = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const changeCompanyData = async (req, res) => {
+  const errors = [];
+  try {
+    // Getting company id valudes
+    let { id } = req.params;
+    // Getting company edit form field values
+    let { name, description, email, phone} = req.body;
 
+    // Sanitizing input by removing whitspaces from both ends of the string
+    // and converting ids to integer.
+    id = parseInt(id.trim(), 10);
+    name = name.trim();
+    description = description.trim();
+    email = email.trim();
+    phone = phone.trim();
+
+    // Validation of values entered.
+    const validations = [
+      {condition: !id || isNaN(id), error: 'ERR_01'},
+      {condition: !name || !description || !email || !phone, error: 'ERR_01'},
+      {condition: email && email.length > 255, error: 'ERR_02'},
+      {condition: name && name.length > 255, error: 'ERR_04'},
+      {condition: phone && phone.length > 32, error: 'ERR_05'},
+      {condition: email && !validation.isValidEmail(email), error: 'ERR_06'},
+      {condition: phone && !validation.isValidPhone(phone), error: 'ERR_07'},
+    ];
+    for (const {condition, error} of validations) {
+      if (condition) errors.push(i18n.__(`errors.${error}`));
+    }
+    if (errors.length > 0) return res.status(400).json({ errors });
+
+    // Searching the company for which the data must be changed. Returns
+    // an error if no such company was found in the database.
+    const company = await Company.findByPk(id);
+    if (!company)
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+
+    // Setting the company's database entry
+    // attributes to their updated values.
+    company.name = name;
+    company.description = description;
+    company.email = email;
+    company.phone = phone;
+
+    // Saving the changes to the database
+    await company.save();
+    
+    // Sending the successful creation message.
+    res.status(200).json({ success: true, message: i18n.__('success.SUC_08') });
+  } catch (error) {
+    // Outputting the errors to the console and sending a
+    // generic internal server error message.
+    console.error(error);
+    errors.push(i18n.__('errors.ERR_18'));
+    res.status(500).json({ errors: errors });
+  }
 };
 
 

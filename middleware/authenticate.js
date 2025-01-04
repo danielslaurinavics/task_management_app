@@ -14,7 +14,7 @@ async function authenticate(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.userId);
     if (!user)
-      return res.status(404).json({ error: i18n.__('errors.ERR_14') });
+      return res.status(404).json({ error: i18n.__('errors.ERR_19') });
 
     if (user.is_blocked)
       return res.status(403).json({ error: i18n.__('errors.ERR_13') });
