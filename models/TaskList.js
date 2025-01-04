@@ -34,7 +34,7 @@ const TaskList = sequelize.define('TaskList', {
     }
   }
 }, {
-  timestamps: true,
+  timestamps: false,
   tableName: 'task_lists',
 });
 

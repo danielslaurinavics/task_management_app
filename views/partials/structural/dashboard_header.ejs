@@ -1,0 +1,11 @@
+<nav class="navbar navbar-expand-md d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 px-5 mb-4 border-bottom">
+  <div class="col-12 col-md-6 mb-2 mb-md-0 justify-content-center">
+    <a class="d-inline-flex link-body-emphasis text-decoration-none fs-3 fw-bold" href="/home">TaskApp</a>
+  </div>
+  <div class="col-12 col-md-6 d-flex justify-content-center justify-content-lg-end align-items-center">
+    <span class="me-3"><%= __('ui.dashboard.loggedas', { name: name }) %></span>
+    <form method="POST" action="/logout">
+      <button type="submit" class="btn btn-outline-primary">Atslēgties</button>
+    </form>
+  </div>
+</nav>

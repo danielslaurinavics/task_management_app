@@ -65,6 +65,7 @@ const TaskPersons = sequelize.define('tasklist', {
     }
   }
 }, {
+  timestamps: false,
   tableName: 'task_persons'
 });
 

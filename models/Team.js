@@ -56,6 +56,7 @@ const TeamParticipant = sequelize.define('TeamParticipant', {
     defaultValue: false
   }
 }, {
+  timestamps: false,
   tableName: 'team_participants'
 });
 

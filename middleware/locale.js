@@ -17,7 +17,10 @@ function setLocale(req, res, next) {
   const checkedLocale = checkForLocale(locale);
   i18n.setLocale(checkedLocale);
   res.cookie('locale', checkedLocale, { maxAge: 365*24*60*60*1000, httpOnly: true });
-  res.redirect('/');
+  
+  const referer = req.get('Referer');
+  if (referer) return res.redirect(referer);
+  else return res.redirect('/');
 }
 
 module.exports = { localeMiddleware, setLocale };

@@ -48,6 +48,7 @@ const CompanyManager = sequelize.define('CompanyManager', {
     }
   }
 }, {
+  timestamps: false,
   tableName: 'company_managers'
 });
 

@@ -7,29 +7,30 @@ const { Task, TaskPersons } = require('../models/Task');
 
 
 const createTaskList = async (req, res) => {
-  const { userId, teamId } = req.body;
-
-  const user_id = userId?.trim();
-  const team_id = teamId?.trim();
-
-  if (!user_id && !team_id) return res.status(400);
-  else if (user_id && team_id) return res.status(400);
-
   try {
-    if (user_id) {
-      const newTaskList = await TaskList.create({
-        owner_user: user_id
+    let { type, ownerId } = req.body;
+
+    type = type.trim();
+    ownerId = ownerId.trim();
+
+    if (!type || !ownerId) return res.status(400);
+    else if (type !== 'user' && type !== 'team') return res.status(400);
+
+    let taskList;
+    if (type === 'user') {
+      taskList = await TaskList.create({
+        owner_user: ownerId
       });
-    } else if (team_id) {
-      const newTaskList = await TaskList.create({
+    } else if (type === 'team') {
+      taskList = await TaskList.create({
         is_team_list: true,
-        owner_team: team_id
+        owner_team: ownerId
       });
     }
-    res.return(201).json({ message: 'New task list created' });
+    if (taskList) return res.status(201).json({ success: true });
   } catch (error) {
-    console.log(error);
-    return res.status(500)
+    console.error(error);
+    return res.status(500).json({ error: [i18n.__('errors.ERR_18')] });
   }
 };
 

@@ -73,6 +73,18 @@
 		},
 		"name": "Your full name",
 		"phone": "Phone number",
-		"password_confirm": "Password confirmation"
+		"password_confirm": "Password confirmation",
+		"dashboard": {
+			"loggedas": "Logged in as {{ name }}",
+			"current_tasks": "Current tasks"
+		}
+	},
+	"tasks": {
+		"statuses": {
+			"upcoming": "Not started"
+		},
+		"priorities": {
+			"low": "Low priority"
+		}
 	}
 }

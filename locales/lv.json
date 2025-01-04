@@ -73,6 +73,18 @@
 		},
 		"name": "Pilnais vārds",
 		"phone": "Tālruņa numurs",
-		"password_confirm": "Paroles apstiprinājums"
+		"password_confirm": "Paroles apstiprinājums",
+		"dashboard": {
+			"loggedas": "Pieslēdzies kā {{ name }}",
+			"current_tasks": "Pašreizējie uzdevumi"
+		}
+	},
+	"tasks": {
+		"statuses": {
+			"upcoming": "Nav uzsākts"
+		},
+		"priorities": {
+			"low": "Zema prioritāte"
+		}
 	}
 }
