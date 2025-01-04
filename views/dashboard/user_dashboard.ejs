@@ -4,19 +4,47 @@
   <body>
     <%- include('../partials/structural/dashboard_header', { name: user.name }) %>
     <main class="mx-5">
-      <h1><%= __('ui.dashboard.welcome', { name: user.name }) %></h1>
+      <h1 class="fs-3"><%= __('ui.dashboard.welcome', { name: user.name }) %></h1>
       <input type="number" id="user-id" style="display: none;" value="<%= user.id %>" disabled>
       <div class="container-fluid my-3">
         <div class="p-3 bg-body-secondary rounded-3">
           <span><%= __('ui.dashboard.current_tasks') %></span>
-          <div class="p-2 bg-body-tertiary rounded-3" id="user-tasks"></div>
+          <div class="p-2 mt-2 bg-body-tertiary rounded-3">
+            <div class="m-2" id="user-tasks"></div>
+          </div>
         </div>
       </div>
 
-      <div class="container-fluid overflow-hidden my-3">
+      <div class="container-fluid my-3">
         <div class="p-3 bg-body-secondary rounded-3">
           <span><%= __('ui.dashboard.goto') %></span>
-          <div class="row p-2" id="select-div"></div>
+          <div class="p-2 mt-2 bg-body-tertiary rounded-3">
+            <div class="m-2 row row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-2" id="select-div">
+              
+              <!-- Link to user settings button -->
+              <div class="col">
+                <a href="/settings" class="text-decoration-none text-reset d-block">
+                  <div class="card text-bg-secondary">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= __('ui.dashboard.settings') %></h5>
+                    </div>
+                  </div>
+                </a>
+              </div>
+
+              <!-- Link to personal task list button -->
+              <div class="col">
+                <a href="/tasks/personal/<%= user.id %>" class="text-decoration-none text-reset d-block">
+                  <div class="card text-bg-dark">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= __('ui.dashboard.personal_list') %></h5>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            
+            </div>
+          </div>
         </div>
       </div>
     </main>

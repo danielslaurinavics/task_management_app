@@ -15,6 +15,43 @@ const validation = require('../utils/validation');
 const sequelize = require('../config/database');
 
 
+
+/**
+ * Returns an array of all system's users.
+ * @param {Object} req - Request object, empty.
+ * @param {Object} res - Response object for sending the result to the client.
+ */
+const getAllUsers = async (req, res) => {
+  try {
+    const usersData = await User.findAll({ order: [[ 'id', 'ASC']] });
+    const users = []
+    usersData.forEach(user => {
+      users.push({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.is_admin ? i18n.__('ui.roles.admin') : i18n.__('ui.roles.user'),
+        admin: user.is_admin,
+        blocked: user.is_blocked ? i18n.__('ui.yes') : i18n.__('ui.no'),
+        block: user.is_blocked,
+        allowed_to: {
+          block_word: i18n.__('ui.dashboard.admin.block_user'),
+          unblock_word: i18n.__('ui.dashboard.admin.unblock_user'),
+          delete_word: i18n.__('ui.dashboard.admin.delete_user'),
+          delete_confirm: i18n.__('confirm.CON_02', { user: user.name })
+        }
+      });
+    })
+    res.status(200).json({ users });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({errors: [i18n.__('errors.ERR_18')]});
+  }
+};
+
+
+
 /**
  * Validates user credentials and logs the user into the
  * system in case of successful validation.
@@ -191,9 +228,7 @@ const changeData = async (req, res) => {
     let { name, phone, current_password,
       new_password, password_confirm} = req.body;
 
-    // Sanitizing the input by removing front and rear whitespaces, as well
-    // as parsing the userId variable as integer.
-    id = parseInt(id.trim(), 10);
+    // Sanitizing the input by removing front and rear whitespaces
     name = name.trim();
     phone = phone.trim();
     current_password = current_password.trim();
@@ -354,7 +389,7 @@ const deleteSelf = async (req, res) => {
       sameSite: 'Strict',
       expiresIn: new Date(0)
     });
-    res.redirect('/');
+    res.status(200).json({ success: true, message: i18n.__('success.SUC_06') })
   } catch (error) {
     // Rolling back the deletion action, outputting the errors to the
     // console and sending a generic internal server error message.
@@ -405,6 +440,6 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
-  login, register, logout, changeData,
+  getAllUsers, login, register, logout, changeData,
   blockUser, unblockUser, deleteSelf, deleteUser
 };

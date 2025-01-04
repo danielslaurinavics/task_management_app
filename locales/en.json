@@ -74,18 +74,47 @@
 			"phoneformat": "Phone number format - +XXX00000000 without any spaces.",
 			"passformat": "The password must be at least 8 characters long."
 		},
-		"name": "Your full name",
+		"name": "Full name",
 		"phone": "Phone number",
 		"password_confirm": "Password confirmation",
 		"dashboard": {
 			"loggedas": "Logged in as {{ name }}",
 			"current_tasks": "Current tasks",
 			"welcome": "Welcome, {{ name }}!",
-			"goto": "Go to"
+			"goto": "Go to",
+			"settings": "User settings",
+			"personal_list": "Your personal list",
+			"system_users": "System's users",
+			"system_companies": "System's companies",
+			"admin": {
+				"block_user": "Block user",
+				"unblock_user": "Unblock user",
+				"delete_user": "Delete user"
+			}
 		},
 		"settings": {
-			"user_settings": "User data"
-		}
+			"user_settings": "User settings",
+			"change_base": "Change base settings",
+			"change_pass": "Change password",
+			"change": "Change settings",
+			"delete": "Delete yourself from the system"
+		},
+		"user_id": "User ID",
+		"old_password": "Current password",
+		"new_password": "New password",
+		"no": "Nē",
+		"yes": "Jā",
+		"actions": "Actions",
+		"company_id": "Company ID",
+		"entity_name": "Name",
+		"entity_email": "Contact e-mail",
+		"entity_phone": "Contact phone",
+		"role": "Role",
+		"roles": {
+			"admin": "Administrator",
+			"user": "User"
+		},
+		"is_blocked": "Blocked?"
 	},
 	"tasks": {
 		"statuses": {

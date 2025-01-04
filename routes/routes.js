@@ -51,6 +51,10 @@ router.delete('/user/:id/delete', authMiddleware.authenticate, authMiddleware.au
 router.get('/user/:id/list', authMiddleware.authenticate, (req, res) => res.render('./tasklists/personal_list', { user: req.user }));
 
 
+// User information routes
+router.get('/user/get', authMiddleware.authenticate, authMiddleware.authorizeAdmin, userController.getAllUsers);
+
+
 
 // Company routes
 router.get('/company/:id', authMiddleware.authenticate, (req, res) => res.render('./companies/dashboard', { user: req.user, company: req.company }));
@@ -76,6 +80,10 @@ router.post('/team/create', authMiddleware.authenticate, teamController.createTe
 
 
 // Task routes
+
+router.get('/tasks/personal/:user_id', authMiddleware.authenticate, (req, res) => res.render('./tasklists/personal_list'));
+router.get('/tasks/team/:team_id', authMiddleware.authenticate, (req, res) => res.render('./tasklists/team_list'));
+
 router.get('/tasks/user/:user_id', authMiddleware.authenticate, taskController.getUserTasks);
 // router.get('/tasks/team/:id')
 router.post('/tasks/create', authMiddleware.authenticate, taskController.createTask);

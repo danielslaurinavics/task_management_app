@@ -81,11 +81,40 @@
 			"loggedas": "Pieslēdzies kā {{ name }}",
 			"current_tasks": "Pašreizējie uzdevumi",
 			"welcome": "Esi sveicināts, {{ name }}!",
-			"goto": "Doties uz"
+			"goto": "Doties uz",
+			"settings": "Lietotāja iestatījumi",
+			"personal_list": "Tavs personīgais uzdevumu saraksts",
+			"system_users": "Sistēmā reģistrētie lietotāji",
+			"system_companies": "Sistēmā reģistrētie uzņēmumi",
+			"admin": {
+				"block_user": "Bloķēt lietotāju",
+				"unblock_user": "Atbloķēt lietotāju",
+				"delete_user": "Dzēst lietotāju"
+			}
 		},
 		"settings": {
-			"user_settings": "Lietotāja dati"
-		}
+			"user_settings": "Lietotāja iestatījumi",
+			"change_base": "Mainīt pamatdatus",
+			"change_pass": "Mainīt paroli",
+			"change": "Mainīt iestatījumus",
+			"delete": "Dzēst sevi no sistēmas"
+		},
+		"user_id": "Lietotāja ID",
+		"old_password": "Pašreizējā parole",
+		"new_password": "Jaunā parole",
+		"no": "Nē",
+		"yes": "Jā",
+		"actions": "Darbības",
+		"company_id": "Uzņēmuma ID",
+		"entity_name": "Nosaukums",
+		"entity_email": "Saziņas e-pasts",
+		"entity_phone": "Saziņas tālrunis",
+		"role": "Loma",
+		"roles": {
+			"admin": "Administrators",
+			"user": "Lietotājs"
+		},
+		"is_blocked": "Bloķēts?"
 	},
 	"tasks": {
 		"statuses": {

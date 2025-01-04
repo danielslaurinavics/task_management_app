@@ -5,7 +5,54 @@
     <%- include('../partials/structural/dashboard_header', { name: user.name }) %>
     <main class="mx-5">
       <h1><%= __('ui.settings.user_settings') %></h1>
+
+      <div class="col-10 col-md-6 col-xl-4 my-3">
+        <div class="form-floating">
+          <input type="text" readonly class="form-control-plaintext" id="user-id" placeholder="0" value="<%= user.id %>">
+          <label for="user-id"><%= __('ui.user_id') %></label>
+        </div>
+        <div class="form-floating">
+          <input type="text" readonly class="form-control-plaintext" id="user-email" placeholder="example@example.com" value="<%= user.email %>">
+          <label for="user-email"><%= __('ui.email') %></label>
+        </div>
+
+        <form id="user-change-form">
+          <div id="message-area"></div>
+          <h5><%= __('ui.settings.change_base') %></h5>
+          <div class="form-floating my-3">
+            <input type="text" class="form-control" id="name" name="name" placeholder="example@example.com" value="<%= user.name %>" autocomplete="name">
+            <label for="name"><%= __('ui.name') %></label>
+          </div>
+          <div class="form-floating my-3">
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="+37100000000" value="<%= user.phone %>" autocomplete="phone">
+            <label for="phone"><%= __('ui.phone') %></label>
+            <div class="form-text"><%= __('ui.register_ui.phoneformat') %></div>
+          </div>
+          <h5><%= __('ui.settings.change_pass') %></h5>
+          <div class="form-floating my-3">
+            <input type="password" class="form-control" id="current_password" name="current_password" placeholder="password" value="">
+            <label for="current_password"><%= __('ui.old_password') %></label>
+          </div>
+          <div class="form-floating my-3">
+            <input type="password" class="form-control" id="new_password" name="new_password" placeholder="password" value="" disabled>
+            <label for="new_password"><%= __('ui.new_password') %></label>
+          </div>
+          <div class="form-floating my-3">
+            <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="password" value="" disabled>
+            <label for="password_confirm"><%= __('ui.password_confirm') %></label>
+          </div>
+          <div class="d-flex flex-column">
+            <button type="submit" class="btn btn-primary my-2"><%= __('ui.settings.change') %></button>
+            <button type="button" class="btn btn-danger my-2" data-bs-toggle="modal" data-bs-target="#deleteModal"><%= __('ui.settings.delete') %></button>
+          </div>
+        </form>
+
+      </div>
     </main>
+
+    <%- include('../partials/structural/confirmModal', { modal: "deleteModal", modal_text: __('confirm.CON_01'), confirmButtonId: "deleteSelfButton" }) %>
+
+    <script src="/public/scripts/forms/change_user.js"></script>
     <%- include('../partials/structural/footer') %>
   </body>
 </html>
