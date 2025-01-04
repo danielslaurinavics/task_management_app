@@ -38,15 +38,18 @@ router.put('/user/block/:id', authMiddleware.authenticate, authMiddleware.author
 router.put('/user/unblock/:id', authMiddleware.authenticate, authMiddleware.authorizeAdmin, userController.unblockUser);
 
 // User deletion route
-router.delete('/user/delete/self/:id', authMiddleware.authenticate, userController.deleteSelf);
-router.delete('/user/delete/:id', authMiddleware.authenticate, authMiddleware.authorizeAdmin,userController.deleteUser);
+router.delete('/user/:id/delete/self', authMiddleware.authenticate, userController.deleteSelf);
+router.delete('/user/:id/delete', authMiddleware.authenticate, authMiddleware.authorizeAdmin,userController.deleteUser);
 
 /*
 // Company routes
 router.get('/company/:id')
-router.post('/company/create')
-router.put('/company/change/:id')
-router.delete('/company/delete/:id')
+router.get('/company/:id/data')
+router.post('/company/create', authMiddleware.authenticate, authMiddleware.authorizeAdmin, companyController.createCompany);
+router.post('/company/:id/manager/add')
+router.put('/company/:id/change')
+router.delete('/company/:id/delete')
+router.delete('/company/:id/manager/delete')
 */
 
 /*

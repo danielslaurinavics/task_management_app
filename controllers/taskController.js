@@ -56,6 +56,8 @@ const createTask = async (req, res) => {
     // Sending the successful creation message.
     res.status(201).json({ success: true, message: i18n.__('success.SUC_16') });
   } catch (error) {
+    // Outputting the errors to the console and sending a
+    // generic internal server error message.
     console.error(error);
     errors.push(i18n.__('errors.ERR_18'));
     res.status(500).json({ errors });

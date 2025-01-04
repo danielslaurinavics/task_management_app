@@ -4,18 +4,13 @@ const i18n = require('i18n');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Importing the necessary models
+// Importing necessary models
 const { User } = require('../models/User');
-const { CompanyManager } = require('../models/Company');
-const { TeamParticipant } = require('../models/Team');
-const { Task } = require('../models/Task');
-
-// Importing the validation utility functions
-const validation = require('../utils/validation');
-
-// Importing the task list creation functions from task list controller
-const { createTaskList, deleteTaskList } = require('./tasklistController');
+const { TaskList } = require('../models/TaskList');
 const sequelize = require('../config/database');
+
+// Importing validation utility functions
+const validation = require('../utils/validation');
 
 
 
@@ -91,7 +86,7 @@ const login = async (req, res) => {
 
 
 /**
- * Validates the entered information and creates a new user in
+ * Validates the information entered and creates a new user in
  * database if validation is successful.
  * @param {Object} req - Request object containing new user information.
  * @param {Object} res - Response object for sending the result to the client.
@@ -146,6 +141,9 @@ const register = async (req, res) => {
       phone: phone
     });
 
+    // Creating a new task list for storing the new user's personal tasks
+    const newTaskList = await TaskList.create({ owner_user: newUser.id });
+
     // Sending the successful registration message.
     res.status(201).json({ success: true, message: i18n.__('success.SUC_02')});
   } catch (error) {
@@ -160,7 +158,7 @@ const register = async (req, res) => {
 
 
 /**
- * Logs the user out of the system
+ * Logs the user out of the system.
  * @param {Object} req - Request object, empty for this function.
  * @param {Object} res - Response object for sending the result to the client.
  */
@@ -179,7 +177,7 @@ const logout = async (req, res) => {
 
 
 /**
- * Validates the entered information and changes data of an existing user
+ * Validates the information entered and changes data of an existing user
  * in the database if validation is successful.
  * @param {Object} req - Request object containing new user information.
  * @param {Object} res - Response object for sending the result to the client.
@@ -258,7 +256,7 @@ const changeData = async (req, res) => {
 
 
 /**
- * Blocks the user (bans the user from accessing the system)
+ * Blocks the user (bans the user from accessing the system).
  * @param {Object} req - Request object containing the ID of the blocking user.
  * @param {Object} res - Response object for sending the result to the client.
  */
@@ -298,8 +296,8 @@ const blockUser = async (req, res) => {
 
 /**
  * Unblocks the user (restores right to access the system).
- * @param {*} req - Request object containing the ID of the user to unblock.
- * @param {*} res - Response object for sending the result to the client.
+ * @param {Object} req - Request object containing the ID of the user to unblock.
+ * @param {Object} res - Response object for sending the result to the client.
  */
 const unblockUser = async (req, res) => {
   const errors = []
@@ -337,8 +335,8 @@ const unblockUser = async (req, res) => {
 
 /**
  * Deletes themselves from the system and also deletes all user-related data.
- * @param {*} req - Request object containing the ID of the user to unblock.
- * @param {*} res - Response object for sending the result to the client.
+ * @param {Object} req - Request object containing the ID of the user to delete.
+ * @param {Object} res - Response object for sending the result to the client.
  */
 const deleteSelf = async (req, res) => {
   const errors = [];
@@ -390,8 +388,8 @@ const deleteSelf = async (req, res) => {
 
 /**
  * Deletes the user from the system together with its related data.
- * @param {*} req - Request object containing the ID of the user to unblock.
- * @param {*} res - Response object for sending the result to the client.
+ * @param {Object} req - Request object containing the ID of the user to delete.
+ * @param {Object} res - Response object for sending the result to the client.
  */
 const deleteUser = async (req, res) => {
   const errors = [];
