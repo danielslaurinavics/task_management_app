@@ -1,17 +1,18 @@
-// Importing thrid-party libraries and middleware
+// Importing thrid-party libraries and middleware.
 require('dotenv').config();
 const i18n = require('i18n');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Importing necessary models
+// Importing necessary models.
 const { User } = require('../models/User');
 const { TaskList } = require('../models/TaskList');
-const sequelize = require('../config/database');
 
-// Importing validation utility functions
+// Importing validation utility functions.
 const validation = require('../utils/validation');
 
+// Importing database connection module.
+const sequelize = require('../config/database');
 
 
 /**
@@ -211,14 +212,11 @@ const changeData = async (req, res) => {
     for (const {condition, error} of validations) {
       if (condition) errors.push(i18n.__(`errors.${error}`));
     }
-    if (errors.length > 0) {
-      return res.status(400).json({ errors });
-    }
+    if (errors.length > 0) return res.status(400).json({ errors });
 
     // Finding the user for who the data will be changed.
     const user = await User.findOne({
-      where: { id },
-      attributes: { include: ['password'] }
+      where: { id }, attributes: { include: ['password'] }
     });
     if (!user)
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
@@ -233,8 +231,8 @@ const changeData = async (req, res) => {
 
     // Changing user's data depending on available data.
     // Saving the changed data to the database afterwards.
-    if (name) user.name = name;
-    if (phone) user.phone = phone;
+    user.name = name;
+    user.phone = phone;
     if (new_password.length > 0) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(new_password, salt);
@@ -261,18 +259,13 @@ const changeData = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const blockUser = async (req, res) => {
-  const errors = []
   try {
-    // Getting the user id from request parameters
+    // Getting the user id from request parameters and validating it.
     let { id } = req.params;
-
-    // Sanitizing and validating the input
-    id = parseInt(id.trim(), 10);
     if (!id || isNaN(id))
       return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
 
-    // Finding the user by its id and returning an
-    // error if no such user was found.
+    // Finding the user by its id. Returning an error if no such user was found.
     const user = await User.findByPk(id);
     if (!user)
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
@@ -287,8 +280,7 @@ const blockUser = async (req, res) => {
     // Outputting the errors to the console and sending a
     // generic internal server error message.
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    return res.status(500).json({ errors });
+    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 };
 
@@ -300,18 +292,13 @@ const blockUser = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const unblockUser = async (req, res) => {
-  const errors = []
   try {
-    // Getting the user id from request parameters
+    // Getting the user id from request parameters and validating it.
     let { id } = req.params;
-
-    // Sanitizing and validating the input
-    id = parseInt(id.trim(), 10);
     if (!id || isNaN(id))
       return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
 
-    // Finding the user by its id and returning an
-    // error if no such user was found.
+    // Finding the user by its id . Returns an error if no such user was found.
     const user = await User.findByPk(id);
     if (!user)
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
@@ -323,11 +310,10 @@ const unblockUser = async (req, res) => {
     // Sending the successful blocking message.
     return res.status(200).json({ success: true, message: i18n.__('success.SUC_04')});
   } catch (error) {
-    // Outputting the errors to the console and sending a
+    // Outputting the error to the console and sending a
     // generic internal server error message.
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    return res.status(500).json({ errors });
+    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 };
 
@@ -339,16 +325,11 @@ const unblockUser = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const deleteSelf = async (req, res) => {
-  const errors = [];
-  // Creating a transaction for a possibility of rollback if
-  // any errors occur.
+  // Creating a transaction for a possibility of rollback if any errors occur.
   const t = await sequelize.transaction();
   try {
-    // Getting the user id from request parameters
+    // Getting the user id from request parameters and validating the input
     let { id } = req.params;
-
-    // Sanitizing and validating the input
-    id = parseInt(id.trim(), 10);
     if (!id || isNaN(id))
       return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
 
@@ -379,8 +360,7 @@ const deleteSelf = async (req, res) => {
     // console and sending a generic internal server error message.
     await t.rollback();
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    res.status(500).json({ errors });
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 }
 
@@ -392,16 +372,11 @@ const deleteSelf = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const deleteUser = async (req, res) => {
-  const errors = [];
-  // Creating a transaction for a possibility of rollback if
-  // any errors occur.
+  // Creating a transaction for a possibility of rollback if any errors occur.
   const t = await sequelize.transaction();
   try {
-    // Getting the user id from request parameters
+    // Getting the user id from request parameters and validating the input
     let { id } = req.params;
-
-    // Sanitizing and validating the input
-    id = parseInt(id.trim(), 10);
     if (!id || isNaN(id))
       return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
 
@@ -425,14 +400,10 @@ const deleteUser = async (req, res) => {
     // console and sending a generic internal server error message.
     await t.rollback();
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    res.status(500).json({ errors });
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 };
 
-
-
-// Exports the controller's function for use by server's routes
 module.exports = {
   login, register, logout, changeData,
   blockUser, unblockUser, deleteSelf, deleteUser

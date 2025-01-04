@@ -1,11 +1,14 @@
+// Importing needed third-party libraries and initializing the routing middleware.
 const express = require('express');
 const router = express.Router();
 
+// Importing local controllers.
 const userController = require('../controllers/userController');
 const companyController = require('../controllers/companyController');
 const teamController = require('../controllers/teamController');
 const taskController = require('../controllers/taskController');
 
+// Importing local middleware.
 const authMiddleware = require('../middleware/authenticate');
 const companyMiddleware = require('../middleware/company');
 const { setLocale } = require('../middleware/locale');
@@ -32,7 +35,6 @@ router.get('/home', authMiddleware.authenticate, authMiddleware.goToDashboard);
 router.get('/dashboard', authMiddleware.authenticate, (req, res) => res.render('./dashboard/user_dashboard', { user: req.user }));
 router.get('/admin', authMiddleware.authenticate, authMiddleware.authorizeAdmin, (req, res) => res.render('./dashboard/admin_dashboard', { user: req.user }));
 
-
 // User setting routes
 router.get('/settings', authMiddleware.authenticate, (req, res) => res.render('./users/settings', { user: req.user }));
 router.put('/settings/change/:id', authMiddleware.authenticate, userController.changeData);
@@ -49,6 +51,7 @@ router.delete('/user/:id/delete', authMiddleware.authenticate, authMiddleware.au
 router.get('/user/:id/list', authMiddleware.authenticate, (req, res) => res.render('./tasklists/personal_list', { user: req.user }));
 
 
+
 // Company routes
 router.get('/company/:id', authMiddleware.authenticate, (req, res) => res.render('./companies/dashboard', { user: req.user, company: req.company }));
 router.get('/company/info/:user_id', authMiddleware.authenticate, companyController.getUserCompanies);
@@ -57,6 +60,7 @@ router.post('/company/:id/manager/add', authMiddleware.authenticate, companyCont
 router.put('/company/:id/change', authMiddleware.authenticate, companyController.changeCompanyData);
 router.delete('/company/:id/delete', authMiddleware.authenticate, authMiddleware.authorizeAdmin, companyController.deleteCompany);
 router.delete('/company/:id/manager/delete', authMiddleware.authenticate, companyController.removeManager);
+
 
 
 // Team routes
@@ -72,13 +76,11 @@ router.post('/team/create', authMiddleware.authenticate, teamController.createTe
 
 
 // Task routes
-router.get('/tasks/user/:id', authMiddleware.authenticate, taskController.getUserTasks);
+router.get('/tasks/user/:user_id', authMiddleware.authenticate, taskController.getUserTasks);
 // router.get('/tasks/team/:id')
 router.post('/tasks/create', authMiddleware.authenticate, taskController.createTask);
 // router.put('/task/:id/change')
 // router.put('/task/:id/status')
 // router.delete('/task/:id/delete')
-
-
 
 module.exports = router;

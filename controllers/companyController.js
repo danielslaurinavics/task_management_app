@@ -1,30 +1,36 @@
+// Importing thrid-party libraries and middleware.
 const i18n = require('i18n');
 
+// Importing necessary models.
 const { User } = require('../models/User');
 const { Company, CompanyManager } = require('../models/Company');
 
+// Importing validation utility functions.
 const validation = require('../utils/validation');
+
+// Importing database connection module.
 const sequelize = require('../config/database');
 
 
 
-
+/**
+ * Gets a list of all companies the user is manager in.
+ * @param {Object} req - Request object containing user's ID.
+ * @param {Object} res - Response object for sending the result to the client.
+ */
 const getUserCompanies = async (req, res) => {
-  const errors = [];
   try {
-    // Getting User ID from the request parameters and then validating
-    // the input. user_id must be an integer
+    // Getting User ID from the request parameters and then validating it.
     const { user_id } = req.params;
     if (!user_id || isNaN(user_id))
       return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
 
-    // Finds a user with such ID. Returns an error if no such user
-    // was found in the database.
+    // Finds a user with such ID. Returns an error if not found.
     const user = await User.findByPk(user_id);
     if (!user)
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
 
-    // Search for the companies in which the user is manager.
+    // Search for companies in which the user is manager.
     const companies = await Company.findAll({
       include: [
         {
@@ -42,11 +48,10 @@ const getUserCompanies = async (req, res) => {
     // Returns the companies array to client.
     res.status(200).json({ companies });
   } catch (error) {
-    // Outputting the errors to the console and sending a
+    // Outputting the error to the console and sending a
     // generic internal server error message.
     console.log(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    return res.status(500).json({ errors });
+    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 }
 
@@ -88,7 +93,7 @@ const createCompany = async (req, res) => {
     // Sending the successful creation message.
     res.status(201).json({success: true, message: i18n.__('success.SUC_07')});
   } catch (error) {
-    // Outputting the errors to the console and sending a
+    // Outputting the error to the console and sending a
     // generic internal server error message.
     console.error(error);
     errors.push(i18n.__('errors.ERR_18'));
@@ -111,9 +116,7 @@ const changeCompanyData = async (req, res) => {
     // Getting company edit form field values
     let { name, description, email, phone} = req.body;
 
-    // Sanitizing input by removing whitspaces from both ends of the string
-    // and converting ids to integer.
-    id = parseInt(id.trim(), 10);
+    // Sanitizing input by removing whitespaces from both ends of the string
     name = name.trim();
     description = description.trim();
     email = email.trim();
@@ -134,14 +137,12 @@ const changeCompanyData = async (req, res) => {
     }
     if (errors.length > 0) return res.status(400).json({ errors });
 
-    // Searching the company for which the data must be changed. Returns
-    // an error if no such company was found in the database.
+    // Searching the company for which the data must be changed. Returns an error if not found.
     const company = await Company.findByPk(id);
     if (!company)
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
 
-    // Setting the company's database entry
-    // attributes to their updated values.
+    // Setting the company's database entry attributes to their updated values.
     company.name = name;
     company.description = description;
     company.email = email;
@@ -153,7 +154,7 @@ const changeCompanyData = async (req, res) => {
     // Sending the successful creation message.
     res.status(200).json({ success: true, message: i18n.__('success.SUC_08') });
   } catch (error) {
-    // Outputting the errors to the console and sending a
+    // Outputting the error to the console and sending a
     // generic internal server error message.
     console.error(error);
     errors.push(i18n.__('errors.ERR_18'));
@@ -178,8 +179,6 @@ const addManager = async (req, res) => {
     let { email } = req.body;
 
     // Sanitizing the input by removing front and rear whitespaces,
-    // and turning ids into numbers.
-    id = parseInt(id.trim(), 10);
     email = email.trim();
 
     // Validation of entered values.
@@ -226,23 +225,21 @@ const addManager = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const removeManager = async (req, res) => {
-  const errors = [];
   const t = await sequelize.transaction();
   try {
-    // Getting company ID and add manager form field values.
+    // Getting company ID and removable user ID field values.
     let { id } = req.params;
     let { userId } = req.body;
 
-    // Sanitizing the input by turning ids to numbers.
-    id = parseInt(id.trim(), 10);
+    // Sanitizing the input by turning User ID to number.
+    // The company ID is already an integer, so it doesn't have to be changed.
     userId = parseInt(userId.trim(), 10);
 
     // Validation of entered values.
-    if (!id || isNaN(id)) errors.push(i18n.__('errors.ERR_01'));
-    if (errors.length > 0) return res.status(400).json({ errors });
+    if (!id || isNaN(id)) 
+      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
 
-    // Searching for the exact company manager record in the database.
-    // Returns an error if it doesn't find one.
+    // Searching for the company manager record in the database. Returns an error if it doesn't find one.
     const companyManager = await CompanyManager.findOne({
       where: { company_id: id, user_id: userId}
     });
@@ -250,18 +247,17 @@ const removeManager = async (req, res) => {
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
 
     // Deleting the manager entry from the database and commit changes.
-    companyManager.destroy();
+    companyManager.destroy({transaction: t});
     await t.commit()
 
     // Sending the successful removal message.
     res.status(200).json({ success: true, message: i18n.__('success.SUC_10')});
   } catch (error) {
-    // Rolling back the deletion action, outputting the errors to the
+    // Rolling back the deletion action, outputting the error to the
     // console and sending a generic internal server error message.
     await t.rollback();
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    res.status(500).json({ errors: errors });
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 };
 
@@ -273,18 +269,12 @@ const removeManager = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const deleteCompany = async (req, res) => {
-  const errors = [];
   const t = await sequelize.transaction();
   try {
-    // Getting company ID from request parameters
+    // Getting company ID from request parameters and validating the entry values
     let { id } = req.params;
-
-    // Sanitizing input by turning ids to numbers.
-    id = parseInt(id.trim(), 10);
-
-    // Validation of entered values.
-    if (!id || isNaN(id)) errors.push(i18n.__(`errors.ERR_01`));
-    if (errors.length > 0) return res.status(400).json({ errors });
+    if (!id || isNaN(id))
+      return res.status(400).json({ errors: [i18n.__(`errors.ERR_01`)] });
 
     // Find the company by its id. Return an error if not found.
     const company = await Company.findByPk(id);
@@ -292,7 +282,7 @@ const deleteCompany = async (req, res) => {
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
 
     // Deleting the company and commiting the action to the database.
-    await company.destroy();
+    await company.destroy({transaction: t});
     await t.commit();
 
     // Sending the successful deletion message.
@@ -302,8 +292,7 @@ const deleteCompany = async (req, res) => {
     // console and sending a generic internal server error message.
     await t.rollback();
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    res.status(500).json({ errors: errors });
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 };
 
