@@ -17,7 +17,8 @@
 		"ERR_15": "Jums nav tiesību veikt šādu darbību!",
 		"ERR_16": "Šim resursam var piekļūt tikai {{ name }} pārvaldnieki. Lūdzu, sazinieties ar uzņēmuma pārvaldnieku!",
 		"ERR_17": "Šim resursam var piekļūt tikai komandas {{ name }} dalībnieki. Lūdzu, sazinieties ar tās komandas vadītāju!",
-		"ERR_18": "Diemžēl notikusi kļūda pieprasījuma apstrādē. Lūdzu, mēģiniet vēlāk!"
+		"ERR_18": "Diemžēl notikusi kļūda pieprasījuma apstrādē. Lūdzu, mēģiniet vēlāk!",
+		"ERR_19": "Resurss nav atrasts!"
 	},
 	"success": {
 		"SUC_01": "Lietotājs ir veiksmīgi pieslēdzies sistēmai!",

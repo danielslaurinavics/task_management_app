@@ -17,7 +17,8 @@
 		"ERR_15": "You don't have the permission to do this action!",
 		"ERR_16": "Only company's {{ name }} managers can access this resource. Please, contact this company's manager!",
 		"ERR_17": "Only team's {{ name }} members can access this resource. Please, contact this team's manager!",
-		"ERR_18": "Sadly, there is an error during the processing of this request. Please, try again later!"
+		"ERR_18": "Sadly, there is an error during the processing of this request. Please, try again later!",
+		"ERR_19": "The resource was not found!"
 	},
 	"success": {
 		"SUC_01": "The user has logged in successfully!",
