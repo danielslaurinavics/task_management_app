@@ -45,11 +45,13 @@ router.put('/user/unblock/:id', authMiddleware.authenticate, authMiddleware.auth
 router.delete('/user/:id/delete/self', authMiddleware.authenticate, userController.deleteSelf);
 router.delete('/user/:id/delete', authMiddleware.authenticate, authMiddleware.authorizeAdmin,userController.deleteUser);
 
+// Personal task list route
+router.get('/user/:id/list', authMiddleware.authenticate, (req, res) => res.render('./tasklists/personal_list', { user: req.user }));
 
 
 // Company routes
-router.get('/company/:id', authMiddleware.authenticate, (req, res) => res.render('./companies/dashboard', { company: req.company }));
-//router.get('/company/:id/data')
+router.get('/company/:id', authMiddleware.authenticate, (req, res) => res.render('./companies/dashboard', { user: req.user, company: req.company }));
+router.get('/company/info/:user_id', authMiddleware.authenticate, companyController.getUserCompanies);
 router.post('/company/create', authMiddleware.authenticate, authMiddleware.authorizeAdmin, companyController.createCompany);
 router.post('/company/:id/manager/add', authMiddleware.authenticate, companyController.addManager);
 router.put('/company/:id/change', authMiddleware.authenticate, companyController.changeCompanyData);
@@ -58,18 +60,24 @@ router.delete('/company/:id/manager/delete', authMiddleware.authenticate, compan
 
 
 // Team routes
-//router.get('/team/:id')
+router.get('/team/:id', authMiddleware.authenticate, (req, res) => res.render('./teams/dashboard', { team: req.team }));
 router.post('/team/create', authMiddleware.authenticate, teamController.createTeam);
-//router.put('/team/change/:id')
-//router.delete('/team/delete/:id')
+//router.post('/team/:id/add')
+//router.put('/team/:id/change')
+//router.put('/team/:id/role/manager')
+//router.put('/team/:id/role/participant')
+//router.delete('/team/:id/delete')
+//router.delete('/team/:id/remove')
+
 
 
 // Task routes
 router.get('/tasks/user/:id', authMiddleware.authenticate, taskController.getUserTasks);
 // router.get('/tasks/team/:id')
 router.post('/tasks/create', authMiddleware.authenticate, taskController.createTask);
-// router.put('/task/change/:id')
-// router.delete('/task/delete/:id')
+// router.put('/task/:id/change')
+// router.put('/task/:id/status')
+// router.delete('/task/:id/delete')
 
 
 

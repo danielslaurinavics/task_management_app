@@ -4,6 +4,7 @@
   <body>
     <%- include('../partials/structural/dashboard_header', { name: user.name }) %>
     <main class="mx-5">
+      <h1><%= __('ui.dashboard.welcome', { name: user.name }) %></h1>
       <input type="number" id="user-id" style="display: none;" value="<%= user.id %>" disabled>
       <div class="container-fluid my-3">
         <div class="p-3 bg-body-secondary rounded-3">
@@ -12,13 +13,15 @@
         </div>
       </div>
 
-      <div class="container-fluid my-3">
+      <div class="container-fluid overflow-hidden my-3">
         <div class="p-3 bg-body-secondary rounded-3">
-          <div class="row g-2"></div>
+          <span><%= __('ui.dashboard.goto') %></span>
+          <div class="row p-2" id="select-div"></div>
         </div>
       </div>
     </main>
     <script src="/public/scripts/fetching/getTasks.js"></script>
+    <script src="/public/scripts/ui/displaySelect.js"></script>
     <%- include('../partials/structural/footer') %>
   </body>
 </html>

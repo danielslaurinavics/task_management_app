@@ -8,6 +8,50 @@ const sequelize = require('../config/database');
 
 
 
+
+const getUserCompanies = async (req, res) => {
+  const errors = [];
+  try {
+    // Getting User ID from the request parameters and then validating
+    // the input. user_id must be an integer
+    const { user_id } = req.params;
+    if (!user_id || isNaN(user_id))
+      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+
+    // Finds a user with such ID. Returns an error if no such user
+    // was found in the database.
+    const user = await User.findByPk(user_id);
+    if (!user)
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+
+    // Search for the companies in which the user is manager.
+    const companies = await Company.findAll({
+      include: [
+        {
+          model: User,
+          attributes: [],
+          through: {
+            attributes: []
+          },
+          where: { id: user_id },
+          required: true
+        }
+      ]
+    });
+
+    // Returns the companies array to client.
+    res.status(200).json({ companies });
+  } catch (error) {
+    // Outputting the errors to the console and sending a
+    // generic internal server error message.
+    console.log(error);
+    errors.push(i18n.__('errors.ERR_18'));
+    return res.status(500).json({ errors });
+  }
+}
+
+
+
 /**
  * Creates a new company and saves it to the database.
  * @param {Object} req - Request object containing new company's information.
@@ -264,5 +308,6 @@ const deleteCompany = async (req, res) => {
 };
 
 module.exports = {
-  createCompany, changeCompanyData, addManager, removeManager, deleteCompany
+  createCompany, getUserCompanies, changeCompanyData,
+  addManager, removeManager, deleteCompany
 };

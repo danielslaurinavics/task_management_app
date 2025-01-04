@@ -70,14 +70,21 @@
 		"password": "Password",
 		"register_ui": {
 			"headline": "Sign up to TaskApp",
-			"loginhere": "Log in here!"
+			"loginhere": "Log in here!",
+			"phoneformat": "Phone number format - +XXX00000000 without any spaces.",
+			"passformat": "The password must be at least 8 characters long."
 		},
 		"name": "Your full name",
 		"phone": "Phone number",
 		"password_confirm": "Password confirmation",
 		"dashboard": {
 			"loggedas": "Logged in as {{ name }}",
-			"current_tasks": "Current tasks"
+			"current_tasks": "Current tasks",
+			"welcome": "Welcome, {{ name }}!",
+			"goto": "Go to"
+		},
+		"settings": {
+			"user_settings": "User data"
 		}
 	},
 	"tasks": {

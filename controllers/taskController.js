@@ -3,6 +3,7 @@ const i18n = require('i18n');
 const { User } = require('../models/User');
 const { TaskList } = require('../models/TaskList');
 const { Task, TaskPersons } = require('../models/Task');
+const sequelize = require('../config/database');
 
 
 const createTask = async (req, res) => {
@@ -68,10 +69,20 @@ const createTask = async (req, res) => {
 const getUserTasks = async (req, res) => {
   const errors = [];
   try {
+    // Getting the user id from request parameters, and then
+    // validating the input of the user ID.
     let { id: userId } = req.params;
-    if (!userId) return res.status(400);
+    if (!userId || isNaN(userId))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
-    const tasks = await Task.findAll({
+    // Finds a user with such ID. Returns an error if no such user
+    // was found in the database.
+    const user = await User.findByPk(userId);
+    if (!user)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+    
+    // Search the tasks in which the user is involved.
+    const tasksFound = await Task.findAll({
       include: [
         {
           model: User,
@@ -85,11 +96,19 @@ const getUserTasks = async (req, res) => {
       ]
     });
 
-    tasks.forEach(task => {
-      task.status = i18n.__(`tasks.statuses.${task.status.toLowerCase()}`);
-      task.priority = i18n.__(`tasks.priorities.${task.priority.toLowerCase()}`);
+    // Write information about tasks in new array.
+    const tasks = [];
+    tasksFound.forEach (task => {
+      tasks.push({
+        name: task.name,
+        description: task.description,
+        status: i18n.__(`tasks.statuses.${task.status.toLowerCase()}`),
+        priority: i18n.__(`tasks.priorities.${task.priority.toLowerCase()}`),
+        due_date: task.due_date
+      });
     });
 
+    // Sending the tasks array.
     return res.status(200).json({ tasks })
   } catch (error) {
     console.error(error);
@@ -103,7 +122,41 @@ const changeTaskData = async (req, res) => {
 };
 
 const changeTaskStatus = async (req, res) => {
+  try {
+    // Gets the task id from request parameters and the task's
+    // new status from request body.
+    let { id } = req.params;
+    let { status } = req.body;
 
+    // Sanitizes status input and does entry value validation.
+    status = status.trim();
+    if (!id || isNaN(id) || !status)
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    // Checks the status against accepted statuses.
+    // If the status input does not correspond to one of the accepted ones,
+    // it will default to UPCOMING.
+    const statuses = ['UPCOMING', 'STARTED', 'ONGOING', 'COMPLETED'];
+    if (!statuses.includes(status)) status = 'UPCOMING';
+
+    // Finds the task by its ID and returns an error if the task is not found.
+    const task = await Task.findByPk(id);
+    if (!task)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    // Changing the task's completion status and saving changes
+    // to the database.
+    task.status = status;
+    await task.save();
+
+    // Sending the successful task edit message
+    res.status(200).json({ success: true, message: i18n.__('success.SUC_17')});
+  } catch (error) {
+    // Outputting the errors to the console and sending a
+    // generic internal server error message.
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
 };
 
 const addPersonResponsible = async (req, res) => {
@@ -115,7 +168,33 @@ const removePersonResponsible = async (req, res) => {
 };
 
 const deleteTask = async (req, res) => {
+  const errors = [];
+  const t = await sequelize.transaction();
+  try {
+    // Gets the deletable task id from request parameters and
+    // validates it.
+    let { id } = req.params;
+    if (!id || isNaN(id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
+    // Finds the task with that ID and returns an error if it doesn't
+    const task = await Task.findByPk(id);
+    if (!task)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    // Deletes the task and commits changes to the database.
+    await task.destroy();
+    t.commit();
+
+    res.status(200).json({ success: true, message: i18n.__('success.SUC_18')});
+  } catch {
+    // Rolling back the deletion action, outputting the errors to the
+    // console and sending a generic internal server error message.
+    await t.rollback();
+    console.log(error);
+    errors.push(i18n.__('errors.ERR_18'));
+    res.status(500).json({ errors: errors });
+  }
 };
 
 module.exports = {

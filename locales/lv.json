@@ -70,14 +70,21 @@
 		"password": "Parole",
 		"register_ui": {
 			"headline": "Reģistrēšanās sistēmai TaskApp",
-			"loginhere": "Pieslēdzies šeit!"
+			"loginhere": "Pieslēdzies šeit!",
+			"phoneformat": "Tālruņa numura formāts - +XXX00000000, bez atstarpēm.",
+			"passformat": "Parolei jābūt vismaz 8 simbolus garai."
 		},
 		"name": "Pilnais vārds",
 		"phone": "Tālruņa numurs",
 		"password_confirm": "Paroles apstiprinājums",
 		"dashboard": {
 			"loggedas": "Pieslēdzies kā {{ name }}",
-			"current_tasks": "Pašreizējie uzdevumi"
+			"current_tasks": "Pašreizējie uzdevumi",
+			"welcome": "Esi sveicināts, {{ name }}!",
+			"goto": "Doties uz"
+		},
+		"settings": {
+			"user_settings": "Lietotāja dati"
 		}
 	},
 	"tasks": {
