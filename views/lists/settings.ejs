@@ -35,7 +35,11 @@
             <label for="task_due"><%= __('ui.entity_duedate') %></label>
           </div>
           <button class="btn btn-primary w-100 py-2 my-1" type="submit"><%= __('ui.company.change') %></button>
-          <a class="btn btn-outline-primary w-100 py-2" href="/users/<%= user.id %>/list"><%= __('ui.return') %></a>
+          <% if (team) { %>
+            <a class="btn btn-outline-primary w-100 py-2" href="/teams/<%= team.id %>"><%= __('ui.return') %></a>
+          <% } else { %>
+            <a class="btn btn-outline-primary w-100 py-2" href="/users/<%= user.id %>/list"><%= __('ui.return') %></a>
+          <% } %>
         </form>
       </div>
     </main>

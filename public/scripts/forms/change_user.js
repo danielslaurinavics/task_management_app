@@ -78,7 +78,7 @@ document.getElementById('user-change-form').addEventListener('submit', async (ev
 
 document.getElementById('deleteSelfButton').addEventListener('click', async () => {
   const user_id = document.getElementById('user-id').value;
-  const fetchUrl = `/user/${user_id}/delete/self`;
+  const fetchUrl = `/users/${user_id}`;
 
   const messageArea = document.getElementById('message-area');
   messageArea.innerHTML = '';

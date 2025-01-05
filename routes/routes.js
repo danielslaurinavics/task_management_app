@@ -42,7 +42,9 @@ router.get('/users', auth.authenticate, auth.authorizeAdmin, user.getAllUsers);
 router.route('/users/:id')
   .get(auth.authenticate, (req, res) => res.render('./users/settings', { user: req.user }))
   .put(auth.authenticate, user.changeData)
-  .delete(auth.authenticate, user.deleteUser);
+  .delete(auth.authenticate, user.deleteSelf);
+
+router.delete('/users/:id/delete', auth.authenticate, auth.authorizeAdmin, user.deleteUser)
 
 router.patch('/users/:id/block', auth.authenticate, auth.authorizeAdmin, user.blockUser);
 
@@ -119,12 +121,11 @@ router.route('/list/team/:id')
 router.get('/tasks/:id/data', auth.authenticate, task.getTaskData);
 
 router.route('/tasks/:id/persons')
- /* .get(auth.authenticate, task.getPersonsResponsible) */
   .post(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.addPersonResponsible)
   .delete(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.removePersonResponsible);
 
-router.get('/tasks/user/edit/:id', auth.authenticate, (req, res) => res.render('./lists/settings', { user: req.user }));
-router.get('/tasks/team/:id/edit/:id', auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager,
-  (req, res) => res.render('./teams/team_settings', { user: req.user, team: req.team }));
+router.get('/tasks/user/edit/:id', auth.authenticate, (req, res) => res.render('./lists/settings', { user: req.user, team: null }));
+router.get('/tasks/team/:id/edit/:task_id', auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager,
+  (req, res) => res.render('./lists/settings', { user: req.user, team: req.team }));
 
 module.exports = router;

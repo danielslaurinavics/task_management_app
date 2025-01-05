@@ -1,19 +1,3 @@
-async function displayUserTasks() {
-  const tasksDiv = document.getElementById('tasks');
-  const userId = document.getElementById('user-id').value;
-
-  const fetchUrl = ``;
-  const response = await fetch(fetchUrl, { method: 'GET' });
-  const data = await response.json();
-
-  if (!response.ok) return;
-  const tasks = data.tasks;
-  tasks.forEach(task => {
-    const taskDiv = document.createElement('div');
-    taskDiv.className = 'col';
-  })
-}
-
 async function displayUserSelect() {
   const selectDiv = document.getElementById('select-card');
   const userId = document.getElementById('user-id').value;
@@ -64,7 +48,4 @@ async function displayUserSelect() {
   })
 }
 
-
-
-//displayUserTasks();
 displayUserSelect();

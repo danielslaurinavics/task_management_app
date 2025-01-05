@@ -57,30 +57,63 @@ async function populateTasks() {
     const isAssigned = persons.find(person => person.id === userId);
 
     taskDiv.innerHTML = `
-    <div class="p-2 d-flex flex-column justify-content-start">
+    <div class="p-2 d-flex flex-column justify-content-start align-items-start">
       <span class="fs-6 badge text-bg-${priorityColor}">${task.priority_word}</span>
       <span class="fs-5 fw-bold">${task.name}</span>
       <p class="fw-lighter">${task.description}</p>
       <span class="fs-6 badge text-bg-${dateSpanColor}">${dueDate}</span>
-      <div class=""></div>
     </div>
     `;
+    
+    const personData = document.createElement('div');
+    personData.className = 'd-flex flex-column align-items-start ms-1 my-1';
+    persons.forEach(person => {
+      const span = document.createElement('span');
+      span.className = 'fs-6 badge text-bg-warning mb-1';
+      span.textContent = person.name;
+      if (isManager) {
+        const remove = document.createElement('button');
+        remove.textContent = 'X';
+        remove.className = 'btn btn-sm btn-danger ms-2';
+        remove.addEventListener('click', async () => {
+          const response = await fetch(`/tasks/${teamId}/persons`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ task_id: task.id, user_id: person.id })
+          });
+          const data = await response.json()
 
+          if (response.ok) {
+            populateTasks();
+            alert(data.message);
+          } else {
+            alert(data.errors);
+          }
+        });
+        span.appendChild(remove);
+      }
+      personData.appendChild(span);
+    })
+    taskDiv.appendChild(personData);
+    
     const changeData = document.createElement('a');
     const changeStatus = document.createElement('button');
     const deleteTask = document.createElement('button');
+    const addPerson = document.createElement('button');
 
     changeData.textContent = task.allowed_to.change_word;
     changeStatus.textContent = task.allowed_to.status_word;
     deleteTask.textContent = task.allowed_to.delete_word;
+    addPerson.textContent = '+';
     
     changeData.className = 'btn btn-sm btn-light ms-1';
     changeStatus.className = 'btn btn-sm btn-light ms-1';
     deleteTask.className = 'btn btn-sm btn-danger ms-1';
+    addPerson.className = 'btn btn-sm btn-light ms-1';
 
-    changeData.href = `/tasks/team/edit/${task.id}`;
+    changeData.href = `/tasks/team/${teamId}/edit/${task.id}`;
     changeStatus.addEventListener('click', async () => {
-      const response = await fetch(`/list/team/${userId}`, {
+      const response = await fetch(`/list/team/${teamId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task_id: task.id })
@@ -99,7 +132,7 @@ async function populateTasks() {
       const confirmed = confirm(task.allowed_to.delete_confirm);
 
       if (confirmed) {
-        const response = await fetch(`/list/team/${userId}`, {
+        const response = await fetch(`/list/team/${teamId}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ task_id: task.id })
@@ -115,8 +148,29 @@ async function populateTasks() {
       }
     });
 
+    addPerson.addEventListener('click', async () => {
+      const email = prompt(task.allowed_to.add_prompt);
+
+      if (email) {
+        const response = await fetch(`/tasks/${teamId}/persons`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ task_id: task.id, email: email })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          populateTasks();
+          alert(data.message);
+        } else {
+          alert(data.errors);
+        }
+      }
+    });
+
     if (task.status < 3 && isManager) taskDiv.appendChild(changeData);
     if (task.status < 3 && (isAssigned || isManager)) taskDiv.appendChild(changeStatus);
+    if (isManager) taskDiv.appendChild(addPerson);
     if (isManager) taskDiv.appendChild(deleteTask);
 
     switch (task.status) {

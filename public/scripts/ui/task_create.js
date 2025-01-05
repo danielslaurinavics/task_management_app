@@ -7,7 +7,7 @@ async function createTask(type = 'user') {
   const response = await fetch(`/list/${type}/${id}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json'},
-    body: JSON.stringify({ list_id: listId })
+    body: JSON.stringify({ type, list_id: listId })
   });
   const data = await response.json();
 

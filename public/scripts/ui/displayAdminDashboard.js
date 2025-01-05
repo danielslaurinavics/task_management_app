@@ -75,7 +75,7 @@ async function populateUserTable() {
       const confirmed = confirm(user.allowed_to.delete_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/users/${user.id}`;
+        const fetchUrl = `/users/${user.id}/delete`;
         const response = await fetch(fetchUrl, { method: 'DELETE' });
         const data = await response.json();
 

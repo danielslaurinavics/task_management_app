@@ -8,7 +8,7 @@ const { Task, TaskPersons } = require('../models/Task');
 
 // Importing database connection module.
 const sequelize = require('../config/database');
-
+const validation = require('../utils/validation');
 
 
 
@@ -43,7 +43,7 @@ const getUserListTasks = async (req, res) => {
           change_word: i18n.__('ui.tasks.change'),
           status_word: i18n.__('ui.tasks.status'),
           delete_word: i18n.__('ui.tasks.delete'),
-          delete_confirm: i18n.__('confirm.CON_13')
+          delete_confirm: i18n.__('confirm.CON_13'),
         }
       });
     });
@@ -98,7 +98,8 @@ const getTeamListTasks = async (req, res) => {
           change_word: i18n.__('ui.tasks.change'),
           status_word: i18n.__('ui.tasks.status'),
           delete_word: i18n.__('ui.tasks.delete'),
-          delete_confirm: i18n.__('confirm.CON_13')
+          delete_confirm: i18n.__('confirm.CON_13'),
+          add_prompt: i18n.__('ui.tasks.add_person')
         },
         assigned_users: task.Users || []
       });
@@ -180,9 +181,12 @@ const getUserTasks = async (req, res) => {
  */
 const createTask = async (req, res) => {
   const { id } = req.params;
-  const { list_id } = req.body;
+  const { type, list_id } = req.body;
   try {
     if (!id || isNaN(id) || !list_id || isNaN(list_id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    if(!type || !['user','team'].includes(type))
       return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
     const list = await TaskList.findOne({ where: { id: list_id }});
@@ -194,8 +198,7 @@ const createTask = async (req, res) => {
       list_id: list.id
     });
 
-    const user = await User.findByPk(id);
-    if (user) {
+    if (type === 'user') {
       const personalTaskRelation = await TaskPersons.create({
         task_id: newTask.id,
         user_id: id
@@ -221,13 +224,13 @@ const changeTaskData = async (req, res) => {
 
   try {
     name = name?.trim();
-    description = description?.trim();
+    description = description ?description.trim() : null;
     priority = priority ? parseInt(priority, 10) : 0;
     due_date = due_date ? new Date(due_date) : null;
 
     const errors = [];
     const rules = [
-      {condition: !name || !description || ![0,1,2].includes(priority), error: 'ERR_01'},
+      {condition: !name || ![0,1,2].includes(priority), error: 'ERR_01'},
       {condition: name && name.length > 255, error: 'ERR_04'}
     ];
     for (const { condition, error } of rules) {
@@ -295,12 +298,65 @@ const changeTaskStatus = async (req, res) => {
   }
 };
 
-const addPersonResponsible = async (req, res) => {
 
+
+const addPersonResponsible = async (req, res) => {
+  let { task_id, email } = req.body;
+  try {
+    email = email?.trim();
+    const errors = [];
+    const rules = [
+      {condition: !task_id || isNaN(task_id) || !email, error: 'ERR_01'},
+      {condition: email && email.length > 255 || !email, error: 'ERR_02'},
+      {condition: email && !validation.isValidEmail(email) || !email, error: 'ERR_06'}
+    ];
+    for (const {condition, error} of rules) {
+      if (condition) errors.push(i18n.__(`errors.${error}`));
+    }
+    if (errors.length > 0) return res.status(400).json({ errors });
+
+    const task = await Task.findByPk(task_id);
+    const user = await User.findOne({ where: { email }});
+    if (!task || !user)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    const taskPersons = await TaskPersons.findAll({ where: { task_id } });
+    if (taskPersons.find(person => person.user_id === user.id))
+      return res.status(409).json({errors: [i18n.__('errors.ERR_20')]});
+
+    const newTaskPerson = await TaskPersons.create({
+      task_id, user_id: user.id
+    });
+
+    res.status(200).json({message: i18n.__('success.SUC_09')});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
 };
 
-const removePersonResponsible = async (req, res) => {
 
+
+const removePersonResponsible = async (req, res) => {
+  const { task_id, user_id } = req.body;
+  const t = await sequelize.transaction();
+  try {
+    if (!task_id || !user_id || isNaN(task_id) || isNaN(user_id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    const taskPerson = await TaskPersons.findOne({ where: { task_id, user_id }});
+    if (!taskPerson)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    await taskPerson.destroy();
+    await t.commit({transaction: t});
+
+    res.status(200).json({message: i18n.__('success.SUC_10')});
+  } catch (error) {
+    await t.rollback();
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
 };
 
 

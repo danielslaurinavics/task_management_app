@@ -151,7 +151,8 @@
 		"tasks": {
 			"change": "Labot",
 			"status": "Mainīt statusu",
-			"delete": "Dzēst"
+			"delete": "Dzēst",
+			"add_person": "Ievadi pievienojamā lietotāja e-pastu"
 		},
 		"task_id": "Uzdevuma ID",
 		"entity_status": "Uzdevuma statuss",
@@ -159,7 +160,7 @@
 		"entity_duedate": "Uzdevuma termiņš",
 		"task": {
 			"create": "Izveidot uzdevumu",
-			"untitled": "ui.task.untitled"
+			"untitled": "Uzdevums bez nosaukuma"
 		}
 	},
 	"tasks": {
