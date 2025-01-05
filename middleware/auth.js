@@ -40,6 +40,13 @@ async function authorizeAdmin(req, res, next) {
 
 
 
+async function usersOnly(req, res, next) {
+  if (req.user && !req.user.is_admin) return next();
+  else return res.status(403).render('error', { error: i18n.__('errors.ERR_14')});
+}
+
+
+
 async function goToDashboard(req, res, next) {
   if (req.user) {
     if (req.user.is_admin) res.redirect('/admin');
@@ -64,5 +71,7 @@ async function redirectIfLoggedIn(req, res, next) {
 
 
 
-module.exports = { authenticate, authorizeAdmin,
-  goToDashboard, redirectIfLoggedIn };
+module.exports = {
+  authenticate, authorizeAdmin, usersOnly,
+  goToDashboard, redirectIfLoggedIn
+};

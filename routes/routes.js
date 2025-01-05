@@ -48,7 +48,7 @@ router.patch('/users/:id/block', auth.authenticate, auth.authorizeAdmin, user.bl
 
 router.patch('/users/:id/unblock', auth.authenticate, auth.authorizeAdmin, user.unblockUser);
 
-
+router.get('/users/:id/list', auth.authenticate, auth.usersOnly, (req, res) => res.render('./lists/user', { user: req.user }));
 
 
 
@@ -62,12 +62,12 @@ router.get('/companies/create', auth.authenticate, auth.authorizeAdmin,
   (req, res) => res.render('./companies/create', { user: req.user }));
 
 router.route('/companies/:id')
-  .get(auth.authenticate, companyAuth.checkForAccess,
+  .get(auth.authenticate, auth.usersOnly, companyAuth.checkForAccess,
     (req, res) => res.render('./companies/dashboard', {user: req.user, company: req.company}))
   .put(auth.authenticate, companyAuth.checkForAccess, company.changeCompanyData)
   .delete(auth.authenticate, auth.authorizeAdmin, company.deleteCompany);
 
-router.get('/companies/:id/settings', auth.authenticate, companyAuth.checkForAccess,
+router.get('/companies/:id/settings', auth.authenticate, auth.usersOnly, companyAuth.checkForAccess,
   (req, res) => res.render('./companies/settings', {user: req.user, company: req.company}));
 
 router.route('/companies/:id/managers')
@@ -84,12 +84,14 @@ router.route('/companies/:id/teams')
 
 
 
-router.get('/teams/create/:id', auth.authenticate, companyAuth.checkForAccess,
+router.get('/teams/create/:id', auth.authenticate, auth.usersOnly, companyAuth.checkForAccess,
   (req, res) => res.render('./teams/create', {user: req.user, company: req.company}));
 
+router.get('/teams/user/:id', auth.authenticate, team.getUserTeams);
+
 router.route('/teams/:id')
-  .get(auth.authenticate, teamAuth.checkForAccess,
-    (req, res) => res.render('./teams/list', { user: req.user, team: req.team }))
+  .get(auth.authenticate, auth.usersOnly, teamAuth.checkForAccess,
+    (req, res) => res.render('./lists/team', { user: req.user, team: req.team }))
   .put(auth.authenticate, teamAuth.checkManager, team.changeTeamData)
 
 router.route('/teams/:id/participants')
@@ -101,22 +103,28 @@ router.route('/teams/:id/participants')
 
 
 router.route('/list/user/:id')
-  /*.get(auth.authenticate, task.getListTasks) */
+  .get(auth.authenticate, task.getUserListTasks)
   .post(auth.authenticate, task.createTask)
   .put(auth.authenticate, task.changeTaskData)
   .patch(auth.authenticate, task.changeTaskStatus)
   .delete(auth.authenticate, task.deleteTask);
 
 router.route('/list/team/:id')
- /* .get(auth.authenticate, teamAuth.checkForAccess, task.getListTasks) */
+ /* .get(auth.authenticate, teamAuth.checkForAccess, task.getTeamListTasks) */
   .post(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.createTask)
   .put(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.changeTaskData)
   .patch(auth.authenticate, teamAuth.checkForAccess, task.changeTaskStatus)
   .delete(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.deleteTask);
 
-router.route('/task/:id/persons')
+router.get('/tasks/:id/data', auth.authenticate, task.getTaskData);
+
+router.route('/tasks/:id/persons')
  /* .get(auth.authenticate, task.getPersonsResponsible) */
   .post(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.addPersonResponsible)
   .delete(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.removePersonResponsible);
+
+router.get('/tasks/user/edit/:id', auth.authenticate, (req, res) => res.render('./lists/settings', { user: req.user }));
+router.get('/tasks/team/:id/edit/:id', auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager,
+  (req, res) => res.render('./lists/team_settings', { user: req.user, team: req.team }));
 
 module.exports = router;

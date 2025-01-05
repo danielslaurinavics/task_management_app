@@ -12,6 +12,7 @@ const validation = require('../utils/validation');
 
 // Importing database connection module.
 const sequelize = require('../config/database');
+const { getAllUsers } = require('./userController');
 
 
 /**
@@ -68,36 +69,70 @@ const createTeam = async (req, res) => {
 
 
 
-const getAllCompanyTeams = async (req, res) => {
+const getUserTeams = async (req, res) => {
+  const  {id: user_id} = req.params;
   try {
+    if (!user_id || isNaN(user_id))
+      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+
+    const user = await User.findByPk(user_id);
+    if (!user)
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+
+    const teams = await Team.findAll({
+      include: [
+        {
+          model: User,
+          attributes: [],
+          through: {
+            attributes: ['is_manager']
+          },
+          where: { id: user_id },
+          required: true
+        }
+      ]
+    });
+
+    res.status(200).json({teams});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+}
+
+
+
+
+const getAllCompanyTeams = async (req, res) => {
   let { id: companyId } = req.params;
-  if (!companyId || isNaN(companyId))
-    return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+  try {
+    if (!companyId || isNaN(companyId))
+      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
 
-  const company = await Company.findByPk(companyId);
-  if (!company)
-    return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+    const company = await Company.findByPk(companyId);
+    if (!company)
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
 
-  const data = await Team.findAll({
-    where: { owner_company: company.id },
-    order: [['id', 'ASC']]
-  });
+    const data = await Team.findAll({
+      where: { owner_company: company.id },
+      order: [['id', 'ASC']]
+    });
 
-  const teams = [];
-  data.forEach(team => {
-    teams.push({
-      id: team.id, name: team.name, description: team.description,
-      allowed_to: {
-        add_word: i18n.__('ui.dashboard.team.add_to_team'),
-        add_prompt: i18n.__('ui.dashboard.team.add_to_team_prompt'),
-        add_confirm: i18n.__('confirm.CON_09', { user: '%user' }),
-        delete_word: i18n.__('ui.dashboard.team.delete_team'),
-        delete_confirm: i18n.__('confirm.CON_08', { name: team.name, company: company.name })
-      }
-    })
-  });
+    const teams = [];
+    data.forEach(team => {
+      teams.push({
+        id: team.id, name: team.name, description: team.description,
+        allowed_to: {
+          add_word: i18n.__('ui.dashboard.team.add_to_team'),
+          add_prompt: i18n.__('ui.dashboard.team.add_to_team_prompt'),
+          add_confirm: i18n.__('confirm.CON_09', { user: '%user' }),
+          delete_word: i18n.__('ui.dashboard.team.delete_team'),
+          delete_confirm: i18n.__('confirm.CON_08', { name: team.name, company: company.name })
+        }
+      })
+    });
 
-  res.status(200).json({ teams });
+    res.status(200).json({ teams });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
@@ -253,6 +288,6 @@ const deleteTeam = async (req, res) => {
 };
 
 module.exports = {
-  createTeam, changeTeamData, addToTeam, removeFromTeam,
+  createTeam, changeTeamData, addToTeam, removeFromTeam, getUserTeams,
   elevateToManager, lowerToParticipant, deleteTeam, getAllCompanyTeams
 };

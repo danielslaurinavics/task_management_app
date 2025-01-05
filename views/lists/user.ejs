@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../partials/structural/head') %>
+  <body>
+    <%- include('../partials/structural/dashboard_header',{ name: user.name }) %>
+    <input type="number" id="user-id" style="display: none;" value="<%= user.id %>" disabled>
+    <main class="mx-5">
+      <h4><%= __('ui.dashboard.personal_list') %></h4>
+      <div class="container-fluid my-3 d-flex flex-column flex-xl-row justify-content-xl-between">
+        <div class="col-12 col-xl-3 my-lg-1 text-bg-secondary rounded-3 p-2">
+          <span class="fs-5"><%= __('tasks.statuses.upcoming') %></span>
+          <div class="container-fluid bg-body-tertiary rounded-3 my-1 p-1" style="min-height: 60vh;" id="upcoming-tasks">
+
+          </div>
+        </div>
+        <div class="col-12 col-xl-3 my-lg-1 text-bg-danger rounded-3 p-2">
+          <span class="fs-5"><%= __('tasks.statuses.started') %></span>
+          <div class="container-fluid bg-body-tertiary rounded-3 my-1 p-1" style="min-height: 60vh;" id="started-tasks">
+
+          </div>
+        </div>
+        <div class="col-12 col-xl-3 my-lg-1 text-bg-warning rounded-3 p-2">
+          <span class="fs-5"><%= __('tasks.statuses.ongoing') %></span>
+          <div class="container-fluid bg-body-tertiary rounded-3 my-1 p-1" style="min-height: 60vh;" id="ongoing-tasks">
+
+          </div>
+        </div>
+        <div class="col-12 col-xl-3 my-lg-1 text-bg-success rounded-3 p-2">
+          <span class="fs-5"><%= __('tasks.statuses.completed') %></span>
+          <div class="container-fluid bg-body-tertiary rounded-3 my-1 p-1" style="min-height: 60vh;" id="completed-tasks">
+
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="/public/scripts/fetching/user_tasks.js"></script>
+    <%- include('../partials/structural/footer') %>
+  </body>
+</html>

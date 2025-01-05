@@ -19,16 +19,16 @@ const Task = sequelize.define('Task', {
     allowNull: true
   },
   status: {
-    type: DataTypes.STRING(16),
+    type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 'UPCOMING'
+    defaultValue: 0
   },
   priority: {
-    type: DataTypes.STRING(16),
+    type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 'LOW'
+    defaultValue: 1
   },
-  dueDate: {
+  due_date: {
     type: DataTypes.DATE,
     allowNull: true
   },

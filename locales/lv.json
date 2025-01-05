@@ -131,7 +131,7 @@
 			"managers": "Uzņēmuma pārvaldnieki",
 			"teams": "Uzņēmuma komandas",
 			"settings": "Uzņēmuma iestatījumi",
-			"settingsHeader": "Uzņēmuma {{ name }} iestatījumi",
+			"settingsHeader": "Uzņēmuma '{{ name }}' iestatījumi",
 			"change": "Mainīt datus"
 		},
 		"return": "Atgriezties",
@@ -139,14 +139,28 @@
 		"team": {
 			"create": "Izveidot komandu"
 		},
-		"remove": "Noņemt"
+		"remove": "Noņemt",
+		"tasks": {
+			"change": "Labot",
+			"status": "Mainīt statusu",
+			"delete": "Dzēst"
+		},
+		"task_id": "Uzdevuma ID",
+		"entity_status": "Uzdevuma statuss",
+		"entity_priority": "Uzdevuma prioritāte",
+		"entity_duedate": "Uzdevuma termiņš"
 	},
 	"tasks": {
 		"statuses": {
-			"upcoming": "Nav uzsākts"
+			"upcoming": "Nav uzsākts",
+			"started": "Uzsākts",
+			"ongoing": "Notiek izpilde",
+			"completed": "Pabeigts"
 		},
 		"priorities": {
-			"low": "Zema prioritāte"
+			"low": "Zema prioritāte",
+			"medium": "Vidēja prioritāte",
+			"high": "Augsta prioritāte"
 		}
 	}
 }

@@ -3,11 +3,15 @@
   <%- include('../partials/structural/head') %>
   <body>
     <%- include('../partials/structural/dashboard_header', { name: user.name }) %>
-    <input type="number" id="company-id" style="display: none;" value="<%= company.id %>" disabled>
     <main class="mx-5">
-      <h1><%= __('ui.company.settingsHeader') %></h1>
-      
+      <h1><%= __('ui.company.settingsHeader', { name: company.name }) %></h1>
+  
       <div class="col-10 col-md-6 col-xl-4 my-3">
+        <div class="form-floating">
+          <input type="text" readonly class="form-control-plaintext" id="company-id" placeholder="0" value="<%= company.id %>">
+          <label for="company-id"><%= __('ui.company_id') %></label>
+        </div>
+
         <form id="change-company-form">
           <div id="message-area"></div>
           <div class="form-floating">

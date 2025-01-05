@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../partials/structural/head') %>
+  <body>
+    <%- include('../partials/structural/dashboard_header', { name: user.name }) %>
+    <input type="number" id="user-id" style="display: none;" value="<%= user.id %>" disabled>
+    <main class="mx-5">
+      <h1>Rediģēt uzdevumu</h1>
+  
+      <div class="col-10 col-md-6 col-xl-4 my-3">
+        <div class="form-floating">
+          <input type="text" readonly class="form-control-plaintext" id="task-id" placeholder="0" value="">
+          <label for="task-id"><%= __('ui.task_id') %></label>
+        </div>
+
+        <form id="change-task-form">
+          <div id="message-area"></div>
+          <div class="form-floating">
+            <input type="text" class="form-control" id="task_name" name="task_name" placeholder="Izveidot uzdevumu" autocomplete="task_name">
+            <label for="task_name"><%= __('ui.entity_name') %></label>
+          </div>
+          <div class="form-floating">
+            <textarea type="text" class="form-control" id="task_description" name="task_description" placeholder="Izveidojam uzdevumu!"></textarea>
+            <label for="task_description"><%= __('ui.entity_description') %></label>
+          </div>
+          <div class="my-2">
+            <label for="task_priority"><%= __('ui.entity_priority') %></label>
+            <input type="range" class="form-range" id="task_priority" name="task_priority" min="0" max="2" value="0">
+            <span class="badge fs-6 text-bg-info" id="low-priority" style="display: block;"><%= __('tasks.priorities.low') %></span>
+            <span class="badge fs-6 text-bg-warning" id="medium-priority" style="display: none;"><%= __('tasks.priorities.medium') %></span>
+            <span class="badge fs-6 text-bg-danger" id="high-priority" style="display: none;"><%= __('tasks.priorities.high') %></span>
+          </div>
+          <div class="form-floating">
+            <input type="datetime-local" class="form-control" id="task_due" name="task_due" placeholder="example@example.com">
+            <label for="task_due"><%= __('ui.entity_duedate') %></label>
+          </div>
+          <button class="btn btn-primary w-100 py-2 my-1" type="submit"><%= __('ui.company.change') %></button>
+          <a class="btn btn-outline-primary w-100 py-2" href="/users/<%= user.id %>/list"><%= __('ui.return') %></a>
+        </form>
+      </div>
+    </main>
+    <script src="/public/scripts/forms/task_change.js"></script>
+    <%- include('../partials/structural/footer') %>
+  </body>
+</html>

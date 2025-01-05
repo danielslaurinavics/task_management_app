@@ -50,7 +50,7 @@ const TeamParticipant = sequelize.define('TeamParticipant', {
       key: 'id'
     }
   },
-  isManager: {
+  is_manager: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false

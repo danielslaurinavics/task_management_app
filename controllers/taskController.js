@@ -11,6 +11,51 @@ const sequelize = require('../config/database');
 
 
 
+
+const getUserListTasks = async (req, res) => {
+  const { id: user_id } = req.params;
+  try {
+    if (!user_id || isNaN(user_id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    const list = await TaskList.findOne({ where: { owner_user: user_id }});
+    if (!list)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    const data = await Task.findAll({ 
+      where: { list_id: list.id },
+      order: [['priority', 'DESC']]
+    });
+    const tasks = [];
+    data.forEach(task => {
+      const getPriorityKey = (priority) => {
+        if (priority === 0) return 'low';
+        if (priority === 1) return 'medium';
+        if (priority === 2) return 'high';
+      }
+      const priorityKey = getPriorityKey(task.priority);
+      tasks.push({
+        id: task.id, name: task.name, description: task.description,
+        status: task.status, priority: task.priority, 
+        priority_word: i18n.__(`tasks.priorities.${priorityKey}`),
+        due_date: task.due_date,
+        allowed_to: {
+          change_word: i18n.__('ui.tasks.change'),
+          status_word: i18n.__('ui.tasks.status'),
+          delete_word: i18n.__('ui.tasks.delete'),
+          delete_confirm: i18n.__('confirm.CON_13')
+        }
+      });
+    });
+
+    res.status(200).json({tasks});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+}
+
+
 /**
  * Gets all tasks which are in user's responsibility
  * @param {Object} req - Request object containing user ID.
@@ -143,7 +188,39 @@ const createTask = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const changeTaskData = async (req, res) => {
+  let { task_id, name, description, priority, due_date } = req.body;
 
+  try {
+    name = name?.trim();
+    description = description?.trim();
+    priority = priority ? parseInt(priority, 10) : 0;
+    due_date = due_date ? new Date(due_date) : null;
+
+    const errors = [];
+    const rules = [
+      {condition: !name || !description || ![0,1,2].includes(priority), error: 'ERR_01'},
+      {condition: name && name.length > 255, error: 'ERR_04'}
+    ];
+    for (const { condition, error } of rules) {
+      if (condition) errors.push(i18n.__(`errors.${error}`));
+    }
+    if (errors.length > 0) return res.status(400).json({errors});
+
+    const task = await Task.findByPk(task_id);
+    if (!task)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    task.name = name;
+    task.description = description;
+    task.priority = priority;
+    if (due_date) task.due_date = due_date;
+
+    await task.save();
+    res.status(200).json({ success: true, message: i18n.__('success.SUC_17')});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
 };
 
 
@@ -157,19 +234,15 @@ const changeTaskStatus = async (req, res) => {
   try {
     // Gets the task id from request parameters and the task's
     // new status from request body.
-    let { id } = req.params;
-    let { status } = req.body;
+    let { task_id: id } = req.body;
 
     // Sanitizes status input and does entry value validation.
-    status = status.trim();
-    if (!id || isNaN(id) || !status)
+    if (!id || isNaN(id))
       return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
     // Checks the status against accepted statuses.
     // If the status input does not correspond to one of the accepted ones,
-    // it will default to UPCOMING.
-    const statuses = ['UPCOMING', 'STARTED', 'ONGOING', 'COMPLETED'];
-    if (!statuses.includes(status)) status = 'UPCOMING';
+    // it will default to UPCOMING
 
     // Finds the task by its ID and returns an error if the task is not found.
     const task = await Task.findByPk(id);
@@ -178,7 +251,9 @@ const changeTaskStatus = async (req, res) => {
 
     // Changing the task's completion status and saving changes
     // to the database.
-    task.status = status;
+    if (task.status < 3) {
+      task.status += 1;
+    } else task.status = 3;
     await task.save();
 
     // Sending the successful task edit message
@@ -200,6 +275,27 @@ const removePersonResponsible = async (req, res) => {
 };
 
 
+const getTaskData = async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (!id || isNaN(id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    const task = await Task.findOne({ where: { id } });
+    if (!task)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    return res.status(200).json({task});
+  } catch (error) {
+    // Outputting error to the console and sending a
+    // generic internal server error message.
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+}
+
+
+
 
 /**
  * Deletes the task and its persons responsible records from the database.
@@ -210,7 +306,7 @@ const deleteTask = async (req, res) => {
   const t = await sequelize.transaction();
   try {
     // Gets the deletable task id from request parameters and validates it.
-    let { id } = req.params;
+    let { task_id: id } = req.body;
     if (!id || isNaN(id))
       return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
@@ -236,5 +332,5 @@ const deleteTask = async (req, res) => {
 
 module.exports = {
   createTask, getUserTasks, changeTaskData, changeTaskStatus,
-  addPersonResponsible, removePersonResponsible, deleteTask
+  addPersonResponsible, removePersonResponsible, deleteTask, getUserListTasks, getTaskData
 };
