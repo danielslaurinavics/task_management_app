@@ -26,7 +26,7 @@ const Task = sequelize.define('Task', {
   priority: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 1
+    defaultValue: 0
   },
   due_date: {
     type: DataTypes.DATE,

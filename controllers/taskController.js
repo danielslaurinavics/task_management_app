@@ -179,61 +179,33 @@ const getUserTasks = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const createTask = async (req, res) => {
-  const errors = [];
+  const { id } = req.params;
+  const { list_id } = req.body;
   try {
-    // Getting task creation form field values.
-    let { name, description, priority, dueDate, listId } = req.body;
+    if (!id || isNaN(id) || !list_id || isNaN(list_id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
-    // Sanitizing input by removing preceding and trailing whitespaces and
-    // changing format of various variables.
-    name = name.trim();
-    description = description.trim();
-    priority = priority.trim();
-    dueDate = dueDate.trim();
-    listId = parseInt(listId.trim(), 10);
+    const list = await TaskList.findOne({ where: { id: list_id }});
+    if (!list)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
 
-    // Validation of entered values
-    const validations = [
-      {condition: !name || !listId, error: 'ERR_01'},
-      {condition: name && name.length > 255, error: 'ERR_04'}
-    ];
-    for (const { condition, error } of validations) {
-      if (condition) errors.push(i18n.__(`errors.${error}`));
-    };
-
-    // Searching the list for the task to be inserted to.
-    // Returns an error if the list is not found.
-    const listFound = await TaskList.findOne({
-      where: { id: listId }
-    });
-    if (!listFound) return res.status(404);
-
-    // Creates a new task entry to the database
     const newTask = await Task.create({
-      name,
-      description: description || null,
-      priority: priority || 'LOW',
-      dueDate: dueDate ? new Date(dueDate) : null,
-      list_id: listId
+      name: i18n.__('ui.task.untitled'),
+      list_id: list.id
     });
 
-    // If the task list's owner is a user, the user is automatically
-    // assigned to the user, since it is the user's personal task list.
-    if (listFound.owner_user) {
-      const newTaskPerson = await TaskPersons.create({
+    const user = await User.findByPk(id);
+    if (user) {
+      const personalTaskRelation = await TaskPersons.create({
         task_id: newTask.id,
-        user_id: listFound.owner_user
+        user_id: id
       });
     }
 
-    // Sending the successful creation message.
-    res.status(201).json({ success: true, message: i18n.__('success.SUC_16') });
+    res.status(200).json({message: i18n.__('success.SUC_16')});
   } catch (error) {
-    // Outputting the errors to the console and sending a
-    // generic internal server error message.
-    console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    res.status(500).json({ errors });
+    console.log(error);
+    res.status(500).json({errors: [i18n.__('errors.ERR_18')]});
   }
 };
 

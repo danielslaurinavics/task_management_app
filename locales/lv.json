@@ -158,7 +158,8 @@
 		"entity_priority": "Uzdevuma prioritāte",
 		"entity_duedate": "Uzdevuma termiņš",
 		"task": {
-			"create": "Izveidot uzdevumu"
+			"create": "Izveidot uzdevumu",
+			"untitled": "ui.task.untitled"
 		}
 	},
 	"tasks": {

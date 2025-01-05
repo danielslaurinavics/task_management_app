@@ -179,14 +179,14 @@ const addToTeam = async (req, res) => {
     if (!team || !user)
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
 
-    const existingParticipant = await TeamParticipant.findOne({
-      where: { team_id, user_id: user.id }
-    });
-    if (existingParticipant)
+    const participantList = await TeamParticipant.findAll({ where: { team_id } });
+    if (participantList.find(member => member.user_id === user.id))
       return res.status(409).json({ errors: [i18n.__('errors.ERR_20')] });
-
+    
     const newParticipant = await TeamParticipant.create({
-     team_id, user_id: user.id
+     team_id,
+     user_id: user.id,
+     is_manager: participantList.length > 0 ? false : true
     });
 
     res.status(200).json({message: i18n.__('success.SUC_09')});

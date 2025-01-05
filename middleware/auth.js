@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const i18n = require('i18n');
 
 const { User } = require('../models/User');
+const { TaskList } = require('../models/TaskList');
 
 async function authenticate(req, res, next) {
   const token = req.cookies.jwt;
@@ -19,7 +20,10 @@ async function authenticate(req, res, next) {
     if (user.is_blocked)
       return res.status(403).render('error', { error: i18n.__('errors.ERR_13')});
 
+    const taskList = await TaskList.findOne({ where: { owner_user: user.id } });
+    
     req.user = user;
+    if (taskList) req.user.list_id = taskList.id;
     next();
   } catch (error) {
     console.error(error);

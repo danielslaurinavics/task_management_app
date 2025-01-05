@@ -1,6 +1,7 @@
 const i18n = require('i18n');
 
 const { Team, TeamParticipant } = require('../models/Team');
+const { TaskList } = require('../models/TaskList');
 
 async function checkForAccess(req, res, next) {
   if (!req.user)
@@ -22,12 +23,16 @@ async function checkForAccess(req, res, next) {
     if (!teamData)
       return res.status(404).render('error', {error: i18n.__('errors.ERR_19')});
 
+    const taskList = await TaskList.findOne({ where: { is_team_list: true, owner_team: teamData.id }});
+    if (!taskList)
+      return res.status(404).render('error', {error: i18n.__('errors.ERR_19')});
     
     const team = {
       id: teamData.id,
       name: teamData.name,
       description: teamData.description,
-      is_manager: teamRelation.is_manager
+      is_manager: teamRelation.is_manager,
+      list_id: taskList.id
     } 
     req.team = team;
     next();
