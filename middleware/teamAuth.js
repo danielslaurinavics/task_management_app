@@ -18,11 +18,18 @@ async function checkForAccess(req, res, next) {
     if (!teamRelation)
       return res.status(403).render('error', {error: i18n.__('errors.ERR_14')});
 
-    const team = await Team.findByPk(teamId);
-    if (!team)
+    const teamData = await Team.findByPk(teamId);
+    if (!teamData)
       return res.status(404).render('error', {error: i18n.__('errors.ERR_19')});
 
-    req.team = { team, is_manager: teamRelation.is_manager };
+    
+    const team = {
+      id: teamData.id,
+      name: teamData.name,
+      description: teamData.description,
+      is_manager: teamRelation.is_manager
+    } 
+    req.team = team;
     next();
   } catch (error) {
     console.error(error);
@@ -34,7 +41,7 @@ async function checkForAccess(req, res, next) {
 
 async function checkManager(req, res, next) {
   if (req.team) {
-    if (is_manager) return next();
+    if (req.team.is_manager) return next();
     else return res.status(403).render('error', {error: i18n.__('errors.ERR_15')});
   }
 }

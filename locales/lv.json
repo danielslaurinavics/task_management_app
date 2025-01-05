@@ -99,7 +99,8 @@
 				"add_to_team": "Pievienot lietotāju komandai",
 				"add_to_team_prompt": "Ievadiet pievienojamā lietotāja e-pasta adresi!",
 				"delete_team": "Dzēst komandu"
-			}
+			},
+			"team_list": "Komandas '{{ team }}' uzdevumu saraksts"
 		},
 		"settings": {
 			"user_settings": "Lietotāja iestatījumi",
@@ -137,7 +138,14 @@
 		"return": "Atgriezties",
 		"entity_description": "Apraksts",
 		"team": {
-			"create": "Izveidot komandu"
+			"create": "Izveidot komandu",
+			"members": "Komandas dalībnieki",
+			"roles": {
+				"participant": "Dalībnieks",
+				"manager": "Vadītājs"
+			},
+			"elevate": "Piesķirt vadītāja lomu",
+			"lower": "Noņemt vadītāja lomu"
 		},
 		"remove": "Noņemt",
 		"tasks": {
@@ -148,7 +156,10 @@
 		"task_id": "Uzdevuma ID",
 		"entity_status": "Uzdevuma statuss",
 		"entity_priority": "Uzdevuma prioritāte",
-		"entity_duedate": "Uzdevuma termiņš"
+		"entity_duedate": "Uzdevuma termiņš",
+		"task": {
+			"create": "Izveidot uzdevumu"
+		}
 	},
 	"tasks": {
 		"statuses": {

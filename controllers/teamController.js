@@ -53,7 +53,7 @@ const createTeam = async (req, res) => {
     
     // Creating a new task list, since team always have one.
     const newTaskList = await TaskList.create({
-      is_task_list: true,
+      is_team_list: true,
       owner_team: newTeam.id
     });
 
@@ -221,36 +221,12 @@ const removeFromTeam = async (req, res) => {
 
     await teamRelation.destroy();
     await t.commit();
-    res.status(200).json({ message: i18n.__('errors.ERR_10')} );
+    res.status(200).json({ message: i18n.__('errors.SUC_10')} );
   } catch (error) {
     await t.rollback();
     console.log(error);
     res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
-};
-
-
-
-/**
- * Changes the role of the user in a team to manager.
- * @param {Object} req - Request object containing the team ID and the user ID of the user
- * whose status has to be elevated
- * @param {Object} res - Response object for sending the result to the client.
- */
-const elevateToManager = async (req, res) => {
-
-};
-
-
-
-/**
- * Changes the role of the user in a team to participant.
- * @param {Object} req - Request object containing the team ID and the user ID of the user
- * whose status has to be lowered
- * @param {Object} res - Response object for sending the result to the client.
- */
-const lowerToParticipant = async (req, res) => {
-
 };
 
 
@@ -287,7 +263,79 @@ const deleteTeam = async (req, res) => {
   }
 };
 
+
+const getAllParticipants = async (req, res) => {
+  const { id: team_id } = req.params;
+
+  try {
+    if (!team_id || isNaN(team_id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    const team = await Team.findByPk(team_id);
+    if (!team)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    const data = await User.findAll({
+      include: [
+        {
+          model: Team,
+          attributes: ['id'],
+          through: {
+            attributes: ['is_manager']
+          },
+          where: { id: team.id },
+          required: true
+        }
+      ]
+    });
+    const participants = [];
+    data.forEach(user => {
+      const is_manager = user.Teams[0].TeamParticipant.is_manager;
+      participants.push({
+        id: user.id, name: user.name, email: user.email, phone: user.phone,
+        is_manager: is_manager,
+        role: is_manager ? i18n.__('ui.team.roles.manager'): i18n.__('ui.team.roles.participant'),
+        allowed_to: {
+          elevate_word: i18n.__('ui.team.elevate'),
+          lower_word: i18n.__('ui.team.lower'),
+          remove_word: i18n.__('ui.remove'),
+          elevate_confirm: i18n.__('confirm.CON_11', { user: user.name }),
+          lower_confirm: i18n.__('confirm.CON_12', { user: user.name }),
+          remove_confirm: i18n.__('confirm.CON_10', { user: user.name })
+        }
+      });
+    });
+
+    res.status(200).json({participants});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+}
+
+
+const changeRole = async (req, res) => {
+  const { id: team_id } = req.params;
+  const { user_id } = req.body;
+  try {
+    if (!team_id || !user_id || isNaN(team_id) || isNaN(user_id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    const teamRelation = await TeamParticipant.findOne({ where: { team_id, user_id }});
+    if (!teamRelation)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    teamRelation.is_manager = !teamRelation.is_manager;
+    await teamRelation.save();
+
+    return res.status(200).json({message: i18n.__('success.SUC_14')});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+}
+
 module.exports = {
-  createTeam, changeTeamData, addToTeam, removeFromTeam, getUserTeams,
-  elevateToManager, lowerToParticipant, deleteTeam, getAllCompanyTeams
+  createTeam, changeTeamData, addToTeam, removeFromTeam, getUserTeams, changeRole,
+  deleteTeam, getAllCompanyTeams, getAllParticipants
 };

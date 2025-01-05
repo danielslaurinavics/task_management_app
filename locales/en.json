@@ -96,7 +96,8 @@
 				"add_to_team": "Add user to team",
 				"add_to_team_prompt": "Enter the new member's e-mail address",
 				"delete_team": "Delete team"
-			}
+			},
+			"team_list": "ui.dashboard.team_list"
 		},
 		"settings": {
 			"user_settings": "User settings",
@@ -134,16 +135,37 @@
 		"return": "Return",
 		"entity_description": "Description",
 		"team": {
-			"create": "Create a team"
+			"create": "Create a team",
+			"members": "ui.team.members",
+			"roles": {
+				"manager": "ui.team.roles.manager",
+				"participant": "ui.team.roles.participant"
+			}
 		},
-		"remove": "Noņemt"
+		"remove": "Noņemt",
+		"tasks": {
+			"change": "ui.tasks.change",
+			"status": "ui.tasks.status",
+			"delete": "ui.tasks.delete"
+		},
+		"task_id": "ui.task_id",
+		"entity_priority": "ui.entity_priority",
+		"entity_duedate": "ui.entity_duedate",
+		"task": {
+			"create": "ui.task.create"
+		}
 	},
 	"tasks": {
 		"statuses": {
-			"upcoming": "Not started"
+			"upcoming": "Not started",
+			"started": "tasks.statuses.started",
+			"ongoing": "tasks.statuses.ongoing",
+			"completed": "tasks.statuses.completed"
 		},
 		"priorities": {
-			"low": "Low priority"
+			"low": "Low priority",
+			"high": "tasks.priorities.high",
+			"medium": "tasks.priorities.medium"
 		}
 	}
 }

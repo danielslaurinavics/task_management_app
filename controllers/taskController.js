@@ -56,6 +56,63 @@ const getUserListTasks = async (req, res) => {
 }
 
 
+
+const getTeamListTasks = async (req, res) => {
+  const { id: team_id } = req.params;
+  try {
+    if (!team_id || isNaN(team_id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    const list = await TaskList.findOne({ where: {
+      is_team_list: true, owner_team: team_id
+    }});
+    if (!list)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    const data = await Task.findAll({
+      where: { list_id: list.id },
+      order: [['priority', 'DESC']],
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'name'],
+          through: { attributes: [] },
+          required: false,
+        }
+      ]
+    });
+    const tasks = [];
+    data.forEach(task => {
+      const getPriorityKey = (priority) => {
+        if (priority === 0) return 'low';
+        if (priority === 1) return 'medium';
+        if (priority === 2) return 'high';
+      }
+      const priorityKey = getPriorityKey(task.priority);
+      tasks.push({
+        id: task.id, name: task.name, description: task.description,
+        status: task.status, priority: task.priority, 
+        priority_word: i18n.__(`tasks.priorities.${priorityKey}`),
+        due_date: task.due_date,
+        allowed_to: {
+          change_word: i18n.__('ui.tasks.change'),
+          status_word: i18n.__('ui.tasks.status'),
+          delete_word: i18n.__('ui.tasks.delete'),
+          delete_confirm: i18n.__('confirm.CON_13')
+        },
+        assigned_users: task.Users || []
+      });
+    });
+
+    res.status(200).json({tasks});
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+}
+
+
+
 /**
  * Gets all tasks which are in user's responsibility
  * @param {Object} req - Request object containing user ID.
@@ -332,5 +389,5 @@ const deleteTask = async (req, res) => {
 
 module.exports = {
   createTask, getUserTasks, changeTaskData, changeTaskStatus,
-  addPersonResponsible, removePersonResponsible, deleteTask, getUserListTasks, getTaskData
+  addPersonResponsible, removePersonResponsible, deleteTask, getUserListTasks, getTeamListTasks, getTaskData
 };
