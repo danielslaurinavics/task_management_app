@@ -130,7 +130,9 @@
 			"dashboard_headline": "Uzņēmums '{{ name }}'",
 			"managers": "Uzņēmuma pārvaldnieki",
 			"teams": "Uzņēmuma komandas",
-			"settings": "Uzņēmuma iestatījumi"
+			"settings": "Uzņēmuma iestatījumi",
+			"settingsHeader": "Uzņēmuma {{ name }} iestatījumi",
+			"change": "Mainīt datus"
 		},
 		"return": "Atgriezties",
 		"entity_description": "Apraksts",

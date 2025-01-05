@@ -67,6 +67,7 @@ async function populateTeamsTable() {
   teams.forEach(team => {
     const row = document.createElement('tr');
     row.innerHTML = `
+    <td>${team.id}</td>
     <td>${team.name}</td>
     <td>${team.description}</td>
     `;
@@ -91,7 +92,7 @@ async function populateTeamsTable() {
         const confirmed = confirm(confirm_text);
 
         if (confirmed) {
-          const fetchUrl = ``;
+          const fetchUrl = `/teams/${team.id}/participants`;
           const response = await fetch(fetchUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
@@ -112,7 +113,11 @@ async function populateTeamsTable() {
 
       if (confirmed) {
         const fetchUrl = `/companies/${companyId}/teams`;
-        const response = await fetch(fetchUrl, { method: 'DELETE' });
+        const response = await fetch(fetchUrl, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ team_id: team.id })
+        });
         const data = await response.json();
 
         if (response.ok) {

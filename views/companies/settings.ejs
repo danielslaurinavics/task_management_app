@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <%- include('../partials/structural/head') %>
+  <body>
+    <%- include('../partials/structural/dashboard_header', { name: user.name }) %>
+    <input type="number" id="company-id" style="display: none;" value="<%= company.id %>" disabled>
+    <main class="mx-5">
+      <h1><%= __('ui.company.settingsHeader') %></h1>
+      
+      <div class="col-10 col-md-6 col-xl-4 my-3">
+        <form id="change-company-form">
+          <div id="message-area"></div>
+          <div class="form-floating">
+            <input type="text" class="form-control" id="company_name" name="company_name" placeholder="SIA TaskApp" autocomplete="company_name" value="<%= company.name %>">
+            <label for="company_name"><%= __('ui.entity_name') %></label>
+          </div>
+          <div class="form-floating">
+            <textarea type="text" class="form-control" id="company_description" name="company_description" placeholder="Mēs esam galaktikas labākais uzņēmums!"><%= company.description %></textarea>
+            <label for="company_description"><%= __('ui.entity_description') %></label>
+          </div>
+          <div class="form-floating">
+            <input type="text" class="form-control" id="company_email" name="company_email" placeholder="example@example.com" autocomplete="company_email" value="<%= company.email %>">
+            <label for="company_email"><%= __('ui.entity_email') %></label>
+          </div>
+          <div class="form-floating">
+            <input type="text" class="form-control" id="company_phone" name="company_phone" placeholder="+XXX00000000" autocomplete="company_phone" value="<%= company.phone %>">
+            <label for="company_phone"><%= __('ui.entity_phone') %></label>
+            <div class="form-text"><%= __('ui.register_ui.phoneformat') %></div>
+          </div>
+          <button class="btn btn-primary w-100 py-2 mb-1" type="submit"><%= __('ui.company.change') %></button>
+          <a class="btn btn-outline-primary w-100 py-2" href="/companies/<%= company.id %>"><%= __('ui.return') %></a>
+        </form>
+      </div>
+    </main>
+    <script src="/public/scripts/forms/change_company.js"></script>
+    <%- include('../partials/structural/footer') %>
+  </body>
+</html>

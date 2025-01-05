@@ -124,7 +124,41 @@ const changeTeamData = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const addToTeam = async (req, res) => {
-  
+  let { id: team_id } = req.params;
+  let { email } = req.body;
+
+  try {
+    const errors = [];
+    const rules = [
+      {condition: !team_id || isNaN(team_id) || !email, error: 'ERR_01'},
+      {condition: email && email.length > 255 || !email, error: 'ERR_02'},
+      {condition: email && !validation.isValidEmail(email) || !email, error: 'ERR_06'}
+    ];
+    for (const {condition, error} of rules) {
+      if (condition) errors.push(i18n.__(`errors.${error}`));
+    }
+    if (errors.length > 0) return res.status(400).json({ errors });
+
+    const team = await Team.findByPk(team_id);
+    const user = await User.findOne({ where: { email }});
+    if (!team || !user)
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+
+    const existingParticipant = await TeamParticipant.findOne({
+      where: { team_id, user_id: user.id }
+    });
+    if (existingParticipant)
+      return res.status(409).json({ errors: [i18n.__('errors.ERR_20')] });
+
+    const newParticipant = await TeamParticipant.create({
+     team_id, user_id: user.id
+    });
+
+    res.status(200).json({message: i18n.__('success.SUC_09')});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
 };
 
 
@@ -136,7 +170,28 @@ const addToTeam = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const removeFromTeam = async (req, res) => {
+  let { id: team_id } = req.params;
+  let { user_id } = req.body;
+  const t = await sequelize.transaction();
 
+  try {
+    if (!team_id || isNaN(team_id) || !user_id && isNaN(user_id))
+      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+
+    const teamRelation = await TeamParticipant.findOne({
+      where: { team_id, user_id }
+    });
+    if (!teamRelation)
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+
+    await teamRelation.destroy();
+    await t.commit();
+    res.status(200).json({ message: i18n.__('errors.ERR_10')} );
+  } catch (error) {
+    await t.rollback();
+    console.log(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
 };
 
 
@@ -171,15 +226,14 @@ const lowerToParticipant = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const deleteTeam = async (req, res) => {
+  const { team_id } = req.body;
   const t = await sequelize.transaction();
   try {
-    // Gets the deletable team id from request parameters and validates it.
-    const { team_id: id } = req.params;
-    if (!id || isNaN(id))
+    if (!team_id || isNaN(team_id))
       return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
     // Finds the team with that ID and returns an error if it doesn't
-    const team = await Team.findByPk(id);
+    const team = await Team.findByPk(team_id);
     if (!team)
       return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
 

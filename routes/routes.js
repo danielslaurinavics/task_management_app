@@ -67,6 +67,9 @@ router.route('/companies/:id')
   .put(auth.authenticate, companyAuth.checkForAccess, company.changeCompanyData)
   .delete(auth.authenticate, auth.authorizeAdmin, company.deleteCompany);
 
+router.get('/companies/:id/settings', auth.authenticate, companyAuth.checkForAccess,
+  (req, res) => res.render('./companies/settings', {user: req.user, company: req.company}));
+
 router.route('/companies/:id/managers')
   .get(auth.authenticate, companyAuth.checkForAccess, company.getCompanyManagers)
   .post(auth.authenticate,/* companyAuth.checkForAccessOrAdmin,*/ company.addManager)
@@ -91,7 +94,7 @@ router.route('/teams/:id')
 
 router.route('/teams/:id/participants')
   /*.get(auth.authenticate, teamAuth.checkForAccess, team.getAllParticipants)*/
-  /*.post(auth.authenticate, teamAuth.checkManagerOrCompanyManager, team.addToTeam)*/
+  .post(auth.authenticate, team.addToTeam)
   /*.patch(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, team.changeRole)*/
   .delete(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, team.removeFromTeam);
 

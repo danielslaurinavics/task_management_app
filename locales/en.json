@@ -127,7 +127,9 @@
 			"dashboard_headline": "Company '{{ name }}'",
 			"managers": "Company's managers",
 			"teams": "Comany's teams",
-			"settings": "Company settings"
+			"settings": "Company settings",
+			"settingsHeader": "Company's '{{ name }}' settings",
+			"change": "Change settings"
 		},
 		"return": "Return",
 		"entity_description": "Description",
