@@ -1,171 +1,126 @@
 {
 	"errors": {
-		"ERR_01": "One of the required fields is missing!",
-		"ERR_02": "The length of the e-mail address exceeds 255 characters!",
-		"ERR_03": "The length of the personal name exceeds 255 characters!",
-		"ERR_04": "The length of the name exceeds 255 characters!",
-		"ERR_05": "The length of the phone number exceeds 32 characters!",
-		"ERR_06": "This e-mail address is invalid!",
-		"ERR_07": "This phone number is incorrect!",
-		"ERR_08": "The password must be at least 8 characters long!",
-		"ERR_09": "The password confirmation written does not match with the written password!",
+		"ERR_01": "One or more required fields are missing!",
+		"ERR_02": "Email address exceeds 255 characters!",
+		"ERR_03": "Name exceeds 255 characters!",
+		"ERR_04": "Title exceeds 255 characters!",
+		"ERR_05": "Phone number exceeds 32 characters!",
+		"ERR_06": "The entered email address is invalid!",
+		"ERR_07": "The entered phone number is incorrect!",
+		"ERR_08": "Password must be at least 8 characters long!",
+		"ERR_09": "Password confirmation does not match the entered password!",
 		"ERR_10": "The current password is incorrect!",
-		"ERR_11": "A user with such e-mail address already exists in the system. Please, use a different e-mail address!",
-		"ERR_12": "Wrong username and/or password!",
-		"ERR_13": "This user is blocked and can't use this system. Please, contact the system's technical support team!",
-		"ERR_14": "You don't have the permission to access this resource!",
-		"ERR_15": "You don't have the permission to do this action!",
-		"ERR_16": "Only company's {{ name }} managers can access this resource. Please, contact this company's manager!",
-		"ERR_17": "Only team's {{ name }} members can access this resource. Please, contact this team's manager!",
-		"ERR_18": "Sadly, there is an error during the processing of this request. Please, try again later!",
-		"ERR_19": "The resource was not found!",
-		"ERR_20": "There is such relationship entry in the system already!"
+		"ERR_11": "A user with this email address is already registered in the system. Please use a different email address!",
+		"ERR_12": "Invalid username and/or password!",
+		"ERR_13": "This user is blocked and cannot use the system. Please contact technical support!",
+		"ERR_14": "You do not have permission to access this resource!",
+		"ERR_15": "You do not have permission to perform this action!",
+		"ERR_16": "This resource is only accessible to {{ name }} managers. Please contact the company manager!",
+		"ERR_17": "This resource is only accessible to members of team {{ name }}. Please contact the team leader!",
+		"ERR_18": "An error occurred while processing the request. Please try again later!",
+		"ERR_19": "Resource not found!",
+		"ERR_20": "A record for this user's participation already exists!"
 	},
 	"success": {
-		"SUC_01": "The user has logged in successfully!",
-		"SUC_02": "The registration was completed successfully!",
-		"SUC_03": "The change of user's data saved successfully!",
-		"SUC_04": "The user was blocked successfully!",
-		"SUC_05": "The user was unblocked sucessfully!",
-		"SUC_06": "The user was deleted from the system successfully!",
-		"SUC_07": "The creation of a company was completed successfully!",
-		"SUC_08": "The change of company's data saved successfully!",
-		"SUC_09": "The user was added successfully!",
-		"SUC_10": "The user was removed successfully!",
-		"SUC_11": "The company was deleted from the system successfully!",
-		"SUC_12": "The creation of a team was completed successfully!",
-		"SUC_13": "The change of team's data saved successfully!",
-		"SUC_14": "The role of the user was changed successfully!",
-		"SUC_15": "The team was deleted from the system successfully!",
-		"SUC_16": "The creation of a task was completed successfully!",
-		"SUC_17": "The change of task's data saved successfully!",
-		"SUC_18": "The task was deleted from the system successfully!"
+		"SUC_01": "User successfully logged into the system!",
+		"SUC_02": "User registration completed successfully!",
+		"SUC_03": "User data successfully updated!",
+		"SUC_04": "User successfully blocked!",
+		"SUC_05": "User successfully unblocked!",
+		"SUC_06": "User successfully deleted from the system!",
+		"SUC_07": "Company successfully created!",
+		"SUC_08": "Company data successfully updated!",
+		"SUC_09": "User successfully added!",
+		"SUC_10": "User successfully removed!",
+		"SUC_11": "Company successfully deleted from the system!",
+		"SUC_12": "Team successfully created!",
+		"SUC_13": "Team data successfully updated!",
+		"SUC_14": "User role successfully changed!",
+		"SUC_15": "Team successfully deleted from the system!",
+		"SUC_16": "Task successfully created!",
+		"SUC_17": "Task data successfully updated!",
+		"SUC_18": "Task successfully deleted from the system!"
 	},
 	"confirm": {
 		"CON_01": "Do you want to delete yourself from the system? All user data will be deleted! This action cannot be undone!",
-		"CON_02": "Do you want to delete the user {{ user }} from the system? All data of this user will be deleted! This action cannot be undone!",
-		"CON_03": "Do you want to block the user {{ user }}? The user will no longer be able to access the system if you proceed.",
-		"CON_04": "Do you want to unblock the user {{ user }}? The user will be able to access the system if you proceed.",
-		"CON_05": "Do you want to delete the company {{ name }} from the system? All data of this company will be deleted! This action cannot be undone.",
-		"CON_06": "Do you want to add the user {{ user }} to the company {{ company }} as its manager? The user will be able to access the company's resources if you proceed.",
-		"CON_07": "Do you want to remove the manager role of the user {{ user }} in this company? The user will no longer have access to its resources if you proceed.",
-		"CON_08": "Do you want to delete the team {{ name }} from the list of teams in the company {{ company }}? All team data will be deleted. This action cannot be undone.",
-		"CON_09": "Do you want to add the user {{ user }} to this team? The user will be able to access the team's resources if you proceed.",
-		"CON_10": "Do you want to remove the user {{ user }} from this team? The user will no longer be able to access the team's resources if you proceed.",
-		"CON_11": "Do you want to change the role of the user {{ user }} in the team to manager? The user will be able to perform all actions related to creating, editing, and deleting team tasks if you proceed.",
-		"CON_12": "Do you want to change the role of the user {{ user }} in the team to member? The user will no longer manage tasks but will still be able to view them if you proceed.",
+		"CON_02": "Do you want to delete user {{ user }} from the system? All data for this user will be deleted! This action cannot be undone!",
+		"CON_03": "Do you want to block user {{ user }}? The user will no longer have access to the system if you proceed.",
+		"CON_04": "Do you want to unblock user {{ user }}? The user will regain access to the system if you proceed.",
+		"CON_05": "Do you want to delete the company {{ name }} from the system? All data for this company will be deleted! This action cannot be undone.",
+		"CON_06": "Do you want to add user {{ user }} to company {{ company }} as its manager? The user will gain access to the company's resources if you proceed.",
+		"CON_07": "Do you want to remove user {{ user }} from the manager role for this company? The user will lose access to its resources if you proceed.",
+		"CON_08": "Do you want to delete team {{ name }} from the company {{ company }} team list? All data for this team will be deleted. This action cannot be undone.",
+		"CON_09": "Do you want to add user {{ user }} to this team? The user will gain access to the team's resources if you proceed.",
+		"CON_10": "Do you want to remove user {{ user }} from this team? The user will lose access to the team's resources if you proceed.",
+		"CON_11": "Do you want to change the role of user {{ user }} in the team to Leader? The user will gain full control over task creation, editing, and deletion if you proceed.",
+		"CON_12": "Do you want to change the role of user {{ user }} in the team to Member? The user will no longer manage tasks but will still see them if you proceed.",
 		"CON_13": "Do you want to delete this task? All task data will be deleted. This action cannot be undone."
 	},
 	"ui": {
-		"login": "Log in",
-		"signup": "Sign up",
+		"login": "Log In",
+		"signup": "Sign Up",
 		"index": {
-			"headline": "Add task management to your own workflow",
-			"headlinetext": "Designed for personal and business use!"
+			"headline": "Bring Task Management into Your Workspace",
+			"headlinetext": "Designed for both personal and commercial use!"
 		},
 		"login_ui": {
 			"headline": "Log in to TaskApp",
-			"registerhere": "Sign up here!"
+			"registerhere": "Register here!"
 		},
-		"email": "E-mail",
+		"email": "Email",
 		"password": "Password",
 		"register_ui": {
-			"headline": "Sign up to TaskApp",
+			"headline": "Sign Up for TaskApp",
 			"loginhere": "Log in here!",
-			"phoneformat": "Phone number format - +XXX00000000 without any spaces.",
-			"passformat": "The password must be at least 8 characters long."
+			"phoneformat": "Phone number format: +XXX00000000, no spaces.",
+			"passformat": "Password must be at least 8 characters long."
 		},
-		"name": "Full name",
-		"phone": "Phone number",
-		"password_confirm": "Password confirmation",
+		"name": "Full Name",
+		"phone": "Phone Number",
+		"password_confirm": "Confirm Password",
 		"dashboard": {
 			"loggedas": "Logged in as {{ name }}",
-			"current_tasks": "Current tasks",
+			"current_tasks": "Current Tasks",
 			"welcome": "Welcome, {{ name }}!",
 			"goto": "Go to",
-			"settings": "User settings",
-			"personal_list": "Your personal task list",
-			"system_users": "System's users",
-			"system_companies": "System's companies",
+			"settings": "User Settings",
+			"personal_list": "Your Personal Task List",
+			"system_users": "Registered System Users",
+			"system_companies": "Registered System Companies",
 			"admin": {
-				"block_user": "Block user",
-				"unblock_user": "Unblock user",
-				"delete_user": "Delete user"
+				"block_user": "Block User",
+				"unblock_user": "Unblock User",
+				"delete_user": "Delete User",
+				"add_to_company": "Add User to Company",
+				"add_to_company_prompt": "Enter the email address of the user to be added!",
+				"delete_company": "Delete Company"
 			},
 			"team": {
-				"add_to_team": "Add user to team",
-				"add_to_team_prompt": "Enter the new member's e-mail address",
-				"delete_team": "Delete team"
+				"add_to_team": "Add User to Team",
+				"add_to_team_prompt": "Enter the email address of the user to be added!",
+				"delete_team": "Delete Team"
 			},
-			"team_list": "ui.dashboard.team_list"
+			"team_list": "Task List for Team '{{ team }}'"
 		},
 		"settings": {
-			"user_settings": "User settings",
-			"change_base": "Change base settings",
-			"change_pass": "Change password",
-			"change": "Change settings",
-			"delete": "Delete yourself from the system"
+			"user_settings": "User Settings",
+			"change_base": "Edit Basic Details",
+			"change_pass": "Change Password",
+			"change": "Update Settings",
+			"delete": "Delete Your Account"
 		},
-		"user_id": "User ID",
-		"old_password": "Current password",
-		"new_password": "New password",
-		"no": "Nē",
-		"yes": "Jā",
-		"actions": "Actions",
-		"company_id": "Company ID",
-		"entity_name": "Name",
-		"entity_email": "Contact e-mail",
-		"entity_phone": "Contact phone",
-		"role": "Role",
-		"roles": {
-			"admin": "Administrator",
-			"user": "User"
-		},
-		"is_blocked": "Blocked?",
-		"company": {
-			"createHeader": "Create a company",
-			"create": "Create company",
-			"dashboard_headline": "Company '{{ name }}'",
-			"managers": "Company's managers",
-			"teams": "Comany's teams",
-			"settings": "Company settings",
-			"settingsHeader": "Company's '{{ name }}' settings",
-			"change": "Change settings"
-		},
-		"return": "Return",
-		"entity_description": "Description",
-		"team": {
-			"create": "Create a team",
-			"members": "ui.team.members",
-			"roles": {
-				"manager": "ui.team.roles.manager",
-				"participant": "ui.team.roles.participant"
-			}
-		},
-		"remove": "Noņemt",
 		"tasks": {
-			"change": "ui.tasks.change",
-			"status": "ui.tasks.status",
-			"delete": "ui.tasks.delete"
-		},
-		"task_id": "ui.task_id",
-		"entity_priority": "ui.entity_priority",
-		"entity_duedate": "ui.entity_duedate",
-		"task": {
-			"create": "ui.task.create"
-		}
-	},
-	"tasks": {
-		"statuses": {
-			"upcoming": "Not started",
-			"started": "tasks.statuses.started",
-			"ongoing": "tasks.statuses.ongoing",
-			"completed": "tasks.statuses.completed"
-		},
-		"priorities": {
-			"low": "Low priority",
-			"high": "tasks.priorities.high",
-			"medium": "tasks.priorities.medium"
+			"statuses": {
+				"upcoming": "Not Started",
+				"started": "Started",
+				"ongoing": "In Progress",
+				"completed": "Completed"
+			},
+			"priorities": {
+				"low": "Low Priority",
+				"medium": "Medium Priority",
+				"high": "High Priority"
+			}
 		}
 	}
 }

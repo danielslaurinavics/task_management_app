@@ -182,11 +182,13 @@ const addToTeam = async (req, res) => {
     const participantList = await TeamParticipant.findAll({ where: { team_id } });
     if (participantList.find(member => member.user_id === user.id))
       return res.status(409).json({ errors: [i18n.__('errors.ERR_20')] });
+
+    const areManagers = await TeamParticipant.findAll({ where: { team_id, is_manager: true }});
     
     const newParticipant = await TeamParticipant.create({
      team_id,
      user_id: user.id,
-     is_manager: participantList.length > 0 ? false : true
+     is_manager: areManagers.length > 0 ? false : true
     });
 
     res.status(200).json({message: i18n.__('success.SUC_09')});
@@ -221,7 +223,7 @@ const removeFromTeam = async (req, res) => {
 
     await teamRelation.destroy();
     await t.commit();
-    res.status(200).json({ message: i18n.__('errors.SUC_10')} );
+    res.status(200).json({ message: i18n.__('success.SUC_10')} );
   } catch (error) {
     await t.rollback();
     console.log(error);

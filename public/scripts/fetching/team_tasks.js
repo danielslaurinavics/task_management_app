@@ -71,7 +71,7 @@ async function populateTasks() {
       const span = document.createElement('span');
       span.className = 'fs-6 badge text-bg-warning mb-1';
       span.textContent = person.name;
-      if (isManager) {
+      if (isManager && task.status < 3) {
         const remove = document.createElement('button');
         remove.textContent = 'X';
         remove.className = 'btn btn-sm btn-danger ms-2';

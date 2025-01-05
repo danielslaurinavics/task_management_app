@@ -77,32 +77,35 @@ document.getElementById('user-change-form').addEventListener('submit', async (ev
 
 
 document.getElementById('deleteSelfButton').addEventListener('click', async () => {
-  const user_id = document.getElementById('user-id').value;
-  const fetchUrl = `/users/${user_id}`;
+  const confirmed = confirm(document.getElementById('delete-confirm').value);
+  if (confirmed) {
+    const user_id = document.getElementById('user-id').value;
+    const fetchUrl = `/users/${user_id}`;
 
-  const messageArea = document.getElementById('message-area');
-  messageArea.innerHTML = '';
+    const messageArea = document.getElementById('message-area');
+    messageArea.innerHTML = '';
 
-  const response = await fetch(fetchUrl, { method: 'DELETE' });
-  const responseData = await response.json();
+    const response = await fetch(fetchUrl, { method: 'DELETE' });
+    const responseData = await response.json();
 
-  if (response.ok) {
-    if (responseData.success) {
-      const message = document.createElement('div');
-      message.className = 'alert alert-success';
-      message.role = 'alert';
-      message.textContent = responseData.message;
-      messageArea.appendChild(message);
+    if (response.ok) {
+      if (responseData.success) {
+        const message = document.createElement('div');
+        message.className = 'alert alert-success';
+        message.role = 'alert';
+        message.textContent = responseData.message;
+        messageArea.appendChild(message);
+      }
+      window.location.href = '/';
+    } else {
+      const errors = responseData.errors;
+      errors.forEach(error => {
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger';
+        alert.role = 'alert';
+        alert.textContent = error;
+        messageArea.appendChild(alert);
+      });
     }
-    window.location.href = '/';
-  } else {
-    const errors = responseData.errors;
-    errors.forEach(error => {
-      const alert = document.createElement('div');
-      alert.className = 'alert alert-danger';
-      alert.role = 'alert';
-      alert.textContent = error;
-      messageArea.appendChild(alert);
-    });
   }
 });
