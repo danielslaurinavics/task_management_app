@@ -43,7 +43,7 @@ document.getElementById('user-change-form').addEventListener('submit', async (ev
   confirmPassowrdInput.disabled = true;
 
   const user_id = document.getElementById('user-id').value;
-  const fetchUrl = `/settings/change/${user_id}`
+  const fetchUrl = `/users/${user_id}`
 
   const response = await fetch(fetchUrl, {
     method: 'PUT',

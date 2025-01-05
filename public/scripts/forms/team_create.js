@@ -12,7 +12,7 @@ document.getElementById('create-team-form').addEventListener('submit', async (ev
   const messageArea = document.getElementById('message-area');
   messageArea.innerHTML = '';
 
-  const response = await fetch(`/create/team/${companyId}`, {
+  const response = await fetch(`/companies/${companyId}/teams`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ document.getElementById('create-team-form').addEventListener('submit', async (ev
 
   if (response.ok) {
     if (responseData.success) {
-      window.location.href = `/company/${companyId}`;
+      window.location.href = `/companies/${companyId}`;
       alert(responseData.message);
     }
   } else {

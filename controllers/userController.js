@@ -28,14 +28,10 @@ const getAllUsers = async (req, res) => {
     const users = []
     usersData.forEach(user => {
       users.push({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
+        id: user.id, name: user.name, email: user.email, phone: user.phone,
         role: user.is_admin ? i18n.__('ui.roles.admin') : i18n.__('ui.roles.user'),
-        admin: user.is_admin,
         blocked: user.is_blocked ? i18n.__('ui.yes') : i18n.__('ui.no'),
-        block: user.is_blocked,
+        admin: user.is_admin, block: user.is_blocked,
         allowed_to: {
           block_word: i18n.__('ui.dashboard.admin.block_user'),
           block_confirm: i18n.__('confirm.CON_03', { user: user.name }),
@@ -45,7 +41,7 @@ const getAllUsers = async (req, res) => {
           delete_confirm: i18n.__('confirm.CON_02', { user: user.name })
         }
       });
-    })
+    });
     res.status(200).json({ users });
   } catch (error) {
     console.log(error);

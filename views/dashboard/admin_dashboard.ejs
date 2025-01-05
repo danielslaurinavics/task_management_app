@@ -6,7 +6,7 @@
     <main class="mx-5">
       <input type="number" id="user-id" style="display: none;" value="<%= user.id %>" disabled>
       <h1 class="fs-3"><%= __('ui.dashboard.welcome', { name: user.name }) %></h1>
-      <a class="btn btn-outline-primary btn-sm" href="/settings"><%= __('ui.dashboard.settings') %></a>
+      <a class="btn btn-outline-primary btn-sm" href="/users/<%= user.id %>"><%= __('ui.dashboard.settings') %></a>
       <div class="container-fluid my-3">
         <div class="p-3 bg-body-secondary rounded-3">
           <span><%= __('ui.dashboard.system_users') %></span>
@@ -34,7 +34,7 @@
       <div class="container-fluid my-3">
         <div class="p-3 bg-body-secondary rounded-3">
           <span><%= __('ui.dashboard.system_companies') %></span>
-          <a class="btn btn-outline-primary btn-sm ms-2" href="/create/company"><%= __('ui.company.create') %></a>
+          <a class="btn btn-outline-primary btn-sm ms-2" href="/companies/create"><%= __('ui.company.create') %></a>
           <div class="p-2 mt-2 bg-body-tertiary rounded-3">
             <div class="m-2">
               <table class="table">

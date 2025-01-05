@@ -153,7 +153,7 @@ const getAllCompanies = async (req, res) => {
 const getUserCompanies = async (req, res) => {
   try {
     // Getting User ID from the request parameters and then validating it.
-    const { user_id } = req.params;
+    const { id: user_id } = req.params;
     if (!user_id || isNaN(user_id))
       return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
 

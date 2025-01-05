@@ -3,7 +3,7 @@ async function populateUserTable() {
   const cuid = document.getElementById('user-id').value;
   const currentUserId = parseInt(cuid, 10);
 
-  const response = await fetch('/user/get', { method: 'GET' });
+  const response = await fetch('/users', { method: 'GET' });
   const data = await response.json();
 
   if (!response.ok) return;
@@ -43,8 +43,8 @@ async function populateUserTable() {
       const confirmed = confirm(user.allowed_to.block_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/user/${user.id}/block`;
-        const response = await fetch(fetchUrl, { method: 'PUT' });
+        const fetchUrl = `/users/${user.id}/block`;
+        const response = await fetch(fetchUrl, { method: 'PATCH' });
         const data = await response.json();
 
         if (response.ok) {
@@ -59,8 +59,8 @@ async function populateUserTable() {
       const confirmed = confirm(user.allowed_to.unblock_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/user/${user.id}/unblock`;
-        const response = await fetch(fetchUrl, { method: 'PUT' });
+        const fetchUrl = `/users/${user.id}/unblock`;
+        const response = await fetch(fetchUrl, { method: 'PATCH' });
         const data = await response.json();
 
         if (response.ok) {
@@ -75,7 +75,7 @@ async function populateUserTable() {
       const confirmed = confirm(user.allowed_to.delete_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/user/${user.id}/delete`;
+        const fetchUrl = `/users/${user.id}`;
         const response = await fetch(fetchUrl, { method: 'DELETE' });
         const data = await response.json();
 
@@ -104,7 +104,7 @@ async function populateUserTable() {
 async function populateCompanyTable() {
   const companiesTable = document.getElementById('companies-table');
 
-  const response = await fetch('/get/company', { method: 'GET' });
+  const response = await fetch('/companies', { method: 'GET' });
   const data = await response.json();
 
   if (!response.ok) return;
@@ -141,7 +141,7 @@ async function populateCompanyTable() {
         const confirmed = confirm(confirm_text);
         
         if (confirmed) {
-          const fetchUrl = `/company/${company.id}/manager/add`;
+          const fetchUrl = `/companies/${company.id}/managers`;
           const response = await fetch(fetchUrl, {
             method: 'POST',
             headers: {
@@ -163,7 +163,7 @@ async function populateCompanyTable() {
       const confirmed = confirm(company.allowed_to.delete_confirm);
       
       if (confirmed) {
-        const fetchUrl = `/company/${company.id}/delete`;
+        const fetchUrl = `/companies/${company.id}`;
         const response = await fetch(fetchUrl, { method: 'DELETE' });
         const data = await response.json();
 

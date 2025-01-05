@@ -49,7 +49,7 @@ async function goToDashboard(req, res, next) {
 
 
 
-async function checkIfLoggedIn(req, res, next) {
+async function redirectIfLoggedIn(req, res, next) {
   const token = req.cookies.jwt;
 
   if (token) {
@@ -65,4 +65,4 @@ async function checkIfLoggedIn(req, res, next) {
 
 
 module.exports = { authenticate, authorizeAdmin,
-  goToDashboard, checkIfLoggedIn };
+  goToDashboard, redirectIfLoggedIn };

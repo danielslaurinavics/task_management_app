@@ -11,7 +11,7 @@ document.getElementById('create-company-form').addEventListener('submit', async 
   const messageArea = document.getElementById('message-area');
   messageArea.innerHTML = '';
 
-  const response = await fetch('/create/company', {
+  const response = await fetch('/companies', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

@@ -18,7 +18,7 @@ async function displayUserCompanies() {
   const companiesDiv = document.getElementById('companies');
   const userId = document.getElementById('user-id').value;
 
-  const fetchUrl = `/company/get/${userId}`;
+  const fetchUrl = `/companies/user/${userId}`;
   const response = await fetch(fetchUrl, { method: 'GET' });
   const data = await response.json()
 
@@ -29,7 +29,7 @@ async function displayUserCompanies() {
     const cardDiv = document.createElement('div');
     cardDiv.className = 'col';
     cardDiv.innerHTML = `
-    <a href="/company/${company.id}" class="text-decoration-none text-reset d-block">
+    <a href="/companies/${company.id}" class="text-decoration-none text-reset d-block">
       <div class="card text-bg-danger">
         <div class="card-body">
           <h5 class="card-title">${company.name}</h5>
@@ -42,8 +42,6 @@ async function displayUserCompanies() {
 }
 
 
-/**
- * displayUserTasks();
- * 
- */
+
+//displayUserTasks();
 displayUserCompanies();

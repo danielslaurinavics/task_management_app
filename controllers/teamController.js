@@ -124,7 +124,7 @@ const changeTeamData = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const addToTeam = async (req, res) => {
-
+  
 };
 
 

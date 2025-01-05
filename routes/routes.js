@@ -1,97 +1,119 @@
-// Importing needed third-party libraries and initializing the routing middleware.
 const express = require('express');
 const router = express.Router();
 
-// Importing local controllers.
-const userCon = require('../controllers/userController');
-const companyCon = require('../controllers/companyController');
-const teamCon = require('../controllers/teamController');
-const taskCon = require('../controllers/taskController');
+const user = require('../controllers/userController');
+const company = require('../controllers/companyController');
+const team = require('../controllers/teamController');
+const task = require('../controllers/taskController');
 
-// Importing local middleware.
-const auth = require('../middleware/authenticate');
-const companyMid = require('../middleware/company');
+const auth = require('../middleware/auth');
+const companyAuth = require('../middleware/companyAuth');
+const teamAuth = require('../middleware/teamAuth');
 const { setLocale } = require('../middleware/locale');
 
 
 
-router.get('/', (req, res) => res.render('./index/index'));
+router.get('/', (req, res) => res.render('index'));
+
 router.get('/locale/set', setLocale);
 
-// Login and logout routes
-router.get('/login', auth.checkIfLoggedIn, (req, res) => res.render('./users/login'));
-router.post('/login', auth.checkIfLoggedIn, userCon.login);
-router.post('/logout', auth.authenticate, userCon.logout);
+router.route('/login')
+  .get(auth.redirectIfLoggedIn, (req, res) => res.render('./users/login'))
+  .post(auth.redirectIfLoggedIn, user.login);
 
-// Registration routes
-router.get('/register', auth.checkIfLoggedIn, (req, res) => res.render('./users/register'));
-router.post('/register', auth.checkIfLoggedIn, userCon.register);
+router.post('/logout', auth.authenticate, user.logout);
 
-// Dashboard routes
+router.route('/register')
+  .get(auth.redirectIfLoggedIn, (req, res) => res.render('./users/register'))
+  .post(auth.redirectIfLoggedIn, user.register);
+
+
+
 router.get('/home', auth.authenticate, auth.goToDashboard);
-router.get('/dashboard', auth.authenticate, (req, res) => res.render('./dashboard/user_dashboard', { user: req.user }));
-router.get('/admin', auth.authenticate, auth.authorizeAdmin, (req, res) => res.render('./dashboard/admin_dashboard', { user: req.user }));
-
-// User setting routes
-router.get('/settings', auth.authenticate, (req, res) => res.render('./users/settings', { user: req.user }));
-router.put('/settings/change/:id', auth.authenticate, userCon.changeData);
-
-// User blocking routes
-router.put('/user/:id/block', auth.authenticate, auth.authorizeAdmin, userCon.blockUser);
-router.put('/user/:id/unblock', auth.authenticate, auth.authorizeAdmin, userCon.unblockUser);
-
-// User deletion route
-router.delete('/user/:id/delete/self', auth.authenticate, userCon.deleteSelf);
-router.delete('/user/:id/delete', auth.authenticate, auth.authorizeAdmin,userCon.deleteUser);
-
-// Personal task list route
-router.get('/user/:id/list', auth.authenticate, (req, res) => res.render('./tasklists/personal_list', { user: req.user }));
-
-
-// User information routes
-router.get('/user/get', auth.authenticate, auth.authorizeAdmin, userCon.getAllUsers);
+router.get('/admin', auth.authenticate, auth.authorizeAdmin,
+  (req, res) => res.render('./dashboard/admin_dashboard', { user: req.user }));
+router.get('/dashboard', auth.authenticate,
+  (req, res) => res.render('./dashboard/user_dashboard', { user: req.user }));
 
 
 
-// Company routes
-router.get('/create/company', auth.authenticate, auth.authorizeAdmin, (req, res) => res.render('./companies/create', { user: req.user }));
-router.post('/create/company', auth.authenticate, auth.authorizeAdmin, companyCon.createCompany);
-router.post('/company/:id/manager/add', auth.authenticate, companyCon.addManager);
+router.get('/users', auth.authenticate, auth.authorizeAdmin, user.getAllUsers);
 
-router.get('/company/:id', auth.authenticate, companyMid.checkForAccess, (req, res) => res.render('./companies/dashboard', { user: req.user, company: req.company }));
-router.get('/get/company', auth.authenticate, auth.authorizeAdmin, companyCon.getAllCompanies);
-router.get('/company/get/:user_id', auth.authenticate, companyCon.getUserCompanies);
-router.get('/company/:id/manager/get', auth.authenticate, companyMid.checkForAccess, companyCon.getCompanyManagers);
+router.route('/users/:id')
+  .get(auth.authenticate, (req, res) => res.render('./users/settings', { user: req.user }))
+  .put(auth.authenticate, user.changeData)
+  .delete(auth.authenticate, user.deleteUser);
 
+router.patch('/users/:id/block', auth.authenticate, auth.authorizeAdmin, user.blockUser);
 
-router.put('/company/:id/change', auth.authenticate, companyCon.changeCompanyData);
-
-router.delete('/company/:id/delete', auth.authenticate, auth.authorizeAdmin, companyCon.deleteCompany);
-router.delete('/company/:id/manager/delete', auth.authenticate, companyCon.removeManager);
-
-
-// Team routes
-router.get('/team/get/:id', auth.authenticate, companyMid.checkForAccess, teamCon.getAllCompanyTeams);
-router.get('/create/team/:id', auth.authenticate, companyMid.checkForAccess, (req, res) => res.render('./teams/create', { user: req.user, company: req.company }));
-router.post('/create/team/:id', auth.authenticate, companyMid.checkForAccess, teamCon.createTeam);
-
-router.get('/team/:team_id', auth.authenticate, (req, res) => res.render('./teams/dashboard', { user: req.user }));
+router.patch('/users/:id/unblock', auth.authenticate, auth.authorizeAdmin, user.unblockUser);
 
 
 
 
-router.delete('/team/:id/:team_id/delete', auth.authenticate, companyMid.checkForAccess, teamCon.deleteTeam);
 
-// Task routes
+router.route('/companies')
+  .get(auth.authenticate, auth.authorizeAdmin, company.getAllCompanies)
+  .post(auth.authenticate, auth.authorizeAdmin, company.createCompany);
 
-router.get('/tasks/personal/:user_id', auth.authenticate, (req, res) => res.render('./tasklists/personal_list'));
-router.get('/tasks/team/:team_id', auth.authenticate, (req, res) => res.render('./tasklists/team_list'));
+router.get('/companies/user/:id', auth.authenticate, company.getUserCompanies);
 
-router.get('/tasks/user/:user_id', auth.authenticate, taskCon.getUserTasks);
-// router.get('/tasks/team/:id')
-router.post('/tasks/create', auth.authenticate, taskCon.createTask);
-// router.put('/task/:id/change')
-// router.put('/task/:id/status')
-// router.delete('/task/:id/delete')
+router.get('/companies/create', auth.authenticate, auth.authorizeAdmin,
+  (req, res) => res.render('./companies/create', { user: req.user }));
+
+router.route('/companies/:id')
+  .get(auth.authenticate, companyAuth.checkForAccess,
+    (req, res) => res.render('./companies/dashboard', {user: req.user, company: req.company}))
+  .put(auth.authenticate, companyAuth.checkForAccess, company.changeCompanyData)
+  .delete(auth.authenticate, auth.authorizeAdmin, company.deleteCompany);
+
+router.route('/companies/:id/managers')
+  .get(auth.authenticate, companyAuth.checkForAccess, company.getCompanyManagers)
+  .post(auth.authenticate,/* companyAuth.checkForAccessOrAdmin,*/ company.addManager)
+  .delete(auth.authenticate, companyAuth.checkForAccess, company.removeManager);
+
+router.route('/companies/:id/teams')
+  .get(auth.authenticate, companyAuth.checkForAccess, team.getAllCompanyTeams)
+  .post(auth.authenticate, companyAuth.checkForAccess, team.createTeam)
+  .delete(auth.authenticate, companyAuth.checkForAccess, team.deleteTeam)
+
+
+
+
+
+router.get('/teams/create/:id', auth.authenticate, companyAuth.checkForAccess,
+  (req, res) => res.render('./teams/create', {user: req.user, company: req.company}));
+
+router.route('/teams/:id')
+  .get(auth.authenticate, teamAuth.checkForAccess,
+    (req, res) => res.render('./teams/list', { user: req.user, team: req.team }))
+  .put(auth.authenticate, teamAuth.checkManager, team.changeTeamData)
+
+router.route('/teams/:id/participants')
+  /*.get(auth.authenticate, teamAuth.checkForAccess, team.getAllParticipants)*/
+  /*.post(auth.authenticate, teamAuth.checkManagerOrCompanyManager, team.addToTeam)*/
+  /*.patch(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, team.changeRole)*/
+  .delete(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, team.removeFromTeam);
+
+
+
+router.route('/list/user/:id')
+  /*.get(auth.authenticate, task.getListTasks) */
+  .post(auth.authenticate, task.createTask)
+  .put(auth.authenticate, task.changeTaskData)
+  .patch(auth.authenticate, task.changeTaskStatus)
+  .delete(auth.authenticate, task.deleteTask);
+
+router.route('/list/team/:id')
+ /* .get(auth.authenticate, teamAuth.checkForAccess, task.getListTasks) */
+  .post(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.createTask)
+  .put(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.changeTaskData)
+  .patch(auth.authenticate, teamAuth.checkForAccess, task.changeTaskStatus)
+  .delete(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.deleteTask);
+
+router.route('/task/:id/persons')
+ /* .get(auth.authenticate, task.getPersonsResponsible) */
+  .post(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.addPersonResponsible)
+  .delete(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, task.removePersonResponsible);
 
 module.exports = router;

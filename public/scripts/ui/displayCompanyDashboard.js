@@ -5,7 +5,7 @@ async function populateManagerTable() {
   const userId = parseInt(cuid, 10);
   const companyId = parseInt(coid, 10);
 
-  const fetchUrl = `/company/${companyId}/manager/get`;
+  const fetchUrl = `/companies/${companyId}/managers`;
   const response = await fetch(fetchUrl, { method: 'GET' });
   const data = await response.json();
 
@@ -30,7 +30,7 @@ async function populateManagerTable() {
       confirmed = confirm(manager.allowed_to.remove_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/company/${companyId}/manager/delete`;
+        const fetchUrl = `/companies/${companyId}/managers`;
         const response = await fetch(fetchUrl, {
           method: 'DELETE',
           headers: { 'Content-Type' : 'application/json'},
@@ -55,7 +55,7 @@ async function populateTeamsTable() {
   const coid = document.getElementById('company-id').value;
   const companyId = parseInt(coid, 10);
 
-  const fetchUrl = `/team/get/${companyId}`;
+  const fetchUrl = `/companies/${companyId}/teams`;
   const response = await fetch(fetchUrl, { method: 'GET' });
   const data = await response.json();
 
@@ -79,8 +79,8 @@ async function populateTeamsTable() {
     addButton.textContent = team.allowed_to.add_word;
     deleteButton.textContent = team.allowed_to.delete_word;
 
-    addButton.className = 'btn btn-outline-primary btn-sm';
-    deleteButton.className = 'btn btn-danger btn-sm';
+    addButton.className = 'btn btn-outline-primary btn-sm ms-1';
+    deleteButton.className = 'btn btn-danger btn-sm ms-1';
 
     addButton.addEventListener('click', async () => {
       const user_email = prompt(team.allowed_to.add_prompt);
@@ -111,7 +111,7 @@ async function populateTeamsTable() {
       const confirmed = confirm(team.allowed_to.delete_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/team/${companyId}/${team.id}/delete`;
+        const fetchUrl = `/companies/${companyId}/teams`;
         const response = await fetch(fetchUrl, { method: 'DELETE' });
         const data = await response.json();
 
