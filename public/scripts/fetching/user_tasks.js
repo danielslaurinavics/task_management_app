@@ -24,7 +24,6 @@ async function populateTasks() {
   
 
   const tasks = data.tasks;
-  console.log(tasks);
   tasks.forEach(task => {
     const taskDiv = document.createElement('div');
     taskDiv.className = 'text-bg-dark mt-2 pb-2 rounded-3 ';

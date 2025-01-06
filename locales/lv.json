@@ -1,5 +1,5 @@
 {
-	"msg":{
+	"msg": {
 		"E01": "Nav aizpildīts kāds no obligātajiem laukiem!",
 		"E02": "E-pasta adreses garums pārsniedz 255 simbolus!",
 		"E03": "Vārda garums pārsniedz 255 simbolus!",
@@ -20,7 +20,6 @@
 		"E18": "Datubāzē nav atrodams attiecīgais ieraksts!",
 		"E19": "Šis lietotājs jau ir pievienots!",
 		"E20": "Nepareizs pieprasījums!",
-		
 		"S01": "Lietotāja reģistrācija sekmīgi pabeigta!",
 		"S02": "Lietotāja datu izmaiņas veiksmīgi saglabātas!",
 		"S03": "Lietotājs veiksmīgi bloķēts!",
@@ -37,7 +36,6 @@
 		"S14": "Uzdevuma izveide sekmīgi pabeigta!",
 		"S15": "Uzdevuma datu izmaiņas veiksmīgi saglabātas!",
 		"S16": "Uzdevums veiksmīgi dzēsts no sistēmas!",
-		
 		"C01": "Vai Jūs vēlaties dzēst sevi no sistēmas? Visi lietotāja dati būs dzēsti!",
 		"C02": "Vai Jūs vēlaties dzēst lietotāju {{ user }} no sistēmas? Visi šī lietotāja dati būs dzēsti!",
 		"C03": "Vai Jūs vēlaties bloķēt lietotāju {{ user }}? Lietotājs vairs nevarēs piekļūt sistēmai!",
@@ -171,5 +169,8 @@
 			"medium": "Vidēja prioritāte",
 			"high": "Augsta prioritāte"
 		}
+	},
+	"confirm": {
+		"CON_01": "confirm.CON_01"
 	}
 }

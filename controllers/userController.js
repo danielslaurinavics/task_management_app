@@ -23,6 +23,7 @@ const sequelize = require('../config/database');
 const getAllUsers = async (req, res) => {
   try {
     const usersData = await User.findAll({ order: [['id', 'ASC']] });
+    
     const users = []
     usersData.forEach(u => {
       users.push({
@@ -67,7 +68,7 @@ const getCompanyUsers = async (req, res) => {
     if (!company)
       return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
-    const data = await User.findAll({
+    const usersData = await User.findAll({
       include: [
         {
           model: Company,
@@ -82,7 +83,7 @@ const getCompanyUsers = async (req, res) => {
     });
 
     const users = [];
-    data.forEach(u => {
+    usersData.forEach(u => {
       users.push({
         id: u.id, name: u.name, email: u.email, phone: u.phone,
         allowed_to: {
@@ -120,7 +121,7 @@ const getTeamUsers = async (req, res) => {
     if (!team)
       return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
-    const data = await User.findAll({
+    const usersData = await User.findAll({
       include: [
         {
           model: Team,
@@ -134,7 +135,7 @@ const getTeamUsers = async (req, res) => {
       ]
     });
     const participants = [];
-    data.forEach(u => {
+    usersData.forEach(u => {
       const is_manager = u.Teams[0].TeamParticipant.is_manager;
       participants.push({
         id: u.id, name: u.name, email: u.email, phone: u.phone,
@@ -234,7 +235,6 @@ const login = async (req, res) => {
  */
 const register = async (req, res) => {
   try {
-    // Getting register form field values.
     let { name, email, phone, password, password_confirm } = req.body;
 
     name = name.trim();
@@ -243,10 +243,9 @@ const register = async (req, res) => {
     password = password.trim();
     password_confirm = password_confirm.trim();
 
-    // Validation of entered values.
     const errors = [];
     const validations = [
-      {condition: !name || !email || !phone || !password || !password_confirm, error: 'ERR_01'},
+      {condition: !name || !email || !phone || !password || !password_confirm, error: 'E01'},
       {condition: email && email.length > 255, error: 'E02'},
       {condition: name && name.length > 255, error: 'E03'},
       {condition: phone && phone.length > 32, error: 'E05'},
@@ -277,7 +276,6 @@ const register = async (req, res) => {
       phone: phone
     });
 
-    // Creating a new task list for storing the new user's personal tasks
     const newTaskList = await TaskList.create({ owner_user: newUser.id });
 
     res.status(201).json({message: i18n.__('msg.S01')});
@@ -347,8 +345,6 @@ const changeData = async (req, res) => {
     if (!user)
       return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
-    // Checks the current password entered with the password stored
-    // in the database if the password is about to be replaced.
     if (new_password.length > 0) {
       const checkPassword = await bcrypt.compare(current_password, user.password);
       if (!checkPassword)
