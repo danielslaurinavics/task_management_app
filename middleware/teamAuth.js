@@ -47,7 +47,7 @@ async function checkForAccess(req, res, next) {
 async function checkManager(req, res, next) {
   if (req.team) {
     if (req.team.is_manager) return next();
-    else return res.status(403).render('error', {error: i18n.__('errors.ERR_15')});
+    else return res.status(403).render('error', {error: i18n.__('errors.ERR_14')});
   }
 }
 

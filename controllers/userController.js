@@ -65,7 +65,7 @@ const getCompanyUsers = async (req, res) => {
 
     const company = await Company.findByPk(id);
     if (!company)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_16')] });
 
     const data = await User.findAll({
       include: [
@@ -118,7 +118,7 @@ const getTeamUsers = async (req, res) => {
 
     const team = await Team.findByPk(team_id);
     if (!team)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('errors.ERR_16')]});
 
     const data = await User.findAll({
       include: [
@@ -144,9 +144,9 @@ const getTeamUsers = async (req, res) => {
           elevate_word: i18n.__('ui.team.elevate'),
           lower_word: i18n.__('ui.team.lower'),
           remove_word: i18n.__('ui.remove'),
-          elevate_confirm: i18n.__('confirm.CON_11', { user: user.name }),
-          lower_confirm: i18n.__('confirm.CON_12', { user: user.name }),
-          remove_confirm: i18n.__('confirm.CON_10', { user: user.name })
+          elevate_confirm: i18n.__('confirm.CON_11', { user: u.name }),
+          lower_confirm: i18n.__('confirm.CON_12', { user: u.name }),
+          remove_confirm: i18n.__('confirm.CON_10', { user: u.name })
         }
       });
     });
@@ -349,7 +349,7 @@ const changeData = async (req, res) => {
       where: { id }, attributes: { include: ['password'] }
     });
     if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_16')] });
 
     // Checks the current password entered with the password stored
     // in the database if the password is about to be replaced.
@@ -391,7 +391,7 @@ const block = async (req, res) => {
   try {
     const user = await User.findByPk(id);
     if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_16')] });
 
     const action = user.is_blocked ? 'unblock' : 'block';
     user.is_blocked = !user.is_blocked;
@@ -423,7 +423,7 @@ const deleteUser = async (req, res) => {
   try {
     const user = await User.findByPk(id);
     if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_16')] });
     
     await user.destroy({ transaction: t });
     await t.commit();
