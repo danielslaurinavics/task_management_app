@@ -51,14 +51,15 @@
 		"C13": "Vai Jūs vēlaties dzēst šo uzdevumu? Visi uzdevuma dati tiks dzēsti."
 	},
 	"ui": {
-		"login": "Pieslēgties",
+		"login": "Pieteikties",
 		"signup": "Reģistrēties",
+		"logout": "Atteikties",
 		"index": {
 			"headline": "Ievies uzdevumu pārvaldību arī savā darba vidē",
 			"headlinetext": "Paredzēts gan personīgai, gan komerciālai lietošanai!"
 		},
 		"login_ui": {
-			"headline": "Pieslēgšanās sistēmai TaskApp",
+			"headline": "Pieteikšanās sistēmai TaskApp",
 			"registerhere": "Reģistrējies šeit!"
 		},
 		"email": "E-pasts",
@@ -169,8 +170,5 @@
 			"medium": "Vidēja prioritāte",
 			"high": "Augsta prioritāte"
 		}
-	},
-	"confirm": {
-		"CON_01": "confirm.CON_01"
 	}
 }

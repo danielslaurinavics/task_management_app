@@ -121,7 +121,7 @@ const deleteTeam = async (req, res) => {
     t.commit();
 
     // Sending the successful deletion message
-    res.status(200).json({ success: true, message: i18n.__('msg.S16')});
+    res.status(200).json({ success: true, message: i18n.__('msg.S13')});
   } catch (error) {
     await t.rollback();
     console.log(error);

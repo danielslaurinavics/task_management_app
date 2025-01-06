@@ -1,77 +1,78 @@
 {
 	"msg": {
-		"E01": "One of the required fields is not filled in!",
+		"E01": "One of the required fields is not filled out!",
 		"E02": "The length of the email address exceeds 255 characters!",
 		"E03": "The length of the name exceeds 255 characters!",
 		"E04": "The length of the title exceeds 255 characters!",
-		"E05": "The length of the phone number exceeds 32 characters!",
-		"E06": "The entered email address is invalid!",
+		"E05": "The phone number length exceeds 32 characters!",
+		"E06": "The entered email address is not valid!",
 		"E07": "The entered phone number is incorrect!",
 		"E08": "The password must be at least 8 characters long!",
 		"E09": "The password confirmation does not match the entered password!",
 		"E10": "The current password is incorrect!",
-		"E11": "A user with this email address is already registered in the system. Please use a different email address!",
+		"E11": "A user with this email address is already registered in the system. Please use another email address!",
 		"E12": "Incorrect email and/or password!",
 		"E13": "This user is blocked and cannot use the system. Please contact the system's technical support team!",
 		"E14": "You do not have permission to access this resource!",
 		"E15": "You do not have permission to perform this action!",
 		"E16": "An error occurred while processing the request. Please try again!",
 		"E17": "This resource does not exist!",
-		"E18": "The corresponding record was not found in the database!",
-		"E19": "This user has already been added!",
+		"E18": "The corresponding record could not be found in the database!",
+		"E19": "This user is already added!",
 		"E20": "Invalid request!",
-		"S01": "User registration completed successfully!",
-		"S02": "User data changes saved successfully!",
+		"S01": "User registration successfully completed!",
+		"S02": "User data changes successfully saved!",
 		"S03": "User successfully blocked!",
 		"S04": "User successfully unblocked!",
 		"S05": "User successfully deleted from the system!",
-		"S06": "Company creation completed successfully!",
-		"S07": "Company data changes saved successfully!",
+		"S06": "Company creation successfully completed!",
+		"S07": "Company data changes successfully saved!",
 		"S08": "User successfully added!",
 		"S09": "User successfully removed!",
 		"S10": "Company successfully deleted from the system!",
-		"S11": "Team creation completed successfully!",
+		"S11": "Team creation successfully completed!",
 		"S12": "User role successfully changed!",
 		"S13": "Team successfully deleted from the system!",
-		"S14": "Task creation completed successfully!",
-		"S15": "Task data changes saved successfully!",
+		"S14": "Task creation successfully completed!",
+		"S15": "Task data changes successfully saved!",
 		"S16": "Task successfully deleted from the system!",
 		"C01": "Do you want to delete yourself from the system? All user data will be deleted!",
-		"C02": "Do you want to delete the user {{ user }} from the system? All data of this user will be deleted!",
+		"C02": "Do you want to delete the user {{ user }} from the system? All this user's data will be deleted!",
 		"C03": "Do you want to block the user {{ user }}? The user will no longer be able to access the system!",
 		"C04": "Do you want to unblock the user {{ user }}? The user will be able to access the system!",
-		"C05": "Do you want to delete the company {{ name }} from the system? All data of this company will be deleted!",
-		"C06": "Do you want to add the user {{ user }} to the company {{ company }} as its manager? The user will be able to access the company's resources!",
-		"C07": "Do you want to remove the manager role from the user {{ user }} in this company? The user will no longer be able to access its resources!",
+		"C05": "Do you want to delete the company {{ name }} from the system? All this company's data will be deleted!",
+		"C06": "Do you want to add the user {{ user }} to the company {{ company }} as its administrator? The user will be able to access the company's resources!",
+		"C07": "Do you want to remove the user {{ user }}'s administrator role in this company? The user will no longer be able to access its resources!",
 		"C08": "Do you want to add the user {{ user }} to this team? The user will be able to access the team's resources!",
-		"C09": "Do you want to delete the team {{ name }} from the list of teams in the company {{ company }}? All team data will be deleted!",
+		"C09": "Do you want to delete the team {{ name }} from the company {{ company }}'s team list? All team data will be deleted!",
 		"C10": "Do you want to remove the user {{ user }} from this team? The user will no longer be able to access the team's resources!",
-		"C11": "Do you want to change the role of the user {{ user }} in the team to leader? The user will be able to perform all actions related to task creation, editing, and deletion in the team!",
-		"C12": "Do you want to change the role of the user {{ user }} in the team to member? The user will no longer be able to manage tasks but will still be able to view them!",
+		"C11": "Do you want to change the user {{ user }}'s role in the team to manager? The user will be able to perform all actions related to task creation, editing, and deletion in the team!",
+		"C12": "Do you want to change the user {{ user }}'s role in the team to participant? The user will no longer be able to manage tasks, but will be able to view them!",
 		"C13": "Do you want to delete this task? All task data will be deleted."
 	},
 	"ui": {
-		"login": "Log In",
+		"login": "Login",
 		"signup": "Sign Up",
+		"logout": "Log Out",
 		"index": {
-			"headline": "Bring Task Management into Your Workspace",
+			"headline": "Implement task management in your work environment",
 			"headlinetext": "Designed for both personal and commercial use!"
 		},
 		"login_ui": {
-			"headline": "Log in to TaskApp",
+			"headline": "Login to TaskApp",
 			"registerhere": "Register here!"
 		},
 		"email": "Email",
 		"password": "Password",
 		"register_ui": {
 			"headline": "Sign Up for TaskApp",
-			"loginhere": "Log in here!",
-			"phoneformat": "Phone number format: +XXX00000000, no spaces.",
+			"loginhere": "Login here!",
+			"phoneformat": "Phone number format - +XXX00000000, without spaces.",
 			"passformat": "Password must be at least 8 characters long."
 		},
 		"name": "Full Name",
 		"phone": "Phone Number",
-		"password_confirm": "Confirm Password",
+		"password_confirm": "Password Confirmation",
 		"dashboard": {
 			"loggedas": "Logged in as {{ name }}",
 			"current_tasks": "Current Tasks",
@@ -79,61 +80,95 @@
 			"goto": "Go to",
 			"settings": "User Settings",
 			"personal_list": "Your Personal Task List",
-			"system_users": "Registered System Users",
-			"system_companies": "Registered System Companies",
+			"system_users": "Registered Users in the System",
+			"system_companies": "Registered Companies in the System",
 			"admin": {
 				"block_user": "Block User",
 				"unblock_user": "Unblock User",
 				"delete_user": "Delete User",
 				"add_to_company": "Add User to Company",
-				"add_to_company_prompt": "Enter the email address of the user to be added!",
+				"add_to_company_prompt": "Enter the email address of the user to add!",
 				"delete_company": "Delete Company"
 			},
 			"team": {
 				"add_to_team": "Add User to Team",
-				"add_to_team_prompt": "Enter the email address of the user to be added!",
+				"add_to_team_prompt": "Enter the email address of the user to add!",
 				"delete_team": "Delete Team"
 			},
-			"team_list": "Task List for Team '{{ team }}'"
+			"team_list": "Team '{{ team }}' Task List"
 		},
 		"settings": {
 			"user_settings": "User Settings",
-			"change_base": "Edit Basic Details",
+			"change_base": "Change Basic Data",
 			"change_pass": "Change Password",
-			"change": "Update Settings",
-			"delete": "Delete Your Account"
+			"change": "Change Settings",
+			"delete": "Delete Yourself from the System"
 		},
+		"user_id": "User ID",
+		"old_password": "Current Password",
+		"new_password": "New Password",
+		"no": "No",
+		"yes": "Yes",
+		"actions": "Actions",
+		"company_id": "Company ID",
+		"entity_name": "Name",
+		"entity_email": "Contact Email",
+		"entity_phone": "Contact Phone",
+		"role": "Role",
+		"roles": {
+			"admin": "Administrator",
+			"user": "User"
+		},
+		"is_blocked": "Blocked?",
+		"company": {
+			"createHeader": "Create Company",
+			"create": "Create Company",
+			"dashboard_headline": "Company '{{ name }}'",
+			"managers": "Company Managers",
+			"teams": "Company Teams",
+			"settings": "Company Settings",
+			"settingsHeader": "Company '{{ name }}' Settings",
+			"change": "Change Data"
+		},
+		"return": "Return",
+		"entity_description": "Description",
+		"team": {
+			"create": "Create Team",
+			"members": "Team Members",
+			"roles": {
+				"participant": "Participant",
+				"manager": "Manager"
+			},
+			"elevate": "Assign Manager Role",
+			"lower": "Remove Manager Role"
+		},
+		"remove": "Remove",
 		"tasks": {
-			"statuses": {
-				"upcoming": "Not Started",
-				"started": "Started",
-				"ongoing": "In Progress",
-				"completed": "Completed"
-			},
-			"priorities": {
-				"low": "Low Priority",
-				"medium": "Medium Priority",
-				"high": "High Priority"
-			},
-			"change": "ui.tasks.change",
-			"status": "ui.tasks.status",
-			"delete": "ui.tasks.delete"
+			"change": "Edit",
+			"status": "Change Status",
+			"delete": "Delete",
+			"add_person": "Enter the email of the user to add"
 		},
+		"task_id": "Task ID",
+		"entity_status": "Task Status",
+		"entity_priority": "Task Priority",
+		"entity_duedate": "Task Due Date",
 		"task": {
-			"create": "ui.task.create"
+			"create": "Create Task",
+			"untitled": "Untitled Task"
 		}
 	},
 	"tasks": {
 		"statuses": {
-			"upcoming": "tasks.statuses.upcoming",
-			"started": "tasks.statuses.started",
-			"ongoing": "tasks.statuses.ongoing",
-			"completed": "tasks.statuses.completed"
+			"upcoming": "Not Started",
+			"started": "Started",
+			"ongoing": "In Progress",
+			"completed": "Completed"
 		},
 		"priorities": {
-			"high": "tasks.priorities.high",
-			"medium": "tasks.priorities.medium",
-			"low": "tasks.priorities.low"
+			"low": "Low Priority",
+			"medium": "Medium Priority",
+			"high": "High Priority"
 		}
 	}
 }
