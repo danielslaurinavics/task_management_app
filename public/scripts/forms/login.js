@@ -26,12 +26,6 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
 
   if (response.ok) {
     if (responseData.success) {
-      const message = document.createElement('div');
-      message.className = 'alert alert-success';
-      message.role = 'alert';
-      message.textContent = responseData.message;
-      messageArea.appendChild(message);
-
       window.location.href = '/home';
     }
   } else {

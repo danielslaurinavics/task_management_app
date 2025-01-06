@@ -32,7 +32,7 @@ router.route('/register')
 router.get('/home', auth.authenticate, auth.goToDashboard);
 router.get('/admin', auth.authenticate, auth.authorizeAdmin,
   (req, res) => res.render('./dashboard/admin_dashboard', { user: req.user }));
-router.get('/dashboard', auth.authenticate,
+router.get('/dashboard', auth.authenticate, auth.usersOnly,
   (req, res) => res.render('./dashboard/user_dashboard', { user: req.user }));
 
 
@@ -69,7 +69,7 @@ router.get('/companies/:id/settings', auth.authenticate, auth.usersOnly, company
 
 router.route('/companies/:id/managers')
   .get(auth.authenticate, companyAuth.checkForAccess, user.getCompanyUsers)
-  .post(auth.authenticate,/* companyAuth.checkForAccessOrAdmin,*/ company.addManager)
+  .post(auth.authenticate, company.addManager)
   .delete(auth.authenticate, companyAuth.checkForAccess, company.removeManager);
 
 router.route('/companies/:id/teams')

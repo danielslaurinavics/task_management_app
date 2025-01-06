@@ -19,7 +19,7 @@ async function checkForAccess(req, res, next) {
 
     const company = await Company.findByPk(companyId);
     if (!company)
-      return res.status(404).render('error', {error: i18n.__('errors.ERR_19')});
+      return res.status(404).render('error', {error: i18n.__('errors.ERR_16')});
 
     req.company = company;
     next();

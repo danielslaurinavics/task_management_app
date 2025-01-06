@@ -21,11 +21,11 @@ async function checkForAccess(req, res, next) {
 
     const teamData = await Team.findByPk(teamId);
     if (!teamData)
-      return res.status(404).render('error', {error: i18n.__('errors.ERR_19')});
+      return res.status(404).render('error', {error: i18n.__('errors.ERR_16')});
 
     const taskList = await TaskList.findOne({ where: { is_team_list: true, owner_team: teamData.id }});
     if (!taskList)
-      return res.status(404).render('error', {error: i18n.__('errors.ERR_19')});
+      return res.status(404).render('error', {error: i18n.__('errors.ERR_16')});
     
     const team = {
       id: teamData.id,

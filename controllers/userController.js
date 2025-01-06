@@ -32,18 +32,18 @@ const getAllUsers = async (req, res) => {
         admin: u.is_admin, block: u.is_blocked,
         allowed_to: {
           block_word: i18n.__('ui.dashboard.admin.block_user'),
-          block_confirm: i18n.__('confirm.CON_03', { user: u.name }),
+          block_confirm: i18n.__('msg.C03', { user: u.name }),
           unblock_word: i18n.__('ui.dashboard.admin.unblock_user'),
-          unblock_confirm: i18n.__('confirm.CON_04', { user: u.name }), 
+          unblock_confirm: i18n.__('msg.C04', { user: u.name }), 
           delete_word: i18n.__('ui.dashboard.admin.delete_user'),
-          delete_confirm: i18n.__('confirm.CON_02', { user: u.name })
+          delete_confirm: i18n.__('msg.C02', { user: u.name })
         }
       });
     });
     res.status(200).json({ users });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({errors: [i18n.__('errors.ERR_18')]});
+    return res.status(500).json({errors: [i18n.__('msg.E16')]});
   }
 };
 
@@ -61,11 +61,11 @@ const getCompanyUsers = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id || isNaN(id))
-      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+      return res.status(400).json({ errors: [i18n.__('msg.E20')] });
 
     const company = await Company.findByPk(id);
     if (!company)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_16')] });
+      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
     const data = await User.findAll({
       include: [
@@ -87,7 +87,7 @@ const getCompanyUsers = async (req, res) => {
         id: u.id, name: u.name, email: u.email, phone: u.phone,
         allowed_to: {
           remove_word: i18n.__('ui.remove'),
-          remove_confirm: i18n.__('confirm.CON_07', { user: u.name })
+          remove_confirm: i18n.__('msg.C07', { user: u.name })
         }
       })
     })
@@ -95,7 +95,7 @@ const getCompanyUsers = async (req, res) => {
     res.status(200).json({ managers: users });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    return res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 
@@ -114,11 +114,11 @@ const getTeamUsers = async (req, res) => {
 
   try {
     if (!team_id || isNaN(team_id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+      return res.status(400).json({errors: [i18n.__('msg.E20')]});
 
     const team = await Team.findByPk(team_id);
     if (!team)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_16')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
     const data = await User.findAll({
       include: [
@@ -144,9 +144,9 @@ const getTeamUsers = async (req, res) => {
           elevate_word: i18n.__('ui.team.elevate'),
           lower_word: i18n.__('ui.team.lower'),
           remove_word: i18n.__('ui.remove'),
-          elevate_confirm: i18n.__('confirm.CON_11', { user: u.name }),
-          lower_confirm: i18n.__('confirm.CON_12', { user: u.name }),
-          remove_confirm: i18n.__('confirm.CON_10', { user: u.name })
+          elevate_confirm: i18n.__('msg.C11', { user: u.name }),
+          lower_confirm: i18n.__('msg.C12', { user: u.name }),
+          remove_confirm: i18n.__('msg.C10', { user: u.name })
         }
       });
     });
@@ -154,7 +154,7 @@ const getTeamUsers = async (req, res) => {
     res.status(200).json({participants});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 
@@ -168,12 +168,7 @@ const getTeamUsers = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const login = async (req, res) => {
-  // Defining an errors array in order to store errors that occured
-  // during execution of the function. Those errors will be displayed
-  // in the frontend as error messages.
-  const errors = [];
   try {
-    // Getting login form field values.
     let { email, password } = req.body;
 
     // Sanitizing the input by removing front and rear whitespaces.
@@ -181,13 +176,14 @@ const login = async (req, res) => {
     password = password.trim();
 
     // Validation of entered values.
+    const errors = [];
     const validations = [
-      {condition: !email || !password, error: 'ERR_01'},
-      {condition: email && email.length > 255, error: 'ERR_02'},
-      {condition: email && !validation.isValidEmail(email), error: 'ERR_06'}
+      {condition: !email || !password, error: 'E01'},
+      {condition: email && email.length > 255, error: 'E02'},
+      {condition: email && !validation.isValidEmail(email), error: 'E06'}
     ];
     for (const {condition, error} of validations) {
-      if (condition) errors.push(i18n.__(`errors.${error}`));
+      if (condition) errors.push(i18n.__(`msg.${error}`));
     }
     if (errors.length > 0) return res.status(400).json({ errors: errors });
 
@@ -197,16 +193,16 @@ const login = async (req, res) => {
       attributes: ['id', 'password', 'is_blocked']
     });
     if (!user)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_12')]});
+      return res.status(404).json({errors: [i18n.__('msg.E12')]});
 
     // Checking whether the password is valid.
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
-      return res.status(401).json({errors: [i18n.__('errors.ERR_12')]});
+      return res.status(401).json({errors: [i18n.__('msg.E12')]});
 
     // Checking whether the user is blocked.
     if (user.is_blocked)
-      return res.status(403).json({errors: [i18n.__('errors.ERR_13')]});
+      return res.status(403).json({errors: [i18n.__('msg.E13')]});
 
     // In case of valid credentials, a JWT authentication token is created and
     // is saved in the cookies of the client.
@@ -220,10 +216,10 @@ const login = async (req, res) => {
     });
 
     // Sending the successful login message.
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_01')});
+    res.status(200).json({ success: true });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 
@@ -251,16 +247,16 @@ const register = async (req, res) => {
     const errors = [];
     const validations = [
       {condition: !name || !email || !phone || !password || !password_confirm, error: 'ERR_01'},
-      {condition: email && email.length > 255, error: 'ERR_02'},
-      {condition: name && name.length > 255, error: 'ERR_03'},
-      {condition: phone && phone.length > 32, error: 'ERR_05'},
-      {condition: email && !validation.isValidEmail(email), error: 'ERR_06'},
-      {condition: phone && !validation.isValidPhone(phone), error: 'ERR_07'},
-      {condition: password && password.length < 8, error: 'ERR_08'},
-      {condition: password && password !== password_confirm, error: 'ERR_09'}
+      {condition: email && email.length > 255, error: 'E02'},
+      {condition: name && name.length > 255, error: 'E03'},
+      {condition: phone && phone.length > 32, error: 'E05'},
+      {condition: email && !validation.isValidEmail(email), error: 'E06'},
+      {condition: phone && !validation.isValidPhone(phone), error: 'E07'},
+      {condition: password && password.length < 8, error: 'E08'},
+      {condition: password && password !== password_confirm, error: 'E09'}
     ];
     for (const {condition, error} of validations) {
-      if (condition) errors.push(i18n.__(`errors.${error}`));
+      if (condition) errors.push(i18n.__(`msg.${error}`));
     }
     if (errors.length > 0) return res.status(400).json({ errors: errors });
 
@@ -270,7 +266,7 @@ const register = async (req, res) => {
       attributes: ['id']
     });
     if (foundUser)
-      return res.status(409).json({ errors: [i18n.__('errors.ERR_11')] });
+      return res.status(409).json({ errors: [i18n.__('msg.E11')] });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -284,10 +280,10 @@ const register = async (req, res) => {
     // Creating a new task list for storing the new user's personal tasks
     const newTaskList = await TaskList.create({ owner_user: newUser.id });
 
-    res.status(201).json({message: i18n.__('success.SUC_02')});
+    res.status(201).json({message: i18n.__('msg.S01')});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 
@@ -333,30 +329,30 @@ const changeData = async (req, res) => {
     password_confirm = password_confirm.trim();
 
     const validations = [
-      {condition: !id || !name || !phone, error: 'ERR_01'},
-      {condition: name && name.length > 255, error: 'ERR_03'},
-      {condition: phone && phone.length > 32, error: 'ERR_05'},
-      {condition: phone && !validation.isValidPhone(phone), error: 'ERR_07'},
-      {condition: new_password && new_password.length > 0 && new_password.length < 8, error: 'ERR_08'},
-      {condition: new_password && new_password.length > 0 && new_password !== password_confirm, error: 'ERR_09'}
+      {condition: !id || !name || !phone, error: 'E01'},
+      {condition: name && name.length > 255, error: 'E03'},
+      {condition: phone && phone.length > 32, error: 'E05'},
+      {condition: phone && !validation.isValidPhone(phone), error: 'E07'},
+      {condition: new_password && new_password.length > 0 && new_password.length < 8, error: 'E08'},
+      {condition: new_password && new_password.length > 0 && new_password !== password_confirm, error: 'E09'}
     ];
     for (const {condition, error} of validations) {
-      if (condition) errors.push(i18n.__(`errors.${error}`));
+      if (condition) errors.push(i18n.__(`msg.${error}`));
     }
-    if (errors.length > 0) return res.status(400).json({ errors });
+    if (errors.length > 0) return res.status(400).json({errors});
 
     const user = await User.findOne({
       where: { id }, attributes: { include: ['password'] }
     });
     if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_16')] });
+      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
     // Checks the current password entered with the password stored
     // in the database if the password is about to be replaced.
     if (new_password.length > 0) {
       const checkPassword = await bcrypt.compare(current_password, user.password);
       if (!checkPassword)
-        return res.status(403).json({ errors: [i18n.__('errors.ERR_10')] });
+        return res.status(403).json({ errors: [i18n.__('msg.E10')] });
     }
 
     user.name = name;
@@ -368,10 +364,10 @@ const changeData = async (req, res) => {
     }
     await user.save();
 
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_03') });
+    res.status(200).json({ success: true, message: i18n.__('msg.S02') });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -386,23 +382,23 @@ const changeData = async (req, res) => {
 const block = async (req, res) => {
     let { id } = req.params;
     if (!id || isNaN(id))
-      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+      return res.status(400).json({ errors: [i18n.__('msg.E20')] });
 
   try {
     const user = await User.findByPk(id);
     if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_16')] });
+      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
     const action = user.is_blocked ? 'unblock' : 'block';
     user.is_blocked = !user.is_blocked;
     await user.save()
 
-    const message = action === 'block' ? i18n.__('success.SUC_04') : i18n.__('success.SUC_05')
+    const message = action === 'block' ? i18n.__('msg.S03') : i18n.__('msg.S04')
 
-    return res.status(200).json({ success: true, message: message});
+    return res.status(200).json({ success: true, message: message });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    return res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -418,23 +414,21 @@ const deleteUser = async (req, res) => {
   const t = await sequelize.transaction();
   let { id } = req.params;
   if (!id || isNaN(id))
-    return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+    return res.status(400).json({ errors: [i18n.__('msg.E20')] });
   
   try {
     const user = await User.findByPk(id);
     if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_16')] });
+      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
     
     await user.destroy({ transaction: t });
     await t.commit();
 
-    res.status(200).json({message: i18n.__('success.SUC_06')});
+    res.status(200).json({message: i18n.__('msg.S05')});
   } catch (error) {
-    // Rolling back the deletion action, outputting the errors to the
-    // console and sending a generic internal server error message.
     await t.rollback();
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 

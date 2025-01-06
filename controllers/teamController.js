@@ -22,11 +22,11 @@ const getAllCompanyTeams = async (req, res) => {
   let { id: companyId } = req.params;
   try {
     if (!companyId || isNaN(companyId))
-      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+      return res.status(400).json({ errors: [i18n.__('msg.E20')] });
 
     const company = await Company.findByPk(companyId);
     if (!company)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
     const data = await Team.findAll({
       where: { owner_company: company.id },
@@ -40,9 +40,9 @@ const getAllCompanyTeams = async (req, res) => {
         allowed_to: {
           add_word: i18n.__('ui.dashboard.team.add_to_team'),
           add_prompt: i18n.__('ui.dashboard.team.add_to_team_prompt'),
-          add_confirm: i18n.__('confirm.CON_09', { user: '%user' }),
+          add_confirm: i18n.__('msg.C08', { user: '%user' }),
           delete_word: i18n.__('ui.dashboard.team.delete_team'),
-          delete_confirm: i18n.__('confirm.CON_08', { name: team.name, company: company.name })
+          delete_confirm: i18n.__('msg.C09', { name: team.name, company: company.name })
         }
       })
     });
@@ -50,7 +50,7 @@ const getAllCompanyTeams = async (req, res) => {
     res.status(200).json({ teams });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    return res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 
@@ -63,47 +63,38 @@ const getAllCompanyTeams = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const createTeam = async (req, res) => {
-  const errors = [];
+  let { name, description } = req.body;
+  let { id: companyId } = req.params;
+  
   try {
-    // Getting creation form field values.
-    let { name, description } = req.body;
-    let { id: companyId } = req.params;
-
-    // Sanitizing the input by removing front and rear whitespaces,
-    // and converting ids to integers.
     name = name.trim();
     description = description.trim();
 
-    // Validation of entered values.
+    const errors = []
     const validations = [
-      {condition: !name || !companyId || isNaN(companyId), error: 'ERR_01'},
-      {condition: name && name.length > 255, error: 'ERR_04'},
+      {condition: !name || !companyId || isNaN(companyId), error: 'E01'},
+      {condition: name && name.length > 255, error: 'E04'},
     ];
     for (const {condition, error} of validations) {
-      if (condition) errors.push(i18n.__(`errors.${error}`));
+      if (condition) errors.push(i18n.__(`msg.${error}`));
     }
     if (errors.length > 0) return res.status(400).json({ errors });
 
-    // Checking whether a company with such id exists in the database.
-    // Returns an error if no such company was found.
     const company = await Company.findByPk(companyId);
     if (!company)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
     
-    // Creating a new team entry in the database
     const newTeam = await Team.create({ name, description, owner_company: company.id });
     
-    // Creating a new task list, since a team always have one.
     const newTaskList = await TaskList.create({
       is_team_list: true,
       owner_team: newTeam.id
     });
 
-    res.status(201).json({ success: true, message: i18n.__('success.SUC_12')});
+    res.status(201).json({ success: true, message: i18n.__('msg.S11')});
   } catch (error) {
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    res.status(500).json({ errors: errors });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -120,25 +111,21 @@ const deleteTeam = async (req, res) => {
   const t = await sequelize.transaction();
   try {
     if (!team_id || isNaN(team_id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+      return res.status(400).json({errors: [i18n.__('msg.E20')]});
 
-    // Finds the team with that ID and returns an error if it doesn't
     const team = await Team.findByPk(team_id);
     if (!team)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
-    // Deletes the team and its related data from the database.
     await team.destroy();
     t.commit();
 
     // Sending the successful deletion message
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_18')});
+    res.status(200).json({ success: true, message: i18n.__('msg.S16')});
   } catch (error) {
-    // Rolling back the deletion action, outputting the error to the
-    // console and sending a generic internal server error message.
     await t.rollback();
     console.log(error);
-    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    return res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -158,23 +145,23 @@ const addToTeam = async (req, res) => {
   try {
     const errors = [];
     const rules = [
-      {condition: !team_id || isNaN(team_id) || !email, error: 'ERR_01'},
-      {condition: email && email.length > 255 || !email, error: 'ERR_02'},
-      {condition: email && !validation.isValidEmail(email) || !email, error: 'ERR_06'}
+      {condition: !team_id || isNaN(team_id) || !email, error: 'E01'},
+      {condition: email && email.length > 255 || !email, error: 'E02'},
+      {condition: email && !validation.isValidEmail(email) || !email, error: 'E06'}
     ];
     for (const {condition, error} of rules) {
-      if (condition) errors.push(i18n.__(`errors.${error}`));
+      if (condition) errors.push(i18n.__(`msg.${error}`));
     }
     if (errors.length > 0) return res.status(400).json({ errors });
 
     const team = await Team.findByPk(team_id);
     const user = await User.findOne({ where: { email }});
     if (!team || !user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
     const participantList = await TeamParticipant.findAll({ where: { team_id } });
     if (participantList.find(member => member.user_id === user.id))
-      return res.status(409).json({ errors: [i18n.__('errors.ERR_20')] });
+      return res.status(409).json({ errors: [i18n.__('msg.E19')] });
 
     const areManagers = await TeamParticipant.findAll({ where: { team_id, is_manager: true }});
     
@@ -184,10 +171,10 @@ const addToTeam = async (req, res) => {
      is_manager: areManagers.length > 0 ? false : true
     });
 
-    res.status(200).json({message: i18n.__('success.SUC_09')});
+    res.status(200).json({message: i18n.__('msg.S08')});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -207,21 +194,21 @@ const removeFromTeam = async (req, res) => {
 
   try {
     if (!team_id || isNaN(team_id) || !user_id && isNaN(user_id))
-      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+      return res.status(400).json({ errors: [i18n.__('msg.E20')] });
 
     const teamRelation = await TeamParticipant.findOne({
       where: { team_id, user_id }
     });
     if (!teamRelation)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
     await teamRelation.destroy();
     await t.commit();
-    res.status(200).json({ message: i18n.__('success.SUC_10')} );
+    res.status(200).json({ message: i18n.__('msg.E09')} );
   } catch (error) {
     await t.rollback();
     console.log(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -240,19 +227,19 @@ const changeRole = async (req, res) => {
   const { user_id } = req.body;
   try {
     if (!team_id || !user_id || isNaN(team_id) || isNaN(user_id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+      return res.status(400).json({errors: [i18n.__('msg.E20')]});
 
     const teamRelation = await TeamParticipant.findOne({ where: { team_id, user_id }});
     if (!teamRelation)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
     teamRelation.is_manager = !teamRelation.is_manager;
     await teamRelation.save();
 
-    return res.status(200).json({message: i18n.__('success.SUC_14')});
+    return res.status(200).json({message: i18n.__('msg.S12')});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 
@@ -269,11 +256,11 @@ const getUserTeams = async (req, res) => {
   const  {id: user_id} = req.params;
   try {
     if (!user_id || isNaN(user_id))
-      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+      return res.status(400).json({ errors: [i18n.__('msg.E20')] });
 
     const user = await User.findByPk(user_id);
     if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
     const teams = await Team.findAll({
       include: [
@@ -292,7 +279,7 @@ const getUserTeams = async (req, res) => {
     res.status(200).json({teams});
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    return res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 

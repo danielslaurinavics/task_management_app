@@ -20,12 +20,12 @@ const validation = require('../utils/validation');
 const getUserListTasks = async (req, res) => {
   const { id: user_id } = req.params;
   if (!user_id || isNaN(user_id))
-    return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+    return res.status(400).json({errors: [i18n.__('msg.E20')]});
 
   try {
     const list = await TaskList.findOne({ where: { owner_user: user_id }});
     if (!list)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
     const data = await Task.findAll({ 
       where: { list_id: list.id },
@@ -48,7 +48,7 @@ const getUserListTasks = async (req, res) => {
           change_word: i18n.__('ui.tasks.change'),
           status_word: i18n.__('ui.tasks.status'),
           delete_word: i18n.__('ui.tasks.delete'),
-          delete_confirm: i18n.__('confirm.CON_13'),
+          delete_confirm: i18n.__('msg.C13'),
         }
       });
     });
@@ -56,7 +56,7 @@ const getUserListTasks = async (req, res) => {
     res.status(200).json({tasks});
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    return res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 
@@ -73,14 +73,14 @@ const getUserListTasks = async (req, res) => {
 const getTeamListTasks = async (req, res) => {
   const { id: team_id } = req.params;
   if (!team_id || isNaN(team_id))
-    return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+    return res.status(400).json({errors: [i18n.__('msg.E20')]});
   
   try {
     const list = await TaskList.findOne({ where: {
       is_team_list: true, owner_team: team_id
     }});
     if (!list)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
     const data = await Task.findAll({
       where: { list_id: list.id },
@@ -109,7 +109,7 @@ const getTeamListTasks = async (req, res) => {
           change_word: i18n.__('ui.tasks.change'),
           status_word: i18n.__('ui.tasks.status'),
           delete_word: i18n.__('ui.tasks.delete'),
-          delete_confirm: i18n.__('confirm.CON_13'),
+          delete_confirm: i18n.__('msg.C13'),
           add_prompt: i18n.__('ui.tasks.add_person')
         },
         assigned_users: task.Users || []
@@ -119,7 +119,7 @@ const getTeamListTasks = async (req, res) => {
     res.status(200).json({tasks});
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    return res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 
@@ -135,17 +135,17 @@ const getTeamListTasks = async (req, res) => {
 const getTaskData = async (req, res) => {
   const { id } = req.params;
   if (!id || isNaN(id))
-    return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+    return res.status(400).json({errors: [i18n.__('msg.E20')]});
   
   try {
     const task = await Task.findByPk(id);
     if (!task)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
     return res.status(200).json({task});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 }
 
@@ -164,14 +164,14 @@ const createTask = async (req, res) => {
   const { type, list_id } = req.body;
   try {
     if (!id || isNaN(id) || !list_id || isNaN(list_id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+      return res.status(400).json({errors: [i18n.__('msg.E20')]});
 
     if(!type || !['user','team'].includes(type))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+      return res.status(400).json({errors: [i18n.__('msg.E20')]});
 
     const list = await TaskList.findOne({ where: { id: list_id }});
     if (!list)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
     const newTask = await Task.create({
       name: i18n.__('ui.task.untitled'),
@@ -185,10 +185,10 @@ const createTask = async (req, res) => {
       });
     }
 
-    res.status(200).json({message: i18n.__('success.SUC_16')});
+    res.status(200).json({message: i18n.__('msg.S11')});
   } catch (error) {
     console.log(error);
-    res.status(500).json({errors: [i18n.__('errors.ERR_18')]});
+    res.status(500).json({errors: [i18n.__('msg.E16')]});
   }
 };
 
@@ -201,38 +201,25 @@ const createTask = async (req, res) => {
  * @param {Object} res - Response object for sending the result to the client.
  */
 const changeTaskStatus = async (req, res) => {
+  let { task_id: id } = req.body;
+
+  if (!id || isNaN(id))
+    return res.status(400).json({errors: [i18n.__('msg.E20')]});
+
   try {
-    // Gets the task id from request parameters and the task's
-    // new status from request body.
-    let { task_id: id } = req.body;
-
-    // Sanitizes status input and does entry value validation.
-    if (!id || isNaN(id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
-
-    // Checks the status against accepted statuses.
-    // If the status input does not correspond to one of the accepted ones,
-    // it will default to UPCOMING
-
-    // Finds the task by its ID and returns an error if the task is not found.
     const task = await Task.findByPk(id);
     if (!task)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
-    // Changing the task's completion status and saving changes
-    // to the database.
     if (task.status < 3) {
       task.status += 1;
     } else task.status = 3;
     await task.save();
 
-    // Sending the successful task edit message
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_17')});
+    res.status(200).json({ success: true, message: i18n.__('msg.S15')});
   } catch (error) {
-    // Outputting error to the console and sending a
-    // generic internal server error message.
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -255,17 +242,17 @@ const changeTaskData = async (req, res) => {
 
     const errors = [];
     const rules = [
-      {condition: !name || ![0,1,2].includes(priority), error: 'ERR_01'},
-      {condition: name && name.length > 255, error: 'ERR_04'}
+      {condition: !name || ![0,1,2].includes(priority), error: 'E01'},
+      {condition: name && name.length > 255, error: 'E04'}
     ];
     for (const { condition, error } of rules) {
-      if (condition) errors.push(i18n.__(`errors.${error}`));
+      if (condition) errors.push(i18n.__(`msg.${error}`));
     }
     if (errors.length > 0) return res.status(400).json({errors});
 
     const task = await Task.findByPk(task_id);
     if (!task)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
     task.name = name;
     task.description = description;
@@ -273,10 +260,10 @@ const changeTaskData = async (req, res) => {
     if (due_date) task.due_date = due_date;
 
     await task.save();
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_17')});
+    res.status(200).json({ success: true, message: i18n.__('msg.S15')});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -290,29 +277,23 @@ const changeTaskData = async (req, res) => {
  */
 const deleteTask = async (req, res) => {
   const t = await sequelize.transaction();
+  let { task_id: id } = req.body;
+  if (!id || isNaN(id))
+    return res.status(400).json({errors: [i18n.__('msg.E20')]});
+  
   try {
-    // Gets the deletable task id from request parameters and validates it.
-    let { task_id: id } = req.body;
-    if (!id || isNaN(id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
-
-    // Finds the task with that ID and returns an error if it doesn't
     const task = await Task.findByPk(id);
     if (!task)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
-    // Deletes the task and commits changes to the database.
     await task.destroy();
     t.commit();
 
-    // Sending the successful deletion message
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_18')});
+    res.status(200).json({ success: true, message: i18n.__('msg.S16')});
   } catch {
-    // Rolling back the deletion action, outputting the errors to the
-    // console and sending a generic internal server error message.
     await t.rollback();
     console.log(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -331,32 +312,32 @@ const addPersonResponsible = async (req, res) => {
     email = email?.trim();
     const errors = [];
     const rules = [
-      {condition: !task_id || isNaN(task_id) || !email, error: 'ERR_01'},
-      {condition: email && email.length > 255 || !email, error: 'ERR_02'},
-      {condition: email && !validation.isValidEmail(email) || !email, error: 'ERR_06'}
+      {condition: !task_id || isNaN(task_id) || !email, error: 'E20'},
+      {condition: email && email.length > 255 || !email, error: 'E02'},
+      {condition: email && !validation.isValidEmail(email), error: 'E06'}
     ];
     for (const {condition, error} of rules) {
-      if (condition) errors.push(i18n.__(`errors.${error}`));
+      if (condition) errors.push(i18n.__(`msg.${error}`));
     }
     if (errors.length > 0) return res.status(400).json({ errors });
 
     const task = await Task.findByPk(task_id);
     const user = await User.findOne({ where: { email }});
     if (!task || !user)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
     const taskPersons = await TaskPersons.findAll({ where: { task_id } });
     if (taskPersons.find(person => person.user_id === user.id))
-      return res.status(409).json({errors: [i18n.__('errors.ERR_20')]});
+      return res.status(409).json({errors: [i18n.__('msg.E19')]});
 
     const newTaskPerson = await TaskPersons.create({
       task_id, user_id: user.id
     });
 
-    res.status(200).json({message: i18n.__('success.SUC_09')});
+    res.status(200).json({message: i18n.__('msg.S08')});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
@@ -371,22 +352,23 @@ const addPersonResponsible = async (req, res) => {
 const removePersonResponsible = async (req, res) => {
   const { task_id, user_id } = req.body;
   const t = await sequelize.transaction();
-  try {
-    if (!task_id || !user_id || isNaN(task_id) || isNaN(user_id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
+  if (!task_id || !user_id || isNaN(task_id) || isNaN(user_id))
+    return res.status(400).json({errors: [i18n.__('msg.E20')]});
+
+  try {
     const taskPerson = await TaskPersons.findOne({ where: { task_id, user_id }});
     if (!taskPerson)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+      return res.status(404).json({errors: [i18n.__('msg.E18')]});
 
     await taskPerson.destroy();
     await t.commit({transaction: t});
 
-    res.status(200).json({message: i18n.__('success.SUC_10')});
+    res.status(200).json({message: i18n.__('msg.S09')});
   } catch (error) {
     await t.rollback();
     console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+    res.status(500).json({ errors: [i18n.__('msg.E16')] });
   }
 };
 
