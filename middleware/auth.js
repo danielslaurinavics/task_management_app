@@ -8,17 +8,17 @@ const { TaskList } = require('../models/TaskList');
 async function authenticate(req, res, next) {
   const token = req.cookies.jwt;
   if (!token) {
-    return res.status(401).render('error', { error: i18n.__('errors.ERR_14')});
+    return res.status(401).render('error', { error: i18n.__('msg.E14')});
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.userId);
     if (!user)
-      return res.status(404).render('error', { error: i18n.__('errors.ERR_16')});
+      return res.status(404).render('error', { error: i18n.__('msg.E18')});
 
     if (user.is_blocked)
-      return res.status(403).render('error', { error: i18n.__('errors.ERR_13')});
+      return res.status(403).render('error', { error: i18n.__('msg.E13')});
 
     const taskList = await TaskList.findOne({ where: { owner_user: user.id } });
     
@@ -28,9 +28,9 @@ async function authenticate(req, res, next) {
   } catch (error) {
     console.error(error);
     if (error.name === 'TokenValidationError') {
-      return res.status(401).render('error', { error: i18n.__('errors.ERR_14')});
+      return res.status(401).render('error', { error: i18n.__('msg.E14')});
     } else {
-      return res.status(403).render('error', { error: i18n.__('errors.ERR_14')});
+      return res.status(403).render('error', { error: i18n.__('msg.E14')});
     }
   }
 }
@@ -39,7 +39,7 @@ async function authenticate(req, res, next) {
 
 async function authorizeAdmin(req, res, next) {
   if (req.user && req.user.is_admin) return next();
-  else return res.status(403).render('error', { error: i18n.__('errors.ERR_14')});
+  else return res.status(403).render('error', { error: i18n.__('msg.E14')});
 }
 
 
