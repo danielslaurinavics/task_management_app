@@ -1,23 +1,28 @@
-// Importing thrid-party libraries and middleware.
 const i18n = require('i18n');
 
-// Importing necessary models.
 const { User } = require('../models/User');
 const { TaskList } = require('../models/TaskList');
 const { Task, TaskPersons } = require('../models/Task');
 
-// Importing database connection module.
 const sequelize = require('../config/database');
 const validation = require('../utils/validation');
 
 
 
+/**
+ * UZD_01
+ * Returns an array of all tasks belonging to the task list of the
+ * user to who the list belongs.
+ * @param {Object} req - Request object containing the ID of the user whose
+ * task list tasks should be searched
+ * @param {Object} res - Response object for sending the result to the client.
+ */
 const getUserListTasks = async (req, res) => {
   const { id: user_id } = req.params;
-  try {
-    if (!user_id || isNaN(user_id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+  if (!user_id || isNaN(user_id))
+    return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
+  try {
     const list = await TaskList.findOne({ where: { owner_user: user_id }});
     if (!list)
       return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
@@ -57,12 +62,20 @@ const getUserListTasks = async (req, res) => {
 
 
 
+/**
+ * UZD_02
+ * Returns an array of all tasks belonging to the team list
+ * of team whose ID is provided
+ * @param {Object} req - Request object containing the ID of the team whose
+ * task list tasks should be searched
+ * @param {Object} res - Response object for sending the result to the client.
+ */
 const getTeamListTasks = async (req, res) => {
   const { id: team_id } = req.params;
+  if (!team_id || isNaN(team_id))
+    return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+  
   try {
-    if (!team_id || isNaN(team_id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
-
     const list = await TaskList.findOne({ where: {
       is_team_list: true, owner_team: team_id
     }});
@@ -74,10 +87,8 @@ const getTeamListTasks = async (req, res) => {
       order: [['priority', 'DESC']],
       include: [
         {
-          model: User,
-          attributes: ['id', 'name'],
-          through: { attributes: [] },
-          required: false,
+          model: User, attributes: ['id', 'name'],
+          through: { attributes: [] }, required: false,
         }
       ]
     });
@@ -115,64 +126,33 @@ const getTeamListTasks = async (req, res) => {
 
 
 /**
- * Gets all tasks which are in user's responsibility
- * @param {Object} req - Request object containing user ID.
+ * UZD_03
+ * Returns an object containing information about a specific task.
+ * @param {Object} req - Request object containing the ID of the task to fetch
  * @param {Object} res - Response object for sending the result to the client.
+ * @returns 
  */
-const getUserTasks = async (req, res) => {
-  const errors = [];
+const getTaskData = async (req, res) => {
+  const { id } = req.params;
+  if (!id || isNaN(id))
+    return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+  
   try {
-    // Getting the user id from request parameters, and then
-    // validating the input of the user ID.
-    let { user_id } = req.params;
-    if (!user_id || isNaN(user_id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
-
-    // Finds a user with such ID. Returns an error if no such user
-    // was found in the database.
-    const user = await User.findByPk(user_id);
-    if (!user)
+    const task = await Task.findByPk(id);
+    if (!task)
       return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
-    
-    // Search the tasks in which the user is involved.
-    const tasksFound = await Task.findAll({
-      include: [
-        {
-          model: User,
-          attributes: [],
-          through: {
-            attributes: []
-          },
-          where: { id: user.id },
-          required: true
-        }
-      ]
-    });
 
-    // Write information about tasks in new array.
-    const tasks = [];
-    tasksFound.forEach (task => {
-      tasks.push({
-        name: task.name,
-        description: task.description,
-        status: i18n.__(`tasks.statuses.${task.status.toLowerCase()}`),
-        priority: i18n.__(`tasks.priorities.${task.priority.toLowerCase()}`),
-        due_date: task.due_date
-      });
-    });
-
-    // Sending the tasks array.
-    return res.status(200).json({ tasks })
+    return res.status(200).json({task});
   } catch (error) {
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    return res.status(500).json({ errors });
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 }
 
 
 
 /**
+ * UZD_04
  * Creates a new task.
  * If the task is a personal task, it also automatically designates the task list's
  * owner as the person responsible for the task.
@@ -215,6 +195,51 @@ const createTask = async (req, res) => {
 
 
 /**
+ * UZD_05
+ * Changes the task's completion status
+ * @param {Object} req - Request object containing the new status.
+ * @param {Object} res - Response object for sending the result to the client.
+ */
+const changeTaskStatus = async (req, res) => {
+  try {
+    // Gets the task id from request parameters and the task's
+    // new status from request body.
+    let { task_id: id } = req.body;
+
+    // Sanitizes status input and does entry value validation.
+    if (!id || isNaN(id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    // Checks the status against accepted statuses.
+    // If the status input does not correspond to one of the accepted ones,
+    // it will default to UPCOMING
+
+    // Finds the task by its ID and returns an error if the task is not found.
+    const task = await Task.findByPk(id);
+    if (!task)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    // Changing the task's completion status and saving changes
+    // to the database.
+    if (task.status < 3) {
+      task.status += 1;
+    } else task.status = 3;
+    await task.save();
+
+    // Sending the successful task edit message
+    res.status(200).json({ success: true, message: i18n.__('success.SUC_17')});
+  } catch (error) {
+    // Outputting error to the console and sending a
+    // generic internal server error message.
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+};
+
+
+
+/**
+ * UZD_06
  * Update task's data.
  * @param {Object} req - Request object containing updated task data.
  * @param {Object} res - Response object for sending the result to the client.
@@ -258,48 +283,48 @@ const changeTaskData = async (req, res) => {
 
 
 /**
- * Changes the task's completion status
- * @param {Object} req - Request object containing the new status.
+ * UZD_07
+ * Deletes the task and its persons responsible records from the database.
+ * @param {Object} req - Request object containing the ID of the task to delete.
  * @param {Object} res - Response object for sending the result to the client.
  */
-const changeTaskStatus = async (req, res) => {
+const deleteTask = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
-    // Gets the task id from request parameters and the task's
-    // new status from request body.
+    // Gets the deletable task id from request parameters and validates it.
     let { task_id: id } = req.body;
-
-    // Sanitizes status input and does entry value validation.
     if (!id || isNaN(id))
       return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
 
-    // Checks the status against accepted statuses.
-    // If the status input does not correspond to one of the accepted ones,
-    // it will default to UPCOMING
-
-    // Finds the task by its ID and returns an error if the task is not found.
+    // Finds the task with that ID and returns an error if it doesn't
     const task = await Task.findByPk(id);
     if (!task)
       return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
 
-    // Changing the task's completion status and saving changes
-    // to the database.
-    if (task.status < 3) {
-      task.status += 1;
-    } else task.status = 3;
-    await task.save();
+    // Deletes the task and commits changes to the database.
+    await task.destroy();
+    t.commit();
 
-    // Sending the successful task edit message
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_17')});
-  } catch (error) {
-    // Outputting error to the console and sending a
-    // generic internal server error message.
-    console.error(error);
+    // Sending the successful deletion message
+    res.status(200).json({ success: true, message: i18n.__('success.SUC_18')});
+  } catch {
+    // Rolling back the deletion action, outputting the errors to the
+    // console and sending a generic internal server error message.
+    await t.rollback();
+    console.log(error);
     res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 };
 
 
 
+/**
+ * UZD_08
+ * Assign a user to a task.
+ * @param {Object} req - Request object containing the ID of the task and
+ * email of the user who has to be added.
+ * @param {Object} res - Response object for sending the result to the client.
+ */
 const addPersonResponsible = async (req, res) => {
   let { task_id, email } = req.body;
   try {
@@ -337,6 +362,12 @@ const addPersonResponsible = async (req, res) => {
 
 
 
+/**
+ * UZD_09
+ * Remove the user's assignment to a task.
+ * @param {Object} req - Request object containing the IDs of the task and the user.
+ * @param {Object} res - Response object for sending the result to the client.
+ */
 const removePersonResponsible = async (req, res) => {
   const { task_id, user_id } = req.body;
   const t = await sequelize.transaction();
@@ -359,63 +390,7 @@ const removePersonResponsible = async (req, res) => {
   }
 };
 
-
-const getTaskData = async (req, res) => {
-  const { id } = req.params;
-  try {
-    if (!id || isNaN(id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
-
-    const task = await Task.findOne({ where: { id } });
-    if (!task)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
-
-    return res.status(200).json({task});
-  } catch (error) {
-    // Outputting error to the console and sending a
-    // generic internal server error message.
-    console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
-  }
-}
-
-
-
-
-/**
- * Deletes the task and its persons responsible records from the database.
- * @param {Object} req - Request object containing the ID of the task to delete.
- * @param {Object} res - Response object for sending the result to the client.
- */
-const deleteTask = async (req, res) => {
-  const t = await sequelize.transaction();
-  try {
-    // Gets the deletable task id from request parameters and validates it.
-    let { task_id: id } = req.body;
-    if (!id || isNaN(id))
-      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
-
-    // Finds the task with that ID and returns an error if it doesn't
-    const task = await Task.findByPk(id);
-    if (!task)
-      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
-
-    // Deletes the task and commits changes to the database.
-    await task.destroy();
-    t.commit();
-
-    // Sending the successful deletion message
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_18')});
-  } catch {
-    // Rolling back the deletion action, outputting the errors to the
-    // console and sending a generic internal server error message.
-    await t.rollback();
-    console.log(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
-  }
-};
-
 module.exports = {
-  createTask, getUserTasks, changeTaskData, changeTaskStatus,
-  addPersonResponsible, removePersonResponsible, deleteTask, getUserListTasks, getTeamListTasks, getTaskData
+  getUserListTasks, getTeamListTasks, getTaskData, createTask, changeTaskStatus,
+  changeTaskData, deleteTask, addPersonResponsible, removePersonResponsible
 };

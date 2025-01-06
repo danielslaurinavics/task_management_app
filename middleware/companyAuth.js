@@ -1,9 +1,5 @@
 const i18n = require('i18n');
-
 const { Company, CompanyManager } = require('../models/Company');
-const { authorizeAdmin } = require('./auth');
-
-
 
 async function checkForAccess(req, res, next) {
   if (!req.user)
@@ -33,20 +29,4 @@ async function checkForAccess(req, res, next) {
   }
 }
 
-
-
-async function checkForAccessOrAdmin(req, res, next) {
-  try {
-    await checkForAccess(req, res, next);
-    return next();
-  } catch (error) {
-    try {
-      await authorizeAdmin(req, res, next);
-      return next();
-    } catch (error) {
-      return res.status(403).render('error', {error: i18n.__('errors.ERR_14')});
-    }
-  }
-}
-
-module.exports = { checkForAccess, checkForAccessOrAdmin };
+module.exports = { checkForAccess };

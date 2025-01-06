@@ -8,7 +8,6 @@ const { Company } = require('../models/Company');
 const { Team } = require('../models/Team');
 const { TaskList } = require('../models/TaskList');
 
-
 const validation = require('../utils/validation');
 const sequelize = require('../config/database');
 
