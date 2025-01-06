@@ -43,7 +43,7 @@ async function populateUserTable() {
       const confirmed = confirm(user.allowed_to.block_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/users/${user.id}/block`;
+        const fetchUrl = `/users/${user.id}`;
         const response = await fetch(fetchUrl, { method: 'PATCH' });
         const data = await response.json();
 
@@ -59,7 +59,7 @@ async function populateUserTable() {
       const confirmed = confirm(user.allowed_to.unblock_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/users/${user.id}/unblock`;
+        const fetchUrl = `/users/${user.id}`;
         const response = await fetch(fetchUrl, { method: 'PATCH' });
         const data = await response.json();
 
@@ -75,7 +75,7 @@ async function populateUserTable() {
       const confirmed = confirm(user.allowed_to.delete_confirm);
 
       if (confirmed) {
-        const fetchUrl = `/users/${user.id}/delete`;
+        const fetchUrl = `/users/${user.id}`;
         const response = await fetch(fetchUrl, { method: 'DELETE' });
         const data = await response.json();
 

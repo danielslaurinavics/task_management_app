@@ -1,22 +1,21 @@
-// Importing thrid-party libraries and middleware.
 require('dotenv').config();
 const i18n = require('i18n');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Importing necessary models.
 const { User } = require('../models/User');
+const { Company } = require('../models/Company');
+const { Team } = require('../models/Team');
 const { TaskList } = require('../models/TaskList');
 
-// Importing validation utility functions.
-const validation = require('../utils/validation');
 
-// Importing database connection module.
+const validation = require('../utils/validation');
 const sequelize = require('../config/database');
 
 
 
 /**
+ * LIE_01
  * Returns an array of all system's users. Also gives
  * localized messages for use by client-side JavaScript.
  * @param {Object} req - Request object, empty.
@@ -26,19 +25,19 @@ const getAllUsers = async (req, res) => {
   try {
     const usersData = await User.findAll({ order: [['id', 'ASC']] });
     const users = []
-    usersData.forEach(user => {
+    usersData.forEach(u => {
       users.push({
-        id: user.id, name: user.name, email: user.email, phone: user.phone,
-        role: user.is_admin ? i18n.__('ui.roles.admin') : i18n.__('ui.roles.user'),
-        blocked: user.is_blocked ? i18n.__('ui.yes') : i18n.__('ui.no'),
-        admin: user.is_admin, block: user.is_blocked,
+        id: u.id, name: u.name, email: u.email, phone: u.phone,
+        role: u.is_admin ? i18n.__('ui.roles.admin') : i18n.__('ui.roles.user'),
+        blocked: u.is_blocked ? i18n.__('ui.yes') : i18n.__('ui.no'),
+        admin: u.is_admin, block: u.is_blocked,
         allowed_to: {
           block_word: i18n.__('ui.dashboard.admin.block_user'),
-          block_confirm: i18n.__('confirm.CON_03', { user: user.name }),
+          block_confirm: i18n.__('confirm.CON_03', { user: u.name }),
           unblock_word: i18n.__('ui.dashboard.admin.unblock_user'),
-          unblock_confirm: i18n.__('confirm.CON_04', { user: user.name }), 
+          unblock_confirm: i18n.__('confirm.CON_04', { user: u.name }), 
           delete_word: i18n.__('ui.dashboard.admin.delete_user'),
-          delete_confirm: i18n.__('confirm.CON_02', { user: user.name })
+          delete_confirm: i18n.__('confirm.CON_02', { user: u.name })
         }
       });
     });
@@ -52,6 +51,118 @@ const getAllUsers = async (req, res) => {
 
 
 /**
+ * LIE_02
+ * Returns an array of all company's managers. Also gives
+ * localized messages for use by client-side JavaScript.
+ * @param {Object} req - Request object containing the id of the company whose
+ * manages should be fetched.
+ * @param {Object} res - Response object for sending the result to the client.
+ */
+const getCompanyUsers = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id || isNaN(id))
+      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+
+    const company = await Company.findByPk(id);
+    if (!company)
+      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
+
+    const data = await User.findAll({
+      include: [
+        {
+          model: Company,
+          attributes: [],
+          through: {
+            attributes: []
+          },
+          where: { id: company.id },
+          required: true
+        }
+      ]
+    });
+
+    const users = [];
+    data.forEach(u => {
+      users.push({
+        id: u.id, name: u.name, email: u.email, phone: u.phone,
+        allowed_to: {
+          remove_word: i18n.__('ui.remove'),
+          remove_confirm: i18n.__('confirm.CON_07', { user: u.name })
+        }
+      })
+    })
+
+    res.status(200).json({ managers: users });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+}
+
+
+
+/**
+ * LIE_03
+ * Returns an array of all team's members. Also includes
+ * localized messages for client JavaScript handling
+ * @param {*} req - Request object containing id of the team for which the
+ * members have to be fetched.
+ * @param {*} res - Response object for sending the result to the client.
+ */
+const getTeamUsers = async (req, res) => {
+  const { id: team_id } = req.params;
+
+  try {
+    if (!team_id || isNaN(team_id))
+      return res.status(400).json({errors: [i18n.__('errors.ERR_01')]});
+
+    const team = await Team.findByPk(team_id);
+    if (!team)
+      return res.status(404).json({errors: [i18n.__('errors.ERR_19')]});
+
+    const data = await User.findAll({
+      include: [
+        {
+          model: Team,
+          attributes: ['id'],
+          through: {
+            attributes: ['is_manager']
+          },
+          where: { id: team.id },
+          required: true
+        }
+      ]
+    });
+    const participants = [];
+    data.forEach(u => {
+      const is_manager = u.Teams[0].TeamParticipant.is_manager;
+      participants.push({
+        id: u.id, name: u.name, email: u.email, phone: u.phone,
+        is_manager: is_manager,
+        role: is_manager ? i18n.__('ui.team.roles.manager'): i18n.__('ui.team.roles.participant'),
+        allowed_to: {
+          elevate_word: i18n.__('ui.team.elevate'),
+          lower_word: i18n.__('ui.team.lower'),
+          remove_word: i18n.__('ui.remove'),
+          elevate_confirm: i18n.__('confirm.CON_11', { user: user.name }),
+          lower_confirm: i18n.__('confirm.CON_12', { user: user.name }),
+          remove_confirm: i18n.__('confirm.CON_10', { user: user.name })
+        }
+      });
+    });
+
+    res.status(200).json({participants});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
+  }
+}
+
+
+
+/**
+ * LIE_04
  * Validates user credentials and logs the user into the
  * system in case of successful validation.
  * @param {Object} req - Request object containing user credentials.
@@ -87,16 +198,16 @@ const login = async (req, res) => {
       attributes: ['id', 'password', 'is_blocked']
     });
     if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_12')] });
+      return res.status(404).json({errors: [i18n.__('errors.ERR_12')]});
 
     // Checking whether the password is valid.
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
-      return res.status(401).json({ errors: [i18n.__('errors.ERR_12')] });
+      return res.status(401).json({errors: [i18n.__('errors.ERR_12')]});
 
     // Checking whether the user is blocked.
     if (user.is_blocked)
-      return res.status(403).json({ errors: [i18n.__('errors.ERR_13')] });
+      return res.status(403).json({errors: [i18n.__('errors.ERR_13')]});
 
     // In case of valid credentials, a JWT authentication token is created and
     // is saved in the cookies of the client.
@@ -112,29 +223,25 @@ const login = async (req, res) => {
     // Sending the successful login message.
     res.status(200).json({ success: true, message: i18n.__('success.SUC_01')});
   } catch (error) {
-    // Outputting the errors to the console and sending a
-    // generic internal server error message.
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    res.status(500).json({ errors: errors });
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 }
 
 
 
 /**
+ * LIE_05
  * Validates the information entered and creates a new user in
  * database if validation is successful.
  * @param {Object} req - Request object containing new user information.
  * @param {Object} res - Response object for sending the result to the client.
  */
 const register = async (req, res) => {
-  const errors = [];
   try {
     // Getting register form field values.
     let { name, email, phone, password, password_confirm } = req.body;
 
-    // Sanitizing the input by removing front and rear whitespaces.
     name = name.trim();
     email = email.trim();
     phone = phone.trim();
@@ -142,6 +249,7 @@ const register = async (req, res) => {
     password_confirm = password_confirm.trim();
 
     // Validation of entered values.
+    const errors = [];
     const validations = [
       {condition: !name || !email || !phone || !password || !password_confirm, error: 'ERR_01'},
       {condition: email && email.length > 255, error: 'ERR_02'},
@@ -157,8 +265,7 @@ const register = async (req, res) => {
     }
     if (errors.length > 0) return res.status(400).json({ errors: errors });
 
-    // Finding a user, who has a such e-mail address.
-    // Two users with the same e-mail address is not allowed.
+    // Finding a user, since two users with same e-mail address is not allowed.
     const foundUser = await User.findOne({
       where: { email },
       attributes: ['id']
@@ -166,11 +273,8 @@ const register = async (req, res) => {
     if (foundUser)
       return res.status(409).json({ errors: [i18n.__('errors.ERR_11')] });
 
-    // Creating a hash of the new user's password.
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Creating a new user entry to the database.
     const newUser = await User.create({
       name: name,
       email: email,
@@ -181,27 +285,23 @@ const register = async (req, res) => {
     // Creating a new task list for storing the new user's personal tasks
     const newTaskList = await TaskList.create({ owner_user: newUser.id });
 
-    // Sending the successful registration message.
-    res.status(201).json({ success: true, message: i18n.__('success.SUC_02')});
+    res.status(201).json({message: i18n.__('success.SUC_02')});
   } catch (error) {
-    // Outputting the errors to the console and sending a
-    // generic internal server error message.
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    res.status(500).json({ errors: errors });
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 }
 
 
 
 /**
+ * LIE_06
  * Logs the user out of the system.
  * @param {Object} req - Request object, empty for this function.
  * @param {Object} res - Response object for sending the result to the client.
  */
 const logout = async (req, res) => {
-  // Deletes the token cookie by setting
-  // the expiration date to the past
+  // Deletes the token cookie by setting the expiration date to the past
   res.cookie('jwt', '', {
     secure: process.env.COOKIES_SECURE === 'yes' ? true : false,
     httpOnly: true,
@@ -214,6 +314,7 @@ const logout = async (req, res) => {
 
 
 /**
+ * LIE_07
  * Validates the information entered and changes data of an existing user
  * in the database if validation is successful.
  * @param {Object} req - Request object containing new user information.
@@ -223,18 +324,15 @@ const changeData = async (req, res) => {
   const errors = [];
   try {
     let { id } = req.params;
-    // Getting user edit form field values.
     let { name, phone, current_password,
       new_password, password_confirm} = req.body;
-
-    // Sanitizing the input by removing front and rear whitespaces
+      
     name = name.trim();
     phone = phone.trim();
     current_password = current_password.trim();
     new_password = new_password.trim();
     password_confirm = password_confirm.trim();
 
-    // Validation of entered values.
     const validations = [
       {condition: !id || !name || !phone, error: 'ERR_01'},
       {condition: name && name.length > 255, error: 'ERR_03'},
@@ -248,7 +346,6 @@ const changeData = async (req, res) => {
     }
     if (errors.length > 0) return res.status(400).json({ errors });
 
-    // Finding the user for who the data will be changed.
     const user = await User.findOne({
       where: { id }, attributes: { include: ['password'] }
     });
@@ -263,8 +360,6 @@ const changeData = async (req, res) => {
         return res.status(403).json({ errors: [i18n.__('errors.ERR_10')] });
     }
 
-    // Changing user's data depending on available data.
-    // Saving the changed data to the database afterwards.
     user.name = name;
     user.phone = phone;
     if (new_password.length > 0) {
@@ -274,45 +369,39 @@ const changeData = async (req, res) => {
     }
     await user.save();
 
-    // Sending the successful editing message.
     res.status(200).json({ success: true, message: i18n.__('success.SUC_03') });
   } catch (error) {
-    // Outputting the errors to the console and sending a
-    // generic internal server error message.
     console.error(error);
-    errors.push(i18n.__('errors.ERR_18'));
-    res.status(500).json({ errors });
+    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
 };
 
 
 
 /**
+ * LIE_08
  * Blocks the user (bans the user from accessing the system).
  * @param {Object} req - Request object containing the ID of the blocking user.
  * @param {Object} res - Response object for sending the result to the client.
  */
-const blockUser = async (req, res) => {
-  try {
-    // Getting the user id from request parameters and validating it.
+const block = async (req, res) => {
     let { id } = req.params;
     if (!id || isNaN(id))
       return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
 
-    // Finding the user by its id. Returning an error if no such user was found.
+  try {
     const user = await User.findByPk(id);
     if (!user)
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
 
-    // Updating the user blocking status
-    user.is_blocked = true;
+    const action = user.is_blocked ? 'unblock' : 'block';
+    user.is_blocked = !user.is_blocked;
     await user.save()
 
-    // Sending the successful blocking message.
-    return res.status(200).json({ success: true, message: i18n.__('success.SUC_04')});
+    const message = action === 'block' ? i18n.__('success.SUC_04') : i18n.__('success.SUC_05')
+
+    return res.status(200).json({ success: true, message: message});
   } catch (error) {
-    // Outputting the errors to the console and sending a
-    // generic internal server error message.
     console.error(error);
     return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
   }
@@ -321,114 +410,26 @@ const blockUser = async (req, res) => {
 
 
 /**
- * Unblocks the user (restores right to access the system).
- * @param {Object} req - Request object containing the ID of the user to unblock.
- * @param {Object} res - Response object for sending the result to the client.
- */
-const unblockUser = async (req, res) => {
-  try {
-    // Getting the user id from request parameters and validating it.
-    let { id } = req.params;
-    if (!id || isNaN(id))
-      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
-
-    // Finding the user by its id . Returns an error if no such user was found.
-    const user = await User.findByPk(id);
-    if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
-
-    // Updating the user blocking status
-    user.is_blocked = false;
-    await user.save()
-
-    // Sending the successful blocking message.
-    return res.status(200).json({ success: true, message: i18n.__('success.SUC_05')});
-  } catch (error) {
-    // Outputting the error to the console and sending a
-    // generic internal server error message.
-    console.error(error);
-    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
-  }
-};
-
-
-
-/**
- * Deletes themselves from the system and also deletes all user-related data.
- * @param {Object} req - Request object containing the ID of the user to delete.
- * @param {Object} res - Response object for sending the result to the client.
- */
-const deleteSelf = async (req, res) => {
-  // Creating a transaction for a possibility of rollback if any errors occur.
-  const t = await sequelize.transaction();
-  try {
-    // Getting the user id from request parameters and validating the input
-    let { id } = req.params;
-    if (!id || isNaN(id))
-      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
-
-    // Finding the user by its id and returning an
-    // if such user wasn't found.
-    const user = await User.findByPk(id);
-    if (!user)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
-    
-    // Deleting the user and its data
-    // All user-related data will also be deleted, including its personal
-    // task list and its tasks, and also participation records in
-    // teams, comapnies and team tasks.
-    await user.destroy({ transaction: t });
-    await t.commit();
-
-    // Logs the user out of the system and redirects it
-    // to the homepage
-    res.cookie('jwt', '', {
-      secure: process.env.COOKIES_SECURE,
-      httpOnly: true,
-      sameSite: 'Strict',
-      expiresIn: new Date(0)
-    });
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_06') })
-  } catch (error) {
-    // Rolling back the deletion action, outputting the errors to the
-    // console and sending a generic internal server error message.
-    await t.rollback();
-    console.error(error);
-    res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
-  }
-}
-
-
-
-/**
+ * LIE_09
  * Deletes the user from the system together with its related data.
  * @param {Object} req - Request object containing the ID of the user to delete.
  * @param {Object} res - Response object for sending the result to the client.
  */
 const deleteUser = async (req, res) => {
-  // Creating a transaction for a possibility of rollback if any errors occur.
   const t = await sequelize.transaction();
+  let { id } = req.params;
+  if (!id || isNaN(id))
+    return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
+  
   try {
-    // Getting the user id from request parameters and validating the input
-    let { id } = req.params;
-    if (!id || isNaN(id))
-      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
-
-    // Finding the user by its id and returning an
-    // if such user wasn't found.
     const user = await User.findByPk(id);
     if (!user)
       return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
     
-    // Deleting the user and its data
-    // All user-related data will also be deleted, including its personal
-    // task list and its tasks, and also participation records in
-    // teams, comapnies and team tasks.
     await user.destroy({ transaction: t });
     await t.commit();
 
-    // Sending the successful deletion message.
-    res.status(200).json({ success: true, message: i18n.__('success.SUC_06') });
+    res.status(200).json({message: i18n.__('success.SUC_06')});
   } catch (error) {
     // Rolling back the deletion action, outputting the errors to the
     // console and sending a generic internal server error message.
@@ -439,6 +440,6 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
-  getAllUsers, login, register, logout, changeData,
-  blockUser, unblockUser, deleteSelf, deleteUser
+  getAllUsers, getTeamUsers, getCompanyUsers, 
+  login, register, logout, changeData, block, deleteUser
 };

@@ -30,15 +30,8 @@ document.getElementById('register-form').addEventListener('submit', async (event
   const responseData = await response.json();
 
   if (response.ok) {
-    if (responseData.success) {
-      const message = document.createElement('div');
-      message.className = 'alert alert-success';
-      message.role = 'alert';
-      message.textContent = responseData.message;
-      messageArea.appendChild(message);
-      
-      window.location.href = '/login';
-    }
+    alert(responseData.message);
+    window.location.href = '/login';
   } else {
     const errors = responseData.errors;
     errors.forEach(error => {

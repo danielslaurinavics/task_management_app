@@ -189,52 +189,6 @@ const getUserCompanies = async (req, res) => {
 
 
 
-
-const getCompanyManagers = async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!id || isNaN(id))
-      return res.status(400).json({ errors: [i18n.__('errors.ERR_01')] });
-
-    const company = await Company.findByPk(id);
-    if (!company)
-      return res.status(404).json({ errors: [i18n.__('errors.ERR_19')] });
-
-    const data = await User.findAll({
-      include: [
-        {
-          model: Company,
-          attributes: [],
-          through: {
-            attributes: []
-          },
-          where: { id: company.id },
-          required: true
-        }
-      ]
-    });
-
-    const managers = [];
-    data.forEach(manager => {
-      managers.push({
-        id: manager.id, name: manager.name, email: manager.email,
-        phone: manager.phone,
-        allowed_to: {
-          remove_word: i18n.__('ui.remove'),
-          remove_confirm: i18n.__('confirm.CON_07', { user: manager.name })
-        }
-      })
-    })
-
-    res.status(200).json({ managers });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ errors: [i18n.__('errors.ERR_18')] });
-  }
-}
-
-
-
 /**
  * Changes data of an already existing company.
  * @param {Object} req - Request object containing updated company's information.
@@ -371,6 +325,6 @@ const removeManager = async (req, res) => {
 };
 
 module.exports = {
-  getAllCompanies, getUserCompanies, createCompany, getCompanyManagers,
+  getAllCompanies, getUserCompanies, createCompany,
   changeCompanyData, addManager, removeManager, deleteCompany
 };

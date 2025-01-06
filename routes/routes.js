@@ -42,13 +42,8 @@ router.get('/users', auth.authenticate, auth.authorizeAdmin, user.getAllUsers);
 router.route('/users/:id')
   .get(auth.authenticate, (req, res) => res.render('./users/settings', { user: req.user }))
   .put(auth.authenticate, user.changeData)
-  .delete(auth.authenticate, user.deleteSelf);
-
-router.delete('/users/:id/delete', auth.authenticate, auth.authorizeAdmin, user.deleteUser)
-
-router.patch('/users/:id/block', auth.authenticate, auth.authorizeAdmin, user.blockUser);
-
-router.patch('/users/:id/unblock', auth.authenticate, auth.authorizeAdmin, user.unblockUser);
+  .patch(auth.authenticate, auth.authorizeAdmin, user.block)
+  .delete(auth.authenticate, user.deleteUser);
 
 router.get('/users/:id/list', auth.authenticate, auth.usersOnly, (req, res) => res.render('./lists/user', { user: req.user }));
 
@@ -73,7 +68,7 @@ router.get('/companies/:id/settings', auth.authenticate, auth.usersOnly, company
   (req, res) => res.render('./companies/settings', {user: req.user, company: req.company}));
 
 router.route('/companies/:id/managers')
-  .get(auth.authenticate, companyAuth.checkForAccess, company.getCompanyManagers)
+  .get(auth.authenticate, companyAuth.checkForAccess, user.getCompanyUsers)
   .post(auth.authenticate,/* companyAuth.checkForAccessOrAdmin,*/ company.addManager)
   .delete(auth.authenticate, companyAuth.checkForAccess, company.removeManager);
 
@@ -94,10 +89,9 @@ router.get('/teams/user/:id', auth.authenticate, team.getUserTeams);
 router.route('/teams/:id')
   .get(auth.authenticate, auth.usersOnly, teamAuth.checkForAccess,
     (req, res) => res.render('./teams/team', { user: req.user, team: req.team }))
-  .put(auth.authenticate, teamAuth.checkManager, team.changeTeamData)
 
 router.route('/teams/:id/participants')
-  .get(auth.authenticate, teamAuth.checkForAccess, team.getAllParticipants)
+  .get(auth.authenticate, teamAuth.checkForAccess, user.getTeamUsers)
   .post(auth.authenticate, team.addToTeam)
   .patch(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, team.changeRole)
   .delete(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, team.removeFromTeam);
