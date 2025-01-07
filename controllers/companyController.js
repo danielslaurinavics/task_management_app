@@ -1,3 +1,7 @@
+// controllers/companyController.js
+// Company module/controller functions.
+// Created by Daniels Laurinavičs, 2025-01-02.
+
 const i18n = require('i18n');
 
 const { User } = require('../models/User');
@@ -7,29 +11,22 @@ const validation = require('../utils/validation');
 const sequelize = require('../config/database');
 
 
-
 /**
  * UZN_01
  * Returns an array of all companies registered in the system.
- * @param {Object} req - Request object, empty.
- * @param {Object} res - Response object for sending the result to the client.
+ * Also adds localized messages for use by client-side JavaScript.
  */
 const getAllCompanies = async (req, res) => {
   try {
     const companyData = await Company.findAll({ order: [['id', 'ASC']] });
     const companies = []
-    companyData.forEach(company => {
+    companyData.forEach(c => {
       companies.push({
-        id: company.id,
-        name: company.name,
-        email: company.email,
-        phone: company.phone,
+        id: c.id, name: c.name, email: c.email, phone: c.phone,
         allowed_to: {
-          add_word: i18n.__('ui.dashboard.admin.add_to_company'),
           add_prompt: i18n.__('ui.dashboard.admin.add_to_company_prompt'),
-          add_confirm: i18n.__('msg.C06', { user: '%user', company: company.name }),
-          delete_word: i18n.__('ui.dashboard.admin.delete_company'),
-          delete_confirm: i18n.__('msg.C05', { name: company.name }),
+          add_confirm: i18n.__('msg.C06', { user: '%user', company: c.name }),
+          delete_confirm: i18n.__('msg.C05', { name: c.name }),
         }
       });
     })
@@ -41,17 +38,14 @@ const getAllCompanies = async (req, res) => {
 }
 
 
-
 /**
  * UZN_02
  * Creates a new company and saves it to the database.
- * @param {Object} req - Request object containing new company's information.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const createCompany = async (req, res) => {
+  let { name, email, phone } = req.body;
+  
   try {
-    let { name, email, phone } = req.body;
-    
     name = name.trim();
     email = email.trim();
     phone = phone.trim();
@@ -80,18 +74,15 @@ const createCompany = async (req, res) => {
 };
 
 
-
 /**
  * UZN_03
  * Changes data of an already existing company.
- * @param {Object} req - Request object containing updated company's information.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const changeCompanyData = async (req, res) => {
+  let { id } = req.params;
+  let { name, description, email, phone} = req.body;
+  
   try {
-    let { id } = req.params;
-    let { name, description, email, phone} = req.body;
-
     name = name.trim();
     description = description.trim();
     email = email.trim();
@@ -131,12 +122,9 @@ const changeCompanyData = async (req, res) => {
 };
 
 
-
 /**
  * UZN_04
- * Deletes the company and all of its related data from the database
- * @param {Object} req - Request object containing the ID of the company to delete.
- * @param {Object} res - Response object for sending the result to the client.
+ * Deletes the company and all of its related data from the database.
  */
 const deleteCompany = async (req, res) => {
   let { id } = req.params;
@@ -165,17 +153,14 @@ const deleteCompany = async (req, res) => {
 
 /**
  * UZN_05
- * Adds a company manager role to a user. This only affects the company
- * for which the user is added to.
- * @param {Object} req - Request object containing information about the company to
- * which the user will be added and the user's e-mail address.
- * @param {Object} res - Response object for sending the result to the client.
+ * Adds a company manager role to a user. This role is added only to
+ * a specific company and not for all companies.
  */
 const addManager = async (req, res) => {
+  let { id } = req.params;
+  let { email } = req.body;
+  
   try {
-    let { id } = req.params;
-    let { email } = req.body;
-
     email = email.trim();
 
     const errors = [];
@@ -213,13 +198,9 @@ const addManager = async (req, res) => {
 };
 
 
-
 /**
  * UZN_06
  * Deletes the company manager role from the user.
- * @param {Object} req - Request object containing the ID of the company and the ID
- * of the manager for who the manager entry must be deleted.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const removeManager = async (req, res) => {
   let { id } = req.params;
@@ -248,13 +229,8 @@ const removeManager = async (req, res) => {
 };
 
 
-
-
-
 /**
- * Gets a list of all companies the user is manager in.
- * @param {Object} req - Request object containing user's ID.
- * @param {Object} res - Response object for sending the result to the client.
+ * Gets an array of all companies in which the user is a manager.
  */
 const getUserCompanies = async (req, res) => {
   const { id: user_id } = req.params;
@@ -271,9 +247,7 @@ const getUserCompanies = async (req, res) => {
         {
           model: User,
           attributes: [],
-          through: {
-            attributes: []
-          },
+          through: { attributes: [] },
           where: { id: user_id },
           required: true
         }

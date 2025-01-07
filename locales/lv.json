@@ -169,6 +169,7 @@
 			"low": "Zema prioritāte",
 			"medium": "Vidēja prioritāte",
 			"high": "Augsta prioritāte"
-		}
+		},
+		"add_person": "Ievadi pievienojamā lietotāja e-pastu"
 	}
 }

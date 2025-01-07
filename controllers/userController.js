@@ -1,3 +1,7 @@
+// controllers/userController.js
+// User module/controller functions.
+// Created by Daniels Laurinavičs, 2025-01-02.
+
 require('dotenv').config();
 const i18n = require('i18n');
 const bcrypt = require('bcryptjs');
@@ -12,13 +16,10 @@ const validation = require('../utils/validation');
 const sequelize = require('../config/database');
 
 
-
 /**
  * LIE_01
  * Returns an array of all system's users. Also gives
  * localized messages for use by client-side JavaScript.
- * @param {Object} req - Request object, empty.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const getAllUsers = async (req, res) => {
   try {
@@ -36,27 +37,21 @@ const getAllUsers = async (req, res) => {
           block_confirm: i18n.__('msg.C03', { user: u.name }),
           unblock_word: i18n.__('ui.dashboard.admin.unblock_user'),
           unblock_confirm: i18n.__('msg.C04', { user: u.name }), 
-          delete_word: i18n.__('ui.dashboard.admin.delete_user'),
           delete_confirm: i18n.__('msg.C02', { user: u.name })
         }
       });
     });
     res.status(200).json({ users });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({errors: [i18n.__('msg.E16')]});
   }
 };
-
 
 
 /**
  * LIE_02
  * Returns an array of all company's managers. Also gives
  * localized messages for use by client-side JavaScript.
- * @param {Object} req - Request object containing the id of the company whose
- * manages should be fetched.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const getCompanyUsers = async (req, res) => {
   try {
@@ -86,13 +81,9 @@ const getCompanyUsers = async (req, res) => {
     usersData.forEach(u => {
       users.push({
         id: u.id, name: u.name, email: u.email, phone: u.phone,
-        allowed_to: {
-          remove_word: i18n.__('ui.remove'),
-          remove_confirm: i18n.__('msg.C07', { user: u.name })
-        }
+        allowed_to: { remove_confirm: i18n.__('msg.C07', { user: u.name }) }
       })
     })
-
     res.status(200).json({ managers: users });
   } catch (error) {
     console.log(error);
@@ -101,14 +92,10 @@ const getCompanyUsers = async (req, res) => {
 }
 
 
-
 /**
  * LIE_03
  * Returns an array of all team's members. Also includes
  * localized messages for client JavaScript handling
- * @param {*} req - Request object containing id of the team for which the
- * members have to be fetched.
- * @param {*} res - Response object for sending the result to the client.
  */
 const getTeamUsers = async (req, res) => {
   const { id: team_id } = req.params;
@@ -126,33 +113,26 @@ const getTeamUsers = async (req, res) => {
         {
           model: Team,
           attributes: ['id'],
-          through: {
-            attributes: ['is_manager']
-          },
+          through: { attributes: ['is_manager'] },
           where: { id: team.id },
           required: true
         }
       ]
     });
-    const participants = [];
+    const users = [];
     usersData.forEach(u => {
       const is_manager = u.Teams[0].TeamParticipant.is_manager;
-      participants.push({
-        id: u.id, name: u.name, email: u.email, phone: u.phone,
-        is_manager: is_manager,
+      users.push({
+        id: u.id, name: u.name, email: u.email, phone: u.phone, is_manager: is_manager,
         role: is_manager ? i18n.__('ui.team.roles.manager'): i18n.__('ui.team.roles.participant'),
         allowed_to: {
-          elevate_word: i18n.__('ui.team.elevate'),
-          lower_word: i18n.__('ui.team.lower'),
-          remove_word: i18n.__('ui.remove'),
           elevate_confirm: i18n.__('msg.C11', { user: u.name }),
           lower_confirm: i18n.__('msg.C12', { user: u.name }),
           remove_confirm: i18n.__('msg.C10', { user: u.name })
         }
       });
     });
-
-    res.status(200).json({participants});
+    res.status(200).json({participants: users});
   } catch (error) {
     console.error(error);
     res.status(500).json({ errors: [i18n.__('msg.E16')] });
@@ -160,23 +140,18 @@ const getTeamUsers = async (req, res) => {
 }
 
 
-
 /**
  * LIE_04
  * Validates user credentials and logs the user into the
  * system in case of successful validation.
- * @param {Object} req - Request object containing user credentials.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const login = async (req, res) => {
   try {
     let { email, password } = req.body;
 
-    // Sanitizing the input by removing front and rear whitespaces.
     email = email.trim();
     password = password.trim();
 
-    // Validation of entered values.
     const errors = [];
     const validations = [
       {condition: !email || !password, error: 'E01'},
@@ -188,7 +163,7 @@ const login = async (req, res) => {
     }
     if (errors.length > 0) return res.status(400).json({ errors: errors });
 
-    // Searching for the user according to its e-mail address.
+
     const user = await User.findOne({
       where: { email },
       attributes: ['id', 'password', 'is_blocked']
@@ -196,17 +171,13 @@ const login = async (req, res) => {
     if (!user)
       return res.status(404).json({errors: [i18n.__('msg.E12')]});
 
-    // Checking whether the password is valid.
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
       return res.status(401).json({errors: [i18n.__('msg.E12')]});
 
-    // Checking whether the user is blocked.
     if (user.is_blocked)
       return res.status(403).json({errors: [i18n.__('msg.E13')]});
 
-    // In case of valid credentials, a JWT authentication token is created and
-    // is saved in the cookies of the client.
     const jwtPayload = { userId: user.id };
     const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '1h'});
     res.cookie('jwt', token, {
@@ -215,8 +186,7 @@ const login = async (req, res) => {
       sameSite: 'Strict',
       maxAge: 3600000
     });
-
-    // Sending the successful login message.
+    
     res.status(200).json({ success: true });
   } catch (error) {
     console.error(error);
@@ -225,13 +195,10 @@ const login = async (req, res) => {
 }
 
 
-
 /**
  * LIE_05
  * Validates the information entered and creates a new user in
  * database if validation is successful.
- * @param {Object} req - Request object containing new user information.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const register = async (req, res) => {
   try {
@@ -275,9 +242,8 @@ const register = async (req, res) => {
       password: hashedPassword,
       phone: phone
     });
-
     const newTaskList = await TaskList.create({ owner_user: newUser.id });
-
+    
     res.status(201).json({message: i18n.__('msg.S01')});
   } catch (error) {
     console.error(error);
@@ -286,12 +252,9 @@ const register = async (req, res) => {
 }
 
 
-
 /**
  * LIE_06
  * Logs the user out of the system.
- * @param {Object} req - Request object, empty for this function.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const logout = async (req, res) => {
   // Deletes the token cookie by setting the expiration date to the past
@@ -305,13 +268,10 @@ const logout = async (req, res) => {
 };
 
 
-
 /**
  * LIE_07
  * Validates the information entered and changes data of an existing user
  * in the database if validation is successful.
- * @param {Object} req - Request object containing new user information.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const changeData = async (req, res) => {
   const errors = [];
@@ -368,22 +328,18 @@ const changeData = async (req, res) => {
 };
 
 
-
 /**
  * LIE_08
  * Blocks the user (bans the user from accessing the system).
- * @param {Object} req - Request object containing the ID of the blocking user.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const block = async (req, res) => {
-    let { id } = req.params;
-    if (!id || isNaN(id))
-      return res.status(400).json({ errors: [i18n.__('msg.E20')] });
+  let { id } = req.params;
+  if (!id || isNaN(id))
+    return res.status(400).json({ errors: [i18n.__('msg.E20')] });
 
   try {
     const user = await User.findByPk(id);
-    if (!user)
-      return res.status(404).json({ errors: [i18n.__('msg.E18')] });
+    if (!user) return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
     const action = user.is_blocked ? 'unblock' : 'block';
     user.is_blocked = !user.is_blocked;
@@ -391,7 +347,7 @@ const block = async (req, res) => {
 
     const message = action === 'block' ? i18n.__('msg.S03') : i18n.__('msg.S04')
 
-    return res.status(200).json({ success: true, message: message });
+    res.status(200).json({ success: true, message: message });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ errors: [i18n.__('msg.E16')] });
@@ -399,19 +355,16 @@ const block = async (req, res) => {
 };
 
 
-
 /**
  * LIE_09
  * Deletes the user from the system together with its related data.
- * @param {Object} req - Request object containing the ID of the user to delete.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const deleteUser = async (req, res) => {
-  const t = await sequelize.transaction();
   let { id } = req.params;
   if (!id || isNaN(id))
     return res.status(400).json({ errors: [i18n.__('msg.E20')] });
   
+  const t = await sequelize.transaction();
   try {
     const user = await User.findByPk(id);
     if (!user)

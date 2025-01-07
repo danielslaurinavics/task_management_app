@@ -24,8 +24,8 @@ async function populateManagerTable() {
 
     const actionCell = document.createElement('td');
     const removeButton = document.createElement('button');
-    removeButton.textContent = manager.allowed_to.remove_word;
-    removeButton.className = 'btn btn-sm btn-danger';
+    removeButton.textContent = '✖';
+    removeButton.className = 'btn btn-sm btn-danger fs-6';
     removeButton.addEventListener('click', async () => {
       confirmed = confirm(manager.allowed_to.remove_confirm);
 
@@ -77,11 +77,11 @@ async function populateTeamsTable() {
     const addButton = document.createElement('button');
     const deleteButton = document.createElement('button');
 
-    addButton.textContent = team.allowed_to.add_word;
-    deleteButton.textContent = team.allowed_to.delete_word;
+    addButton.textContent = '✚'
+    deleteButton.textContent = '✖';
 
-    addButton.className = 'btn btn-outline-primary btn-sm ms-1';
-    deleteButton.className = 'btn btn-danger btn-sm ms-1';
+    addButton.className = 'btn btn-outline-primary btn-sm ms-1 fs-6';
+    deleteButton.className = 'btn btn-danger btn-sm ms-1 fs-6';
 
     addButton.addEventListener('click', async () => {
       const user_email = prompt(team.allowed_to.add_prompt);

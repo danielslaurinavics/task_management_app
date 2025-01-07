@@ -33,11 +33,11 @@ async function populateUserTable() {
 
     blockButton.textContent = user.allowed_to.block_word;
     unblockButton.textContent = user.allowed_to.unblock_word;
-    deleteButton.textContent = user.allowed_to.delete_word;
+    deleteButton.textContent = '✖';
 
     blockButton.className = 'btn btn-outline-primary btn-sm ms-1';
     unblockButton.className = 'btn btn-outline-primary btn-sm ms-1';
-    deleteButton.className = 'btn btn-danger btn-sm ms-1';
+    deleteButton.className = 'btn btn-danger btn-sm ms-1 fs-6';
 
     blockButton.addEventListener('click', async () => {
       const confirmed = confirm(user.allowed_to.block_confirm);
@@ -126,11 +126,11 @@ async function populateCompanyTable() {
     const addUserButton = document.createElement('button');
     const deleteButton = document.createElement('button');
 
-    addUserButton.textContent = company.allowed_to.add_word;
-    deleteButton.textContent = company.allowed_to.delete_word;
+    addUserButton.textContent = '✚';
+    deleteButton.textContent = '✖';
 
-    addUserButton.className = 'btn btn-outline-primary btn-sm ms-1';
-    deleteButton.className = 'btn btn-danger btn-sm ms-1';
+    addUserButton.className = 'btn btn-outline-primary btn-sm ms-1 fs-6';
+    deleteButton.className = 'btn btn-danger btn-sm ms-1 fs-6';
 
     addUserButton.addEventListener('click', async () => {
       const user_email = prompt(company.allowed_to.add_prompt);

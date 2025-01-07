@@ -169,6 +169,7 @@
 			"low": "Low Priority",
 			"medium": "Medium Priority",
 			"high": "High Priority"
-		}
+		},
+		"add_person": "Enter the email of the user to add"
 	}
 }

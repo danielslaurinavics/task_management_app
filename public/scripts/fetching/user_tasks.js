@@ -61,18 +61,20 @@ async function populateTasks() {
     </div>
     `;
 
+    // Defines buttons for each task.
     const changeData = document.createElement('a');
     const changeStatus = document.createElement('button');
     const deleteTask = document.createElement('button');
 
-    changeData.textContent = task.allowed_to.change_word;
-    changeStatus.textContent = task.allowed_to.status_word;
-    deleteTask.textContent = task.allowed_to.delete_word;
+    changeData.textContent = '⛭';
+    changeStatus.textContent = '⇒';
+    deleteTask.textContent = '✖';
     
-    changeData.className = 'btn btn-sm btn-light ms-1';
-    changeStatus.className = 'btn btn-sm btn-light ms-1';
-    deleteTask.className = 'btn btn-sm btn-danger ms-1';
+    changeData.className = 'btn btn-sm btn-light ms-1 fs-6';
+    changeStatus.className = 'btn btn-sm btn-light ms-1 fs-6';
+    deleteTask.className = 'btn btn-sm btn-danger ms-1 fs-6';
 
+    // Adds functionality for "Change data" button.
     changeData.href = `/tasks/user/edit/${task.id}`;
     changeStatus.addEventListener('click', async () => {
       const response = await fetch(`/list/user/${userId}`, {
@@ -90,6 +92,7 @@ async function populateTasks() {
       }
     });
     
+    // Adds functionality for "Delete task" button.
     deleteTask.addEventListener('click', async () => {
       const confirmed = confirm(task.allowed_to.delete_confirm);
 
@@ -114,27 +117,12 @@ async function populateTasks() {
     if (task.status < 3) taskDiv.appendChild(changeStatus);
     taskDiv.appendChild(deleteTask);
 
-    switch (task.status) {
-      case 0:
-        upcomingTasksDiv.appendChild(taskDiv);
-        break;
-
-      case 1:
-        startedTasksDiv.appendChild(taskDiv);
-        break;
-
-      case 2:
-        ongoingTasksDiv.appendChild(taskDiv);
-        break;
-
-      case 3:
-        completedTasksDiv.appendChild(taskDiv);;
-        break;
-
-      default:
-        upcomingTasksDiv.appendChild(taskDiv);
-        break;
-    }
+    // Add the task to the corresponding status's DIV.
+    if (task.status === 0) upcomingTasksDiv.appendChild(taskDiv);
+    else if (task.status === 1) startedTasksDiv.appendChild(taskDiv);
+    else if (task.status === 2) ongoingTasksDiv.appendChild(taskDiv);
+    else if (task.status === 3) completedTasksDiv.appendChild(taskDiv);
+    else upcomingTasksDiv.appendChild(taskDiv);
   });
 }
 

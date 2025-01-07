@@ -32,13 +32,13 @@ async function populateTeamParticipants() {
     const lowerRoleBtn = document.createElement('button');
     const removeRoleBtn = document.createElement('button');
 
-    elevateRoleBtn.textContent = member.allowed_to.elevate_word;
-    lowerRoleBtn.textContent = member.allowed_to.lower_word;
-    removeRoleBtn.textContent = member.allowed_to.remove_word;
+    elevateRoleBtn.textContent = '⇑';
+    lowerRoleBtn.textContent = '⇓';
+    removeRoleBtn.textContent = "✖"
 
-    elevateRoleBtn.className = 'btn btn-sm btn-outline-primary ms-1';
-    lowerRoleBtn.className = 'btn btn-sm btn-outline-primary ms-1';
-    removeRoleBtn.className = 'btn btn-sm btn-danger ms-1';
+    elevateRoleBtn.className = 'btn btn-sm btn-outline-primary ms-1 fs-6';
+    lowerRoleBtn.className = 'btn btn-sm btn-outline-primary ms-1 fs-6';
+    removeRoleBtn.className = 'btn btn-sm btn-danger ms-1 fs-6';
   
     elevateRoleBtn.addEventListener('click', async () => {
       const confirmed = confirm(member.allowed_to.elevate_confirm);

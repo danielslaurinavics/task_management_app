@@ -1,10 +1,12 @@
 async function populateTasks() {
+  // Gets current team and user ID values
   const cuid = document.getElementById('user-id').value;
   const tid = document.getElementById('team-id').value;
   const isManager = JSON.parse(document.getElementById('team-manager').value);
   const userId = parseInt(cuid, 10);
   const teamId = parseInt(tid, 10);
 
+  // Gets the DIV elements of the tasks array.
   const upcomingTasksDiv = document.getElementById('upcoming-tasks');
   const startedTasksDiv = document.getElementById('started-tasks');
   const ongoingTasksDiv = document.getElementById('ongoing-tasks');
@@ -73,7 +75,7 @@ async function populateTasks() {
       span.textContent = person.name;
       if (isManager && task.status < 3) {
         const remove = document.createElement('button');
-        remove.textContent = 'X';
+        remove.textContent = '✖';
         remove.className = 'btn btn-sm btn-danger ms-2';
         remove.addEventListener('click', async () => {
           const response = await fetch(`/tasks/${teamId}/persons`, {
@@ -96,22 +98,25 @@ async function populateTasks() {
     })
     taskDiv.appendChild(personData);
     
+    // Defines buttons for each task.
     const changeData = document.createElement('a');
     const changeStatus = document.createElement('button');
     const deleteTask = document.createElement('button');
     const addPerson = document.createElement('button');
 
-    changeData.textContent = task.allowed_to.change_word;
-    changeStatus.textContent = task.allowed_to.status_word;
-    deleteTask.textContent = task.allowed_to.delete_word;
-    addPerson.textContent = '+';
+    changeData.textContent = '⛭';
+    changeStatus.textContent = '⇒';
+    deleteTask.textContent = '✖';
+    addPerson.textContent = '✚';
     
-    changeData.className = 'btn btn-sm btn-light ms-1';
-    changeStatus.className = 'btn btn-sm btn-light ms-1';
-    deleteTask.className = 'btn btn-sm btn-danger ms-1';
-    addPerson.className = 'btn btn-sm btn-light ms-1';
+    changeData.className = 'btn btn-sm btn-light ms-1 fs-6';
+    changeStatus.className = 'btn btn-sm btn-light ms-1 fs-6';
+    deleteTask.className = 'btn btn-sm btn-danger ms-1 fs-6';
+    addPerson.className = 'btn btn-sm btn-light ms-1 fs-6';
 
     changeData.href = `/tasks/team/${teamId}/edit/${task.id}`;
+
+    // Adds functionality to "Change status" button.
     changeStatus.addEventListener('click', async () => {
       const response = await fetch(`/list/team/${teamId}`, {
         method: 'PATCH',
@@ -128,6 +133,7 @@ async function populateTasks() {
       }
     });
     
+    // Adds functionality to "Delete task" button.
     deleteTask.addEventListener('click', async () => {
       const confirmed = confirm(task.allowed_to.delete_confirm);
 
@@ -148,6 +154,7 @@ async function populateTasks() {
       }
     });
 
+    // Adds functionality to "Add person to task" button
     addPerson.addEventListener('click', async () => {
       const email = prompt(task.allowed_to.add_prompt);
 
@@ -172,28 +179,13 @@ async function populateTasks() {
     if (task.status < 3 && (isAssigned || isManager)) taskDiv.appendChild(changeStatus);
     if (isManager) taskDiv.appendChild(addPerson);
     if (isManager) taskDiv.appendChild(deleteTask);
-
-    switch (task.status) {
-      case 0:
-        upcomingTasksDiv.appendChild(taskDiv);
-        break;
-
-      case 1:
-        startedTasksDiv.appendChild(taskDiv);
-        break;
-
-      case 2:
-        ongoingTasksDiv.appendChild(taskDiv);
-        break;
-
-      case 3:
-        completedTasksDiv.appendChild(taskDiv);;
-        break;
-
-      default:
-        upcomingTasksDiv.appendChild(taskDiv);
-        break;
-    }
+    
+    // Add the task to the corresponding status's DIV.
+    if (task.status === 0) upcomingTasksDiv.appendChild(taskDiv);
+    else if (task.status === 1) startedTasksDiv.appendChild(taskDiv);
+    else if (task.status === 2) ongoingTasksDiv.appendChild(taskDiv);
+    else if (task.status === 3) completedTasksDiv.appendChild(taskDiv);
+    else upcomingTasksDiv.appendChild(taskDiv);
   });
 }
 

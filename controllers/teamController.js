@@ -1,3 +1,7 @@
+// controllers/teamController.js
+// Team module/controller functions.
+// Created by Daniels Laurinavičs, 2025-01-02.
+
 const i18n = require('i18n');
 
 const { User } = require('../models/User');
@@ -10,13 +14,10 @@ const validation = require('../utils/validation');
 const sequelize = require('../config/database');
 
 
-
 /**
  * KOM_01
- * Returns an array of all teams owned by the company
- * @param {Object} req - Request object containing the ID of the company whose
- * tasks have to be searched
- * @param {Object} res - Response object for sending the result to the client.
+ * Returns data of all teams which belong to the company.
+ * Also gives localized messages for use by client-side JavaScript.
  */
 const getAllCompanyTeams = async (req, res) => {
   let { id: companyId } = req.params;
@@ -55,12 +56,9 @@ const getAllCompanyTeams = async (req, res) => {
 }
 
 
-
 /**
  * KOM_02
- * Creates a new team
- * @param {Object} req - Request object containing new team's information.
- * @param {Object} res - Response object for sending the result to the client.
+ * Creates a new team.
  */
 const createTeam = async (req, res) => {
   let { name, description } = req.body;
@@ -99,15 +97,13 @@ const createTeam = async (req, res) => {
 };
 
 
-
 /**
  * KOM_03
  * Deletes the team and all of its related data from the database.
- * @param {Object} req - Request object containing the ID of the team to be deleted.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const deleteTeam = async (req, res) => {
   const { team_id } = req.body;
+  
   const t = await sequelize.transaction();
   try {
     if (!team_id || isNaN(team_id))
@@ -120,7 +116,6 @@ const deleteTeam = async (req, res) => {
     await team.destroy();
     t.commit();
 
-    // Sending the successful deletion message
     res.status(200).json({ success: true, message: i18n.__('msg.S13')});
   } catch (error) {
     await t.rollback();
@@ -130,13 +125,9 @@ const deleteTeam = async (req, res) => {
 };
 
 
-
 /**
  * KOM_04
  * Adds a new team participant user to the team.
- * @param {Object} req - Request object containing the team ID and the e-mail of the user
- * who has to be added to the team.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const addToTeam = async (req, res) => {
   let { id: team_id } = req.params;
@@ -159,16 +150,18 @@ const addToTeam = async (req, res) => {
     if (!team || !user)
       return res.status(404).json({ errors: [i18n.__('msg.E18')] });
 
+    // The user can have only one role per team.
     const participantList = await TeamParticipant.findAll({ where: { team_id } });
     if (participantList.find(member => member.user_id === user.id))
       return res.status(409).json({ errors: [i18n.__('msg.E19')] });
 
+    // Checks whether there are managers in the team.
+    // If there are no managers, the user will automatically become one.
     const areManagers = await TeamParticipant.findAll({ where: { team_id, is_manager: true }});
     
     const newParticipant = await TeamParticipant.create({
-     team_id,
-     user_id: user.id,
-     is_manager: areManagers.length > 0 ? false : true
+      team_id, user_id: user.id,
+      is_manager: areManagers.length > 0 ? false : true
     });
 
     res.status(200).json({message: i18n.__('msg.S08')});
@@ -179,19 +172,15 @@ const addToTeam = async (req, res) => {
 };
 
 
-
 /**
  * KOM_05
  * Removes the team participant user from the team.
- * @param {Object} req - Request object containing the team ID and the user ID of the user
- * who has to be removed from the team.
- * @param {Object} res - Response object for sending the result to the client.
  */
 const removeFromTeam = async (req, res) => {
   let { id: team_id } = req.params;
   let { user_id } = req.body;
+  
   const t = await sequelize.transaction();
-
   try {
     if (!team_id || isNaN(team_id) || !user_id && isNaN(user_id))
       return res.status(400).json({ errors: [i18n.__('msg.E20')] });
@@ -204,7 +193,7 @@ const removeFromTeam = async (req, res) => {
 
     await teamRelation.destroy();
     await t.commit();
-    res.status(200).json({ message: i18n.__('msg.E09')} );
+    res.status(200).json({ message: i18n.__('msg.S09')} );
   } catch (error) {
     await t.rollback();
     console.log(error);
@@ -213,14 +202,11 @@ const removeFromTeam = async (req, res) => {
 };
 
 
-
 /**
  * KOM_06
  * Changes the role of the user.
- * If the user is a member - the user gets elevated to team manager
+ * If the user is a member - the user gets elevated to team manager.
  * Otherwise, the user gets lowered to team member
- * @param {*} req - Response object containing team and user information
- * @param {*} res - Response object for sending the result to the client.
  */
 const changeRole = async (req, res) => {
   const { id: team_id } = req.params;
@@ -244,16 +230,12 @@ const changeRole = async (req, res) => {
 }
 
 
-
 /**
- * Get all the teams where the user is part of
- * @param {Object} req - Request object containing id of the user whose
- * team participation has to be searched.
- * @param {Object} res - Response object for sending the result to the client.
- * @returns 
+ * Get all teams where the user participates in.
  */
 const getUserTeams = async (req, res) => {
   const  {id: user_id} = req.params;
+  
   try {
     if (!user_id || isNaN(user_id))
       return res.status(400).json({ errors: [i18n.__('msg.E20')] });
@@ -267,9 +249,7 @@ const getUserTeams = async (req, res) => {
         {
           model: User,
           attributes: [],
-          through: {
-            attributes: ['is_manager']
-          },
+          through: { attributes: ['is_manager'] },
           where: { id: user_id },
           required: true
         }

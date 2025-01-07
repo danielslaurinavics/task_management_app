@@ -1,8 +1,20 @@
+// middleware/companyAuth.js
+// Middleware functions for locale management
+// Created by Daniels Laurinavičs, 2025-01-05.
+
 const i18n = require('i18n');
 
 const { Team, TeamParticipant } = require('../models/Team');
 const { TaskList } = require('../models/TaskList');
 
+
+/**
+ * Checks whether the user can access the specified team's resources.
+ * User's data is acquired through authenticate() middleware, team ID is
+ * acquired from the team page access request parameters.
+ * Grants access to the team if the user is part of it (and also adds team data to it),
+ * otherwise displays an error and stops granting access to the page.
+ */
 async function checkForAccess(req, res, next) {
   if (!req.user)
     return res.status(401).render('error', {error: i18n.__('msg.E14')});
@@ -30,20 +42,19 @@ async function checkForAccess(req, res, next) {
     const team = {
       id: teamData.id,
       name: teamData.name,
-      description: teamData.description,
       is_manager: teamRelation.is_manager,
       list_id: taskList.id
     } 
     req.team = team;
     next();
-  } catch (error) {
-    console.error(error);
-    res.status(500).render('error', {error: i18n.__('msg.E16')});
-  }
+  } catch (error) { res.status(500).render('error', {error: i18n.__('msg.E16')}); }
 }
 
 
-
+/**
+ * Checks whether the user who has access to the team is its manager.
+ * If the user is not the team's manager, he's denied access.
+ */
 async function checkManager(req, res, next) {
   if (req.team) {
     if (req.team.is_manager) return next();
