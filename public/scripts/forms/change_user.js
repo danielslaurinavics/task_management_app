@@ -1,3 +1,5 @@
+// Enable or disable the password check section if no input was found
+// in the current password field.
 document.getElementById('current_password').addEventListener('input', () => {
   const currentInput = document.getElementById('current_password');
   const newInput = document.getElementById('new_password');
@@ -22,6 +24,7 @@ document.getElementById('user-change-form').addEventListener('submit', async (ev
 
   const formData = new FormData(event.target);
   
+  // Get form data
   const data = {
     name: formData.get('name').trim(),
     phone: formData.get('phone').trim(),
@@ -30,6 +33,7 @@ document.getElementById('user-change-form').addEventListener('submit', async (ev
     password_confirm: formData.get('password_confirm')?.trim() || '',
   };
 
+  // Get the message area data and clear password fields.
   const messageArea = document.getElementById('message-area');
   const currentPassowrdInput = document.getElementById('current_password');
   const newPassowrdInput = document.getElementById('new_password');
@@ -45,6 +49,7 @@ document.getElementById('user-change-form').addEventListener('submit', async (ev
   const user_id = document.getElementById('user-id').value;
   const fetchUrl = `/users/${user_id}`
 
+  // Do the data change request.
   const response = await fetch(fetchUrl, {
     method: 'PUT',
     headers: {
@@ -54,6 +59,8 @@ document.getElementById('user-change-form').addEventListener('submit', async (ev
   });
   const responseData = await response.json();
 
+  // Show the success message if it's successful, otherwise
+  // display all errors that occured during the request.
   if (response.ok) {
     if (responseData.success) {
       const message = document.createElement('div');

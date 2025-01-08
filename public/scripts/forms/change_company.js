@@ -3,6 +3,7 @@ document.getElementById('change-company-form').addEventListener('submit', async 
   const coid = document.getElementById('company-id').value;
   const companyId = parseInt(coid, 10);
 
+  // Get entered form data
   const formData = new FormData(event.target);
   const data = {
     name: formData.get('company_name')?.trim() || '',
@@ -11,9 +12,11 @@ document.getElementById('change-company-form').addEventListener('submit', async 
     phone: formData.get('company_phone')?.trim() || ''
   };
 
+  // Clear the message area
   const messageArea = document.getElementById('message-area');
   messageArea.innerHTML = '';
 
+  // Do the data change request
   const response = await fetch(`/companies/${companyId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -21,10 +24,15 @@ document.getElementById('change-company-form').addEventListener('submit', async 
   });
   const responseData = await response.json();
 
+  // Give a message if data change is successful, otherwise
+  // display all errors which occured during the process.
   if (response.ok) {
     if (responseData.success) {
-      window.location.href = `/companies/${companyId}`;
-      alert(responseData.message);
+      const message = document.createElement('div');
+      message.className = 'alert alert-success';
+      message.role = 'alert';
+      message.textContent = responseData.message;
+      messageArea.appendChild(message);
     }
   } else {
     const errors = responseData.errors;

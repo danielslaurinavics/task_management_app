@@ -4,6 +4,7 @@ document.getElementById('register-form').addEventListener('submit', async (event
 
   const formData = new FormData(event.target);
 
+  // Get registration form data
   const data = {
     name: formData.get('name').trim(),
     email: formData.get('email').trim(),
@@ -12,6 +13,7 @@ document.getElementById('register-form').addEventListener('submit', async (event
     password_confirm: formData.get('password_confirm').trim()
   };
 
+  // Clear the message area and password fields.
   const messageArea = document.getElementById('message-area');
   const passwordInput = document.getElementById('password');
   const passwordConfirmInput = document.getElementById('password_confirm');
@@ -20,6 +22,7 @@ document.getElementById('register-form').addEventListener('submit', async (event
   passwordInput.value = '';
   passwordConfirmInput.value = '';
 
+  // Do the registration request.
   const response = await fetch('/register', {
     method: 'POST',
     headers: {
@@ -29,6 +32,8 @@ document.getElementById('register-form').addEventListener('submit', async (event
   });
   const responseData = await response.json();
 
+  // Notify the user and redirect to the login page if successful,
+  // otherwise show all errors that occured during the process.
   if (response.ok) {
     alert(responseData.message);
     window.location.href = '/login';

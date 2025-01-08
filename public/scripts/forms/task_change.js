@@ -1,20 +1,25 @@
 const userId = parseInt(document.getElementById('user-id').value, 10);
 
+// Get the data about the task for automatic 
 async function getTaskData() {
+  // Get the task's ID.
   const path = window.location.pathname;
   const segments = path.split('/');
   const taskId = parseInt(segments[segments.length - 1], 10);
   
+  // Get the data about the task.
   document.getElementById('task-id').value = taskId;
   const fetchUrl = `/tasks/${taskId}/data`;
   const response = await fetch(fetchUrl, { method: 'GET' });
   const data = await response.json();
 
+  // Alert in case of an error during data fetching request,
   if (!response.ok) {
     alert(data.errors);
     return;
   }
   
+  // Format the date in order for the datetime-local input object to accept.
   const task = data.task;
   let formattedDate = '';
   if (task.due_date) {
@@ -24,6 +29,7 @@ async function getTaskData() {
     formattedDate = new Date(timestamp - tz).toISOString().slice(0, 16);
   }
 
+  // Write the acquired task values to the UI.
   document.getElementById('task_name').value = task.name;
   document.getElementById('task_description').innerHTML = task.description;
   document.getElementById('task_priority').value = task.priority;
@@ -62,6 +68,7 @@ document.getElementById('change-task-form').addEventListener('submit', async (ev
   event.preventDefault();
   const taskId = parseInt(document.getElementById('task-id').value, 10);
 
+  // Get form data and change them accordingly.
   const formData = new FormData(event.target);
   let due_date = formData.get('task_due')?.trim();
   if (due_date) {
@@ -76,10 +83,11 @@ document.getElementById('change-task-form').addEventListener('submit', async (ev
     due_date: due_date
   };
 
+  // Clear the message area
   const messageArea = document.getElementById('message-area');
   messageArea.innerHTML = '';
 
-
+  // Do the request to the task data change controller function.
   const response = await fetch(`/list/user/${userId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -87,6 +95,8 @@ document.getElementById('change-task-form').addEventListener('submit', async (ev
   });
   const responseData = await response.json();
 
+  // Display a success message if the request was successful, otherwise
+  // display all errors which happened during the request.
   if (response.ok) {
     const message = responseData.message;
     const alert = document.createElement('div');
@@ -107,6 +117,7 @@ document.getElementById('change-task-form').addEventListener('submit', async (ev
   }
 });
 
+// Changes the task priority text in case of value change.
 document.getElementById('task_priority').addEventListener('input', async () => {
   const value = document.getElementById('task_priority').value;
 

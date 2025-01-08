@@ -9,7 +9,6 @@ function isValidEmail(email) {
 }
 
 
-
 /**
  * Checks the string for a valid phone number (e.g. "+37100000000")
  * @param {String} phone - String to be checked
@@ -20,8 +19,4 @@ function isValidPhone(phone) {
   return regex.test(phone);
 }
 
-
-
-module.exports = {
-  isValidEmail, isValidPhone
-};
+module.exports = { isValidEmail, isValidPhone };

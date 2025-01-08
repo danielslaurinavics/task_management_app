@@ -28,7 +28,7 @@ router.route('/register')
   .post(auth.redirectIfLoggedIn, user.register);
 
 
-
+// Dashboard and its redirection routes.
 router.get('/home', auth.authenticate, auth.goToDashboard);
 router.get('/admin', auth.authenticate, auth.authorizeAdmin,
   (req, res) => res.render('./dashboard/admin_dashboard', { user: req.user }));
@@ -36,7 +36,7 @@ router.get('/dashboard', auth.authenticate, auth.usersOnly,
   (req, res) => res.render('./dashboard/user_dashboard', { user: req.user }));
 
 
-
+// User function routes
 router.get('/users', auth.authenticate, auth.authorizeAdmin, user.getAllUsers);
 
 router.route('/users/:id')
@@ -48,7 +48,7 @@ router.route('/users/:id')
 router.get('/users/:id/list', auth.authenticate, auth.usersOnly, (req, res) => res.render('./lists/user', { user: req.user }));
 
 
-
+// Company function routes
 router.route('/companies')
   .get(auth.authenticate, auth.authorizeAdmin, company.getAllCompanies)
   .post(auth.authenticate, auth.authorizeAdmin, company.createCompany);
@@ -78,9 +78,7 @@ router.route('/companies/:id/teams')
   .delete(auth.authenticate, companyAuth.checkForAccess, team.deleteTeam)
 
 
-
-
-
+// Team function routes
 router.get('/teams/create/:id', auth.authenticate, auth.usersOnly, companyAuth.checkForAccess,
   (req, res) => res.render('./teams/create', {user: req.user, company: req.company}));
 
@@ -97,7 +95,7 @@ router.route('/teams/:id/participants')
   .delete(auth.authenticate, teamAuth.checkForAccess, teamAuth.checkManager, team.removeFromTeam);
 
 
-
+  // Task (and their list) routes
 router.route('/list/user/:id')
   .get(auth.authenticate, task.getUserListTasks)
   .post(auth.authenticate, task.createTask)

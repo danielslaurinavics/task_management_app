@@ -6,8 +6,12 @@ async function populateUserTable() {
   const response = await fetch('/users', { method: 'GET' });
   const data = await response.json();
 
-  if (!response.ok) return;
+  if (!response.ok) {
+    alert(data.errors);
+    return;
+  }
 
+  // Clear the users table and fill it with new data
   usersTable.innerHTML = '';
   const users = data.users;
 
@@ -27,6 +31,7 @@ async function populateUserTable() {
 
     const actionCell = document.createElement('td');
 
+    // Define block/unblock user and user delete buttons.
     const blockButton = document.createElement('button');
     const unblockButton = document.createElement('button');
     const deleteButton = document.createElement('button');
@@ -39,6 +44,7 @@ async function populateUserTable() {
     unblockButton.className = 'btn btn-outline-primary btn-sm ms-1';
     deleteButton.className = 'btn btn-danger btn-sm ms-1 fs-6';
 
+    // Add functionality to "Block user" button.
     blockButton.addEventListener('click', async () => {
       const confirmed = confirm(user.allowed_to.block_confirm);
 
@@ -55,6 +61,7 @@ async function populateUserTable() {
       }
     });
 
+    // Add functionality to "Unblock user" button.
     unblockButton.addEventListener('click', async () => {
       const confirmed = confirm(user.allowed_to.unblock_confirm);
 
@@ -71,6 +78,7 @@ async function populateUserTable() {
       }
     });
 
+    // Add functionality to "Delete user from system" button.
     deleteButton.addEventListener('click', async () => {
       const confirmed = confirm(user.allowed_to.delete_confirm);
 
@@ -87,6 +95,9 @@ async function populateUserTable() {
       }
     });
 
+    // Add those buttons to the corresponding user's entry depending on
+    // - whether user is blocked
+    // - whether the user added to the table isn't himself.
     if (user.id !== currentUserId) {
       if (!user.block) actionCell.appendChild(blockButton);
       else actionCell.appendChild(unblockButton);

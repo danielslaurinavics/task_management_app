@@ -52,124 +52,117 @@
 	},
 	"ui": {
 		"login": "Login",
-		"signup": "Sign Up",
-		"logout": "Log Out",
+		"signup": "Sign up",
+		"logout": "Log out",
 		"index": {
-			"headline": "Implement task management in your work environment",
+			"headline": "Add task management to your work environment",
 			"headlinetext": "Designed for both personal and commercial use!"
 		},
 		"login_ui": {
 			"headline": "Login to TaskApp",
-			"registerhere": "Register here!"
+			"registerhere": "Not registered? Do it here!"
 		},
 		"email": "Email",
 		"password": "Password",
 		"register_ui": {
-			"headline": "Sign Up for TaskApp",
-			"loginhere": "Login here!",
+			"headline": "Sign up for TaskApp",
+			"loginhere": "Registered? Log in here!",
 			"phoneformat": "Phone number format - +XXX00000000, without spaces.",
 			"passformat": "Password must be at least 8 characters long."
 		},
-		"name": "Full Name",
-		"phone": "Phone Number",
-		"password_confirm": "Password Confirmation",
+		"name": "Full name",
+		"phone": "Phone number",
+		"password_confirm": "Password confirmation",
 		"dashboard": {
 			"loggedas": "Logged in as {{ name }}",
-			"current_tasks": "Current Tasks",
 			"welcome": "Welcome, {{ name }}!",
 			"goto": "Go to",
-			"settings": "User Settings",
-			"personal_list": "Your Personal Task List",
-			"system_users": "Registered Users in the System",
-			"system_companies": "Registered Companies in the System",
+			"settings": "User settings",
+			"personal_list": "Your personal task list",
+			"system_users": "Users registered in the system",
+			"system_companies": "Companies registered in the system",
 			"admin": {
-				"block_user": "Block User",
-				"unblock_user": "Unblock User",
-				"delete_user": "Delete User",
-				"add_to_company": "Add User to Company",
-				"add_to_company_prompt": "Enter the email address of the user to add!",
-				"delete_company": "Delete Company"
+				"block_user": "Block",
+				"unblock_user": "Unblock",
+				"add_to_company_prompt": "Enter the email address of the user to add"
 			},
 			"team": {
-				"add_to_team": "Add User to Team",
-				"add_to_team_prompt": "Enter the email address of the user to add!",
-				"delete_team": "Delete Team"
+				"add_to_team_prompt": "Enter the email address of the user to add"
 			},
-			"team_list": "Team '{{ team }}' Task List"
+			"team_list": "Team's '{{ team }}' Task List"
 		},
 		"settings": {
-			"user_settings": "User Settings",
-			"change_base": "Change Basic Data",
-			"change_pass": "Change Password",
-			"change": "Change Settings",
-			"delete": "Delete Yourself from the System"
+			"user_settings": "User settings",
+			"change_base": "Change base data",
+			"change_pass": "Change password",
+			"change": "Change settings"
 		},
 		"user_id": "User ID",
-		"old_password": "Current Password",
-		"new_password": "New Password",
+		"old_password": "Current password",
+		"new_password": "New password",
 		"no": "No",
 		"yes": "Yes",
 		"actions": "Actions",
 		"company_id": "Company ID",
 		"entity_name": "Name",
-		"entity_email": "Contact Email",
-		"entity_phone": "Contact Phone",
+		"entity_email": "Contact email",
+		"entity_phone": "Contact phone",
 		"role": "Role",
 		"roles": {
 			"admin": "Administrator",
-			"user": "User"
+			"user": "Regular user"
 		},
-		"is_blocked": "Blocked?",
+		"is_blocked": "Is blocked?",
 		"company": {
-			"createHeader": "Create Company",
-			"create": "Create Company",
+			"createHeader": "Create company",
+			"create": "Create company",
 			"dashboard_headline": "Company '{{ name }}'",
-			"managers": "Company Managers",
-			"teams": "Company Teams",
-			"settings": "Company Settings",
-			"settingsHeader": "Company '{{ name }}' Settings",
-			"change": "Change Data"
+			"managers": "Company's managers",
+			"teams": "Company's teams",
+			"settings": "Company's settings",
+			"settingsHeader": "Company '{{ name }}' settings",
+			"change": "Change data"
 		},
 		"return": "Return",
 		"entity_description": "Description",
 		"team": {
-			"create": "Create Team",
-			"members": "Team Members",
+			"create": "Create team",
+			"members": "Team members",
 			"roles": {
 				"participant": "Participant",
 				"manager": "Manager"
 			},
-			"elevate": "Assign Manager Role",
-			"lower": "Remove Manager Role"
+			"elevate": "Assign as Manager",
+			"lower": "Assign as Participant"
 		},
 		"remove": "Remove",
 		"tasks": {
 			"change": "Edit",
-			"status": "Change Status",
+			"status": "Change status",
 			"delete": "Delete",
-			"add_person": "Enter the email of the user to add"
+			"add_person": "Enter the email address of the user to add"
 		},
 		"task_id": "Task ID",
-		"entity_status": "Task Status",
-		"entity_priority": "Task Priority",
-		"entity_duedate": "Task Due Date",
+		"entity_status": "Task status",
+		"entity_priority": "Task priority (importance)",
+		"entity_duedate": "Task due",
 		"task": {
-			"create": "Create Task",
-			"untitled": "Untitled Task"
+			"create": "Create task",
+			"untitled": "Untitled task"
 		}
 	},
 	"tasks": {
 		"statuses": {
-			"upcoming": "Not Started",
+			"upcoming": "Not started",
 			"started": "Started",
-			"ongoing": "In Progress",
+			"ongoing": "In progress",
 			"completed": "Completed"
 		},
 		"priorities": {
-			"low": "Low Priority",
-			"medium": "Medium Priority",
-			"high": "High Priority"
+			"low": "Low priority",
+			"medium": "Medium priority",
+			"high": "High priority"
 		},
-		"add_person": "Enter the email of the user to add"
+		"add_person": "Enter the email address of the user to add"
 	}
 }

@@ -12,21 +12,24 @@ async function populateTasks() {
   const ongoingTasksDiv = document.getElementById('ongoing-tasks');
   const completedTasksDiv = document.getElementById('completed-tasks');
 
+  // Get tasks data
   const fetchUrl = `/list/team/${teamId}`;
   const response = await fetch(fetchUrl, { method: 'GET' });
   const data = await response.json();
 
+  // Clear the tasks DIVs
   upcomingTasksDiv.innerHTML = '';
   startedTasksDiv.innerHTML = '';
   ongoingTasksDiv.innerHTML = '';
   completedTasksDiv.innerHTML = '';
 
+  // Return an error if the task data fetching process is unsuccessful.
   if (!response.ok) {
     alert(data.errors);
     return;
   }
 
-
+  // Create a new task card and fill it with data
   const tasks = data.tasks;
   tasks.forEach(task => {
     const taskDiv = document.createElement('div');
@@ -67,6 +70,7 @@ async function populateTasks() {
     </div>
     `;
     
+    // Create a new DIV for any person responsible for the task.
     const personData = document.createElement('div');
     personData.className = 'd-flex flex-column align-items-start ms-1 my-1';
     persons.forEach(person => {
@@ -175,6 +179,7 @@ async function populateTasks() {
       }
     });
 
+    // Show the buttons according to the role of the user or completion status
     if (task.status < 3 && isManager) taskDiv.appendChild(changeData);
     if (task.status < 3 && (isAssigned || isManager)) taskDiv.appendChild(changeStatus);
     if (isManager) taskDiv.appendChild(addPerson);

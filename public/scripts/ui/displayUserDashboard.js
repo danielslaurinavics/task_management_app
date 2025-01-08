@@ -6,8 +6,13 @@ async function displayUserSelect() {
   const companyResponse = await fetch(companyFetchUrl, { method: 'GET' });
   const companyData = await companyResponse.json()
 
-  if (!companyResponse.ok) return;
+  if (!companyResponse.ok) {
+    alert(companyData.errors);
+    return;
+  }
 
+  // Create a company card for each company the user is
+  // manager in
   const companies = companyData.companies;
   companies.forEach(company => {
     const cardDiv = document.createElement('div');
@@ -24,13 +29,17 @@ async function displayUserSelect() {
     selectDiv.appendChild(cardDiv);
   });
 
-
+  // Get information about the teams the user is participating in.
   const teamFetchUrl = `/teams/user/${userId}`;
   const teamResponse = await fetch(teamFetchUrl, { method: 'GET' });
   const teamData = await teamResponse.json();
 
-  if (!teamResponse.ok) return;
+  if (!teamResponse.ok) {
+    alert(teamData.errors);
+    return;
+  }
   
+  // Create a team card for each team the user is participating.
   const teams = teamData.teams;
   teams.forEach(team => {
     const cardDiv = document.createElement('div');

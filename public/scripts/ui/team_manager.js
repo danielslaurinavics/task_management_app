@@ -5,14 +5,17 @@ async function populateTeamParticipants() {
   const userId = parseInt(cuid, 10);
   const teamId = parseInt(teid, 10);
 
+  // Get information about the team's members.
   const response = await fetch(`/teams/${teamId}/participants`, { method: 'GET' });
   const data = await response.json();
 
+  // Display an error if an error occured during the request.
   if (!response.ok) {
     alert(data.errors);
     return;
   }
 
+  // Clear the participant table and start populating the current one.
   table.innerHTML = '';
   const members = data.participants;
   members.forEach(member => {
@@ -28,6 +31,7 @@ async function populateTeamParticipants() {
 
     const actionCell = document.createElement('td');
 
+    // Define action buttons
     const elevateRoleBtn = document.createElement('button');
     const lowerRoleBtn = document.createElement('button');
     const removeRoleBtn = document.createElement('button');
@@ -40,6 +44,7 @@ async function populateTeamParticipants() {
     lowerRoleBtn.className = 'btn btn-sm btn-outline-primary ms-1 fs-6';
     removeRoleBtn.className = 'btn btn-sm btn-danger ms-1 fs-6';
   
+    // Add participant's role elevation button functionality.
     elevateRoleBtn.addEventListener('click', async () => {
       const confirmed = confirm(member.allowed_to.elevate_confirm);
       if (confirmed) {
@@ -57,6 +62,7 @@ async function populateTeamParticipants() {
       }
     });
 
+    // Add participant's role lowering button functionality.
     lowerRoleBtn.addEventListener('click', async () => {
       const confirmed = confirm(member.allowed_to.lower_confirm);
       if (confirmed) {
@@ -74,6 +80,7 @@ async function populateTeamParticipants() {
       }
     });
 
+    // Adding functionality to the remove role button.
     removeRoleBtn.addEventListener('click', async () => {
       const confirmed = confirm(member.allowed_to.remove_confirm);
       if (confirmed) {
@@ -91,6 +98,7 @@ async function populateTeamParticipants() {
       }
     });
 
+    // Add member management buttons except for their own user.
     if (!member.is_manager) actionCell.appendChild(elevateRoleBtn);
     else {
       if (member.id !== userId) actionCell.appendChild(lowerRoleBtn);

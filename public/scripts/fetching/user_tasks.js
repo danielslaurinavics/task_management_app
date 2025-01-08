@@ -2,27 +2,30 @@ async function populateTasks() {
   const cuid = document.getElementById('user-id').value;
   const userId = parseInt(cuid, 10);
 
+  // Set up the DIVs where the tasks are stored
   const upcomingTasksDiv = document.getElementById('upcoming-tasks');
   const startedTasksDiv = document.getElementById('started-tasks');
   const ongoingTasksDiv = document.getElementById('ongoing-tasks');
   const completedTasksDiv = document.getElementById('completed-tasks');
 
+  // Fetch tasks data
   const fetchUrl = `/list/user/${userId}`;
   const response = await fetch(fetchUrl, { method: 'GET' });
   const data = await response.json();
 
+  // Clear current tasks data from their DIVs
   upcomingTasksDiv.innerHTML = '';
   startedTasksDiv.innerHTML = '';
   ongoingTasksDiv.innerHTML = '';
   completedTasksDiv.innerHTML = '';
 
+  // Return an error if the tasks data fetching was unsuccessful
   if (!response.ok) {
     alert(data.errors);
     return;
   }
 
-  
-
+  // Create a task card for each task
   const tasks = data.tasks;
   tasks.forEach(task => {
     const taskDiv = document.createElement('div');
@@ -113,6 +116,7 @@ async function populateTasks() {
       }
     });
 
+    // Show the buttons according to the completion status
     if (task.status < 3) taskDiv.appendChild(changeData);
     if (task.status < 3) taskDiv.appendChild(changeStatus);
     taskDiv.appendChild(deleteTask);

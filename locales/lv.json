@@ -75,7 +75,6 @@
 		"password_confirm": "Paroles apstiprinājums",
 		"dashboard": {
 			"loggedas": "Pieslēdzies kā {{ name }}",
-			"current_tasks": "Pašreizējie uzdevumi",
 			"welcome": "Esi sveicināts, {{ name }}!",
 			"goto": "Doties uz",
 			"settings": "Lietotāja iestatījumi",
@@ -101,8 +100,7 @@
 			"user_settings": "Lietotāja iestatījumi",
 			"change_base": "Mainīt pamatdatus",
 			"change_pass": "Mainīt paroli",
-			"change": "Mainīt iestatījumus",
-			"delete": "Dzēst sevi no sistēmas"
+			"change": "Mainīt iestatījumus"
 		},
 		"user_id": "Lietotāja ID",
 		"old_password": "Pašreizējā parole",

@@ -5,12 +5,17 @@ async function populateManagerTable() {
   const userId = parseInt(cuid, 10);
   const companyId = parseInt(coid, 10);
 
+  // Get data about company's managers
   const fetchUrl = `/companies/${companyId}/managers`;
   const response = await fetch(fetchUrl, { method: 'GET' });
   const data = await response.json();
 
-  if (!response.ok) return;
+  if (!response.ok) {
+    alert(data.errors);
+    return;
+  }
 
+  // Clear the managers table and fill it with new information.
   managersTable.innerHTML = '';
   const managers = data.managers;
 
@@ -23,6 +28,8 @@ async function populateManagerTable() {
     `;
 
     const actionCell = document.createElement('td');
+
+    // Define the remove button and its functionality.
     const removeButton = document.createElement('button');
     removeButton.textContent = '✖';
     removeButton.className = 'btn btn-sm btn-danger fs-6';
@@ -44,6 +51,7 @@ async function populateManagerTable() {
         } else alert(data.errors);
       }
     });
+    // Add the delete button except for their own user.
     if (manager.id !== userId) actionCell.appendChild(removeButton);
     row.appendChild(actionCell);
     managersTable.appendChild(row);
@@ -55,12 +63,17 @@ async function populateTeamsTable() {
   const coid = document.getElementById('company-id').value;
   const companyId = parseInt(coid, 10);
 
+  // Get data about company's teams
   const fetchUrl = `/companies/${companyId}/teams`;
   const response = await fetch(fetchUrl, { method: 'GET' });
   const data = await response.json();
 
-  if (!response.ok) return;
+  if (!response.ok) {
+    alert(data.errors);
+    return;
+  }
 
+  // Clear the teams table and populate it with fetched data.
   teamsTable.innerHTML = '';
   const teams = data.teams;
   
@@ -74,6 +87,7 @@ async function populateTeamsTable() {
 
     const actionCell = document.createElement('td');
 
+    // Define buttons used for team management.
     const addButton = document.createElement('button');
     const deleteButton = document.createElement('button');
 
@@ -83,6 +97,7 @@ async function populateTeamsTable() {
     addButton.className = 'btn btn-outline-primary btn-sm ms-1 fs-6';
     deleteButton.className = 'btn btn-danger btn-sm ms-1 fs-6';
 
+    // Add functionality to the 'Add member to team button'.
     addButton.addEventListener('click', async () => {
       const user_email = prompt(team.allowed_to.add_prompt);
 
@@ -108,6 +123,7 @@ async function populateTeamsTable() {
       }
     });
 
+    // Add functionality to 'Delete team' button.
     deleteButton.addEventListener('click', async () => {
       const confirmed = confirm(team.allowed_to.delete_confirm);
 
