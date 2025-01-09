@@ -25,15 +25,15 @@ async function checkForAccess(req, res, next) {
     return res.status(403).render('error', {error: i18n.__('msg.E20')});
 
   try {
-    const teamRelation = await TeamParticipant.findOne({
+	const teamData = await Team.findByPk(teamId);
+    if (!teamData)
+      return res.status(404).render('error', {error: i18n.__('msg.E18')});
+    
+	const teamRelation = await TeamParticipant.findOne({
       where: { team_id: teamId, user_id: user.id }
     });
     if (!teamRelation)
       return res.status(403).render('error', {error: i18n.__('msg.E14')});
-
-    const teamData = await Team.findByPk(teamId);
-    if (!teamData)
-      return res.status(404).render('error', {error: i18n.__('msg.E18')});
 
     const taskList = await TaskList.findOne({ where: { is_team_list: true, owner_team: teamData.id }});
     if (!taskList)
